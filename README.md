@@ -2,4 +2,4 @@ Ludwik
 ========
 
 
-* Game ranking: main js
+* jeu-classement.js : main js of game ranking
