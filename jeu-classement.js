@@ -63,13 +63,6 @@ et entre 2 et n pièces ?
 tests de compatibilité dont terminaux mobiles
 IE 9 et terminaux mobiles
 
-DEBOG  de cohérence
-	engoulevent à droite...
-
-
-
-
-
 détection du support de
 	section via Modernizr
 	audio via Modernizr
@@ -77,11 +70,7 @@ détection du support de
 	Object.keys
 => d'où page alternative
 
-
 ergo et habillage
-
-tests de compatibilité dont terminaux mobiles
-IE 9 et terminaux mobiles
 
 attributs ARIA ?
 surtout au clavier
