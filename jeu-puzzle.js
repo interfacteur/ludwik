@@ -22,8 +22,12 @@
 	delai4: 10,
 	delai5: 333,
 
-	dropCourt: 14, //(pixels)
+	regex: [/dragDropped|dragSimili/],
+
+	dropCourt: 24, //(pixels)
 	adjustMoment: 125, //pb of click on original <g> after a short drag (milliseconds)
+
+	filtres: "css/filtres.svg",
 
 	sons: {
 		ok: "audio/confirmation/correct", //drop valide
@@ -50,30 +54,24 @@
 
 
 /*
+
+vérfier sur MSIE
+	et si alternative pour filtres
+	et question du pointer-events
+
+
+to do :
+pointer-events msie 9 cf. notes in .css
+et vérifier dans svg.css
+	Does not work on SVG elements in Safari 5.1 or Android <= 4.1
+
+
+
+
 <!-- to do: labels, submit button? -->
 
 
 
-to do :
-pointer-events
-js
-pour MSIE 10 ?
-http://caniuse.com/#feat=pointer-events
-
-http://caniuse.com/#feat=pointer
-	càd
-	http://www.w3.org/TR/pointerevents/
-
-	MAIS QUOI ?
-
-
-
-to do: without ghost pieces?
-
-
-
-
-to do : filtres alt ??
 
 
 to do : effets avec voir ?
@@ -150,18 +148,24 @@ jquery-....min.js (ligne 2, col. 1808)
 
 		sounds = [],
 
+		doNothing = function () { "use strict"; },
+
 		game = {
 			// timt: null,
 			// clock: null,
-			//ratio: null,
-			//simili: null,
+			// ratio: null,
+			// toEnd: null,
+			duality: false,
+			hybrid: 0,
+			deshybr: [doNothing],
 			windW: $w.width(),
 			windH: $w.height(),
 			referWAbs: refer.getAttribute("width"),
 			referWRel: refer.getBoundingClientRect().width,
 			win: 0,
 			play: null,
-			delays : [],
+			drag: null,
+			delays: [],
 			sounds: {
 				audio: document.createElement("audio"),
 				format: function () {
@@ -171,6 +175,43 @@ jquery-....min.js (ligne 2, col. 1808)
 								".mp3" : game.sounds.audio.canPlayType('audio/ogg; codecs="vorbis"') ? ".ogg" : false	)
 						: false;
 		}	}	}
+
+
+
+
+
+
+
+
+
+
+
+
+if ($drawer.hasClass("transfigure"))
+	return;
+
+
+
+
+
+
+
+//Pseudo-class Location ----------------------------------------------------------------------------
+	/* TO DO <g data-transjectif=""
+	*/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	instancie.init = (function ii () {
 		"use strict";
@@ -197,6 +238,20 @@ jquery-....min.js (ligne 2, col. 1808)
 				"use strict";
 		}	}
 
+		game.duality = $("[data-dueljectif]").length;
+		game.duality = game.duality > 0 && game.duality % 2 == 0 ? [] : false;
+
+
+/* WEBKIT
+	to call SVG filters from CSS */
+		(parseInt($("#webkit").css("left"), 10) < -4444)
+		&& (instancie.webkit = (function wk () {
+			"use strict";
+			$("<div>", { class: "hr" }).appendTo($("body"))
+			.load(parametres.filtres);
+			return wk;
+		}) ());
+
 		return ii;
 	}) ();
 
@@ -212,30 +267,40 @@ jquery-....min.js (ligne 2, col. 1808)
 		if (! this instanceof Piece)
 			throw new Error("Attention à l'instanciation");
 
+//to do transfigure : prévoir que .transdrag s'arrête avant fin Piece()
+
 		this.instance = ind;
 		this.tmt = [];
 		this.tmt["manage"] = 0;
 		this.tmt["click"] = 0;
 		//this.state = null; /* null: starting; -1: invalid; 0: neutral; .5: almost; 1: valid */
-		this.queue = function () { "use strict"; }
-	/*		this.simili = undefined; //cf. topple() */
+		this.queue = doNothing;
 
 		this.$dom = $pieces.eq(ind);
 		this.$figure = $figures.eq(ind);
 		this.$figure.data("instance", ind);
 
-	/*		this.$posX = null; //cf. toGrade() */
-	/*		this.$posY = null; //cf. toGrade() */
-		this.establish("toGrade");
+	/*	this.$posX = null; //cf. toGrade() */
+	/*	this.$posY = null; //cf. toGrade() */
+		this.establish("toGrade"); //for this.calculate()
 
-		this.SVGgroup = this.$dom.find("g").attr("data-instance", this.instance).get(0);
+		this.SVGgroup = this.$dom.find("g")
+		.attr("data-instance", ind)
+		.get(0); //for this.calculate()
 
-		this.$cloneGroup = this.establish("toClone", "g");
-	/*	this.SVGcloneGroup = this.$cloneGroup.get(0);
-			this.dimension = null; //cf. calculate() */
+		this.$cloneGroup = this.establish("toClone", "g"); //duplicate <g to create drop zone
+		this.$cloneImage = this.establish("toClone", "image"); //duplicate <image to play final
 
-		this.$cloneImage = this.establish("toClone", "image");
+		this.dualize();
+	/*	this.duel = null; //cf. Piece.prototype.armor */
+	/*	this.$cloneDuel = null; //cf. Piece.prototype.armor */
+	/*	this.$againClone = null; //cf. Piece.prototype.againHelper */
 	}
+
+
+
+
+
 
 
 /* Class methods */
@@ -255,47 +320,6 @@ jquery-....min.js (ligne 2, col. 1808)
 		&& pieces[which].$figure.addClass("dragClick");
 	}
 
-	Piece.topple = function (dro, dra, sim) {
-		"use strict";
-
-		var harvestDrop = pieces[dro].$cloneGroup.offset(),
-			harvestDrag = pieces[dra].$cloneGroup.offset();
-
-		typeof pieces[dro].simili == "undefined"
-		&& (game.simili = {
-			dr: [dro, dra],
-			x: (harvestDrag.left - harvestDrop.left) / game.ratio,
-			y: (harvestDrag.top - harvestDrop.top) / game.ratio,
-			sim: sim
-		})
-		&& (! game.topple
-			&& (game.topple = (function tp (args) {
-				"use strict";
-				pieces[args.dr[0]].$cloneImage.attr({
-					"x": args.x,
-					"y": args.y
-				});
-				pieces[args.dr[0]].$cloneGroup.attr({
-					"data-instance": args.dr[1],
-					"data-simili": args.sim //for later: messages to user ?
-				});
-				pieces[args.dr[0]].simili = args.dr[1];
-				return tp;
-			}) (game.simili))
-			|| game.topple(game.simili)
-		)
-		({
-			dr: [dra, dro],
-			x: (harvestDrop.left - harvestDrag.left) / game.ratio,
-			y: (harvestDrop.top - harvestDrag.top) / game.ratio,
-			sim: sim
-		});
-
-		game.simili = true;
-		$stage.data("aera", [dra, $stage.data("aera")[1]]);
-		Piece.toCheck(null, { draggable: pieces[dra].$figure });
-	}
-
 	Piece.appreciate = function (cl) {
 		"use strict";
 		$stage.addClass(cl);
@@ -310,67 +334,65 @@ jquery-....min.js (ligne 2, col. 1808)
 		return true;
 	}
 
-	Piece.win = function () {
+	Piece.manageDrop = function (state) {
 		"use strict";
+		this.data("full", ! state);
+	}
+
+	Piece.win = function (del) {
+		"use strict";
+
 		if ($(".dragSimili").length)
-			return Piece.hybrid();
+			return setTimeout(function () {
+				"use strict";
+				Piece.hybrid();
+			}, game.delays[0] + 50);
+
 		var time = game.clock.getTime();
 		game.clock.stop();
-		$drawer.addClass("bravo")
-		.html(
+
+		pieces.forEach(function (val) {
+			"use strict";
+			val.$cloneGroup.draggable("disable");
+		});
+
+		$(".puzzle").addClass("bravo");
+		$drawer.html(
 			parametres.message1
-			+ ((game.simili && parametres.message2) || "")
 			+ parametres.message3
 			+ (time - 1) + "-" + time
 			+ parametres.message4
-		);
-		// return true;
-	}
+	);	}
 
-	Piece.hybrid = function () {
+	Piece.hybrid = function (del) {
 		"use strict";
-		$(".dragSimili").css(parametres.transition(0)) /* QOUI ? */
-		.addClass("dragAgain")
-		.removeClass("dragSimili")
-		.css("opacity", 1);
 
+		var $simili = $(".dragSimili");
+		game.win -= $simili.length;
+		game.deshybr[1] = function (uid) {
+			"use strict";
+			uid
+			&& uid.removeClass("dropHybrid"); //to erase shadow of .dragOriginal
+			$("#message").remove();
+		}
+		game.hybrid = 1;
 
+		$simili.removeClass("dragDropped dragSimili")
+		.css({
+			"z-index": ++parametres.index
+		})
+		.each(function () {
+			"use strict";
+			var $t = $(this),
+				piece = pieces[pieces[$t.data("instance")].duel[0]];
+			piece.$figure.addClass("dropHybrid");
+			piece.$cloneDuel.attr("class", "");
+			piece.$cloneGroup.attr("class", "");
+			Piece.manageDrop.call(piece.$cloneGroup, true);
+		});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		$("<div>", { id: "message", html: parametres.message1 + parametres.message2 })
+		.prependTo($drawer);
 	}
 
 
@@ -379,20 +401,25 @@ jquery-....min.js (ligne 2, col. 1808)
 	Piece.toBrand = function (ev, ui) { //drag: start
 		"use strict";
 		var $t = $(this),
-			piece = pieces[$t.data("instance")],
+			instance = $t.data("instance"),
+			piece = pieces[instance],
 			harvest = $t.offset();
 		clearTimeout(piece.tmt);
+		clearTimeout(game.toEnd);
+		game.drag = instance;
 		Piece.playable(null);
 		piece.playLeft = harvest.left;
 		piece.playTop = harvest.top;
 		game.time();
 		$t.addClass("dragOriginal justAMoment");
-		ui.helper.addClass("dragClone");
+		return ui.helper.addClass("dragClone");
 	}
 
 	Piece.toFix = function (ev, ui) { //drag: stop (coming after toCheck)
 		"use strict";
 		var harvest = ui.helper.offset();
+		game.deshybr[game.hybrid](ui.draggable); //serve to final Piece.hybrid()
+		game.drag = null;
 		pieces[$(this).data("instance")].place({
 			left: harvest.left - game.windW * .5,
 			top: (harvest.top - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
@@ -402,8 +429,11 @@ jquery-....min.js (ligne 2, col. 1808)
 	Piece.toCheck = function (ev, ui) { //drop: drop (coming before toFix)
 		"use strict";
 		var indDrop = $stage.data("aera")[0],
-			indDrag = ui.draggable.data("instance"),
-			simili = ui.draggable.data("simili");
+			indDrag = ! $(this).has(ui.draggable).length ? //via #figure g equals recursive drag and drop
+				ui.draggable.data("instance")
+				:
+				ui.helper.data("instance"); //a placed piece is drag and drop again (via #figure g - cf. this.$cloneGroup.draggable in finish())
+
 		switch (indDrop) {
 			case -1:
 				break;
@@ -411,26 +441,31 @@ jquery-....min.js (ligne 2, col. 1808)
 				pieces[indDrop].queue = Piece.prototype.finish;
 				break;
 			default:
-				(typeof simili == "undefined" || simili != $stage.data("aera")[1])
+				(indDrag != $stage.data("aera")[1])
 				&& Piece.appreciate("nok")
-				|| Piece.topple(indDrop, indDrag, simili);
+				|| (pieces[indDrag].queue = Piece.prototype.stay);
 	}	}
 
 	Piece.toCheckClick = function () { //click: drag, and can drop
 		"use strict";
 		var $t = $(this),
 			instance = $t.data("instance"),
-			simili = pieces[instance].$figure.data("simili");
+			duel = $t.data("duel");
+
+		if ($t.data("full"))
+			return $stage.data("aera", [-1, undefined]);
+
 		switch (game.play) {
 			case null:
 				break;
 			case instance:
 				pieces[game.play].finish(0);
 				break;
+			case duel:
+				pieces[game.play].stay(0);
+				break;
 			default:
-				(typeof simili == "undefined" || simili != pieces[game.play].$figure.data("simili"))
-				&& Piece.appreciate("nok")
-				|| Piece.topple(instance, game.play, simili);
+				Piece.appreciate("nok")
 	}	}
 
 
@@ -461,14 +496,9 @@ jquery-....min.js (ligne 2, col. 1808)
 	}
 	Piece.establish.toClone = function (tag) {
 		"use strict";
-		return this.$dom.find(tag).length ?
-			this.$dom.find(tag)
+		return this.$dom.find(tag)
 			.clone()
 			.appendTo($puzzle)
-			:
-			(	this.$figure.addClass("dragPseudo") //to do: without ghost pieces?
-				&& -- game.total
-				&& $("no")	);
 	}
 	Piece.prototype.establish = function (meth, sup) {
 		"use strict";
@@ -483,8 +513,6 @@ jquery-....min.js (ligne 2, col. 1808)
 		var dimension = this.SVGgroup.getBoundingClientRect(),
 			harvest, x, y, w;
 
-		//this.dimension = this.SVGcloneGroup.getBoundingClientRect();
-
 		this.$figure.css("height", "100%");
 		this.$dom.css({
 			"margin": 0,
@@ -493,7 +521,7 @@ jquery-....min.js (ligne 2, col. 1808)
 
 		harvest = this.$figure.offset();
 		x = this.$posX.offset().left - harvest.left - 3; //- 3 : padding for usability and filter
-		x < 0
+		x < 0 
 		&& (x = 0);
 		y = this.$posY.offset().top - harvest.top;
 		w = dimension.width + 6;
@@ -507,7 +535,7 @@ jquery-....min.js (ligne 2, col. 1808)
 			"height": dimension.height
 	});	}
 
-	Piece.prototype.manage = function (state) {
+	Piece.prototype.manageDrag = function (state) {
 		"use strict";
 		try {
 			this.$figure.draggable(state);
@@ -553,38 +581,164 @@ jquery-....min.js (ligne 2, col. 1808)
 		piece.queue(game.delays[0]);
 	}
 
-	Piece.prototype.finish = function (del) {
+	Piece.prototype.finish = function (del, app, stop) {
 		"use strict";
 		var $f = this.$figure,
-			delay = typeof del != "undefined" ? del : game.delays[0],
-			simili = typeof this.simili != "undefined";
+			delay = typeof del != "undefined" ? del : game.delays[0];
+
 		// this.state = 1;
-		//Piece.appreciate((simili && "almost") || "ok");
+
+		this.queue = doNothing;
+		Piece.appreciate(app || "ok");
 		game.win ++;
-		((simili && pieces[this.simili]) || this).$cloneGroup.attr("class", "g");
-		this.$cloneImage.css(parametres.transition(delay, "opacity"))
-		.attr("class", "image");
+
+console.log(game.win);
+
 		$f.css(parametres.transition(delay, "opacity"))
-		.css("opacity", 0);
+		.addClass("dragDropped");
 		setTimeout(function () {
 			"use strict";
-			! simili
-			&& $f.remove()
-			|| $f.addClass("dragSimili")
-			.appendTo($drawer);
-			game.win == game.total
-			&& Piece.win();
+			$f.css("z-index", -1);
 		}, delay);
+
+		if (! stop) { //cf. Piece.prototype.stay()
+			this.$cloneGroup.attr("class", "g");
+			this.$cloneImage.css(parametres.transition(delay, "opacity"))
+			.attr("class", "image");
+
+			this.finishToDragAgain($f, false);
+		}
+
+		game.win == game.total
+		&& Piece.win(delay);
 	}
-/*		return setTimeout(function () {
+
+	Piece.prototype.finishToDragAgain = function (fig, duel) {
+		"use strict";
+		var that = this;
+
+		Piece.manageDrop.call(this.$cloneGroup, false);
+
+		this.$cloneGroup.draggable("instance")
+		&& this.$cloneGroup.draggable("enable");
+
+		this.$cloneGroup.draggable({
+			addClasses: false,
+			cursorAt: {
+				left: fig.width() / 2,
+				top: fig.height() / 2
+			},
+			helper: function (ev) {
+				"use strict";
+				return that.againHelper(ev, fig);
+			},
+			start: function () {
+				"use strict";
+				that.againStart(duel);
+			},
+			stop: function () {
+				"use strict";
+				that.againStop(fig);
+	}	});	}
+
+	Piece.prototype.againHelper = function (ev, fig) {
+		"use strict";
+
+		fig.css(parametres.transition(0, "opacity"))
+		.css("z-index", -1)
+		.removeClass("dragDropped dragSimili");
+
+		this.$againClone = fig.clone()
+		.data("instance", fig.data("instance"))
+		.css("z-index", ++parametres.index)
+		.addClass("dragAgain")
+		.position({
+			of: ev
+		})
+		.appendTo($drawer);
+
+		return Piece.toBrand.call(fig, null, { helper: this.$againClone });			
+	}
+
+	Piece.prototype.againStart = function (duel) {
+		"use strict";
+
+		Piece.manageDrop.call(this.$cloneGroup, true);
+
+		game.win --;
+
+		this[! duel ? "$cloneImage" : "$cloneDuel"].css(parametres.transition(0, "opacity"))
+		.attr("class", "")
+		this.$cloneGroup.attr("class", "");
+	}
+
+	Piece.prototype.againStop = function (fig) {
+		"use strict";
+
+		this.$cloneGroup.draggable("disable")
+
+		Piece.toFix.call(fig, null, { helper: this.$againClone });
+	}
+
+
+/* Conditionnal methods: puzzle with possible "hybridation" cf. data-dueljectif */
+
+	! game.duality
+	&& (Piece.prototype.dualize = Piece.armor = Piece.prototype.armor = doNothing)
+
+	|| ((Piece.prototype.dualize = function () {
 			"use strict";
-			! simili
-			&& $f.remove()
-			|| $f.addClass("dragSimili");
-			game.win == game.total
-			&& Piece.win();
-		}, delay) + .1; //setTimeout returns an integer: here returned value need to be different from 0
-	} //PS: why? there is no return this.finish(n) - thinks to switch (?) */
+			var duel = this.$figure.data("dueljectif");
+			duel
+			&& game.duality.push(duel);
+		})
+
+		&& (Piece.armor = function () {
+			"use strict";
+			var p;
+			game.duality.sort();
+			for (var i = 0, lg = game.duality.length; i < lg; i += 2) {
+				p = $("[data-dueljectif='" + game.duality[i] + "']");
+				pieces[p.eq(0).data("instance")].armor(p.eq(1).data("instance"), game.duality[i], true);
+		}	})
+
+		&& (Piece.prototype.armor = function (comp, duel, first) {
+			"use strict";
+
+			var harvestObj = this.$cloneGroup.offset(),
+				pieceComp = pieces[comp],
+				harvestComp = pieceComp.$cloneGroup.offset();
+
+			this.duel = [comp, duel]; //duel: if personnalized message to user
+			this.$cloneGroup.data("duel", comp);
+			this.$cloneDuel = pieceComp.establish("toClone", "image"); //duplicate duel <image to play final
+			this.$cloneDuel.attr({
+				"x": (harvestObj.left - harvestComp.left) / game.ratio,
+				"y": (harvestObj.top - harvestComp.top) / game.ratio
+			});
+
+			first
+			&& pieceComp.armor(this.instance, duel);
+		})
+
+		&& (Piece.prototype.stay = function (del) {
+			"use strict";
+			var $f = this.$figure,
+				delay = typeof del != "undefined" ? del : game.delays[0],
+				piece = pieces[this.duel[0]];
+
+			// this.state = .5;
+
+			this.finish(null, "almost", true);
+
+			$f.addClass("dragSimili");
+
+			piece.$cloneGroup.attr("class", "g");
+			piece.$cloneDuel.css(parametres.transition(delay, "opacity"))
+			.attr("class", "image");
+
+			piece.finishToDragAgain($f, true);
+	})	);
 
 
 
@@ -668,7 +822,7 @@ jquery-....min.js (ligne 2, col. 1808)
 			mouseover: function () {
 				"use strict";
 				pieces[$(this).data("instance")].getFromGroups()
-				.manage("enable");
+				.manageDrag("enable");
 			},
 			touchstart: function () {
 				"use strict";
@@ -679,7 +833,7 @@ jquery-....min.js (ligne 2, col. 1808)
 				var piece = pieces[$(this).data("instance")].getFromGroups();
 				piece.tmt["manage"] = setTimeout(function () {
 					"use strict";
-					piece.manage("disable");
+					piece.manageDrag("disable");
 				}, game.delays[3]);
 			},
 			touchend: function () {
@@ -691,8 +845,31 @@ jquery-....min.js (ligne 2, col. 1808)
 			click: Piece.toCheckClick,
 			mouseover: function () {
 				"use strict";
-				var instance = $(this).data("instance");
-				$stage.data("aera", [instance, pieces[instance].$figure.data("simili")]);
+				var $t = $(this),
+					cl,
+					filigree;
+				// if ($t.data("over")) //to do: pb of <path no contigous ?
+				// 	return;
+				// $t.data("over", true);
+
+				if ($t.data("full"))
+					return $stage.data("aera", [-1, undefined]);
+
+				$stage.data("aera", [$t.data("instance"), $t.data("duel")]);
+
+				//filigree :
+				cl = $t.attr("class");
+				if (game.drag == null || cl == "mig" || cl == "g")
+					return;
+				clearTimeout($t.data("timet"));
+				filigree =
+					game.drag == $t.data("instance") ? pieces[game.drag].$cloneImage
+					: game.drag ==  $t.data("duel") ? pieces[pieces[game.drag].duel[0]].$cloneDuel
+					: false;
+				filigree
+				&& filigree.attr("class", "mimage")
+				&& $t.attr("class", "mig")
+				&& $t.data("filigree", filigree);
 			},
 			touchstart: function () {
 				"use strict";
@@ -708,7 +885,20 @@ jquery-....min.js (ligne 2, col. 1808)
 			},
 			mouseout: function () {
 				"use strict";
+				var $t = $(this);
+				// $t.data("over", false);
 				$stage.data("aera", [-1, undefined]);
+
+				//filigree :
+				$t.data("filigree")
+				&& $t.data("timet", setTimeout(function () {
+					"use strict";1
+					if (! $t.data("filigree") || $t.data("filigree").attr("class") == "image")
+						return;
+					$t.data("filigree").attr("class", "");
+					$t.attr("class", "");
+					$t.data("filigree", false);
+				}, game.delays[3]));
 			},
 			touchend: function () {
 				"use strict";
@@ -716,28 +906,44 @@ jquery-....min.js (ligne 2, col. 1808)
 		}	});
 
 		$see.on({
-			click: function (ze) {
+			click: function (ze, next, follow) {
 				"use strict";
-				var $f = $(".figure:eq(0)"),  //to do: randomize ?
-					$g;
+
+				var ind = typeof next != "undefined" ? next : 0,
+					$f, //to do: randomize ?
+					$g,
+					$gTarget;
+
 				ze.preventDefault();
-				if ($f.hasClass("dragSimili"))
-					return;
+
+				if (ind < game.total && parametres.regex[0].test($(".figure:eq(" + ind + ")").attr("class")))
+					return $see.trigger("click", [++ind, follow]);
+
+				$f = $(".figure:eq(" + ind + ")");
 				$g = $f.find("g");
 				$g.trigger("click");
-				$("#figure [data-instance='" + $g.data("instance") + "']").trigger("click");
-				if (! ze.isTrigger || $(".figure").length == 0)
-					return;
-				setTimeout(function () {
+				$gTarget = $("#figure [data-instance='" + $g.data("instance") + "']");//or pieces[$g.data("instance")].$cloneGroup ?
+				$gTarget.attr("class") == "g"
+				&& ($gTarget = $("#figure [data-instance='" + $gTarget.data("duel") + "']"))
+				&& $f.addClass("dragSimili").
+				css({
+					"left": $gTarget.offset().left + ($f.width() / 2) - game.windW * .5,
+					"top": ($gTarget.offset().top + ($f.height() / 2) - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
+				});
+				$gTarget.trigger("click");
+
+				follow
+				&& game.total > ind
+				&& (game.toEnd = setTimeout(function () {
 					"use strict";
-					$see.trigger("click")
-				}, game.delays[5]);
+					$see.trigger("click", [++ind, true]);
+				}, game.delays[5]));
 		}	});
 
 		$("#see2").on({
 			click: function (ze) {
 				"use strict";
-				$see.trigger("click");
+				$see.trigger("click", [0, true]);
 	}	});	}
 
 
@@ -776,11 +982,12 @@ jquery-....min.js (ligne 2, col. 1808)
 			"use strict";
 			pieces.push(new Piece(ind));
 		});
+
+		Piece.calculate();
+		Piece.armor();
 		delete Piece.establish;
 
 		$targetGroups = $stage.find("g");
-
-		Piece.calculate();
 
 //Drag and drop events
 		instancie.uiEvents
@@ -791,6 +998,7 @@ jquery-....min.js (ligne 2, col. 1808)
 			$figures.draggable({
 				addClasses: false,
 				helper: "clone",
+				cursor: "move",
 				disabled: true,
 				start: Piece.toBrand,
 				stop: Piece.toFix
