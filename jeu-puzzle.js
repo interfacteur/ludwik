@@ -8,7 +8,7 @@
 ;var parametres = {
 
 	message1 : "BRAVO !!",
-	message2 : " mais il y a des hybridations",
+	message2 : " mais les deux puzzles sont encore mélangés",
 	message3 : "<br>Puzzle effectué en ",
 	message4 : " secondes",
 
@@ -36,6 +36,10 @@
 		win: "audio/confirmation/wrong" //puzzle terminé
 	},
 
+	formul: {
+		hybridHelp: $("#hybridHelp").length ? $("#hybridHelp").val() : false
+	},
+
 	transition: function (delai, prop) {
 		var pr = prop ? prop + " " : "";
 		return {
@@ -47,7 +51,6 @@
 
 
 }
-
 
 
 
@@ -98,6 +101,12 @@ noter contrainte pas de pièces d'une hauteur supérieure à la moitié ?
 <!-- enable-background="new 0 0 726 726" -->
 
 
+to do
+CONFORMITE DU SVG GENERE :
+<g data-instance="n"
+n'est pas conforme
+	mais comme il s'agit d'éléments clonables, il est plus difficile de passer par $element.data()
+
 
 
 MAC webkit
@@ -112,6 +121,10 @@ GC 34
 	les pièces n'apparaissent pas
 
 Canary
+
+
+
+
 
 
 
@@ -132,6 +145,7 @@ jquery-....min.js (ligne 2, col. 1808)
 
 		$pieces, //$(".figure svg")
 
+		$game = $(".puzzle"),
 		$stage = $("#figure"),
 		$puzzle = $("#figure svg"),
 		refer = document.getElementById("referencial"),
@@ -143,6 +157,7 @@ jquery-....min.js (ligne 2, col. 1808)
 
 		$clock = $("#clock"),
 
+		$level = $("#levels"),
 		$levels = $("[name='lev']"),
 		$see = $("#see1"),
 
@@ -155,6 +170,7 @@ jquery-....min.js (ligne 2, col. 1808)
 			// clock: null,
 			// ratio: null,
 			// toEnd: null,
+			// levelsWAbs: null,
 			duality: false,
 			hybrid: 0,
 			deshybr: [doNothing],
@@ -166,6 +182,15 @@ jquery-....min.js (ligne 2, col. 1808)
 			play: null,
 			drag: null,
 			delays: [],
+			levelsWRel: $level.width(),
+			responsive: function () {
+				"use strict";
+				game.levelsWRel = $level.width();
+				if (! window.matchMedia("(min-width: " + (game.levelsWAbs * 2 + game.referWRel) + "px)").matches)
+					$game.addClass("mini")
+				else
+					$game.removeClass("mini")
+			},
 			sounds: {
 				audio: document.createElement("audio"),
 				format: function () {
@@ -224,6 +249,9 @@ if ($drawer.hasClass("transfigure"))
 		for (var p in parametres.sons)
 			sounds[p] = new Sound(parametres.sons[p]);
 
+		game.levelsWAbs = game.levelsWRel;
+		game.responsive();
+
 		game.ratio = game.referWRel / game.referWAbs;
 
 		game.clock = $clock.FlipClock({
@@ -250,7 +278,8 @@ if ($drawer.hasClass("transfigure"))
 			$("<div>", { class: "hr" }).appendTo($("body"))
 			.load(parametres.filtres);
 			return wk;
-		}) ());
+		}) ())
+		|| (instancie.webkit = doNothing);
 
 		return ii;
 	}) ();
@@ -350,50 +379,18 @@ if ($drawer.hasClass("transfigure"))
 
 		var time = game.clock.getTime();
 		game.clock.stop();
-
 		pieces.forEach(function (val) {
 			"use strict";
 			val.$cloneGroup.draggable("disable");
 		});
 
-		$(".puzzle").addClass("bravo");
+		$game.addClass("bravo");
 		$drawer.html(
 			parametres.message1
 			+ parametres.message3
 			+ (time - 1) + "-" + time
 			+ parametres.message4
 	);	}
-
-	Piece.hybrid = function (del) {
-		"use strict";
-
-		var $simili = $(".dragSimili");
-		game.win -= $simili.length;
-		game.deshybr[1] = function (uid) {
-			"use strict";
-			uid
-			&& uid.removeClass("dropHybrid"); //to erase shadow of .dragOriginal
-			$("#message").remove();
-		}
-		game.hybrid = 1;
-
-		$simili.removeClass("dragDropped dragSimili")
-		.css({
-			"z-index": ++parametres.index
-		})
-		.each(function () {
-			"use strict";
-			var $t = $(this),
-				piece = pieces[pieces[$t.data("instance")].duel[0]];
-			piece.$figure.addClass("dropHybrid");
-			piece.$cloneDuel.attr("class", "");
-			piece.$cloneGroup.attr("class", "");
-			Piece.manageDrop.call(piece.$cloneGroup, true);
-		});
-
-		$("<div>", { id: "message", html: parametres.message1 + parametres.message2 })
-		.prependTo($drawer);
-	}
 
 
 /* Class methods for jQuery UI events manager */
@@ -591,9 +588,6 @@ if ($drawer.hasClass("transfigure"))
 		this.queue = doNothing;
 		Piece.appreciate(app || "ok");
 		game.win ++;
-
-console.log(game.win);
-
 		$f.css(parametres.transition(delay, "opacity"))
 		.addClass("dragDropped");
 		setTimeout(function () {
@@ -684,7 +678,7 @@ console.log(game.win);
 /* Conditionnal methods: puzzle with possible "hybridation" cf. data-dueljectif */
 
 	! game.duality
-	&& (Piece.prototype.dualize = Piece.armor = Piece.prototype.armor = doNothing)
+	&& (Piece.prototype.dualize = Piece.armor = Piece.prototype.armor = Piece.hybrid = doNothing)
 
 	|| ((Piece.prototype.dualize = function () {
 			"use strict";
@@ -738,6 +732,41 @@ console.log(game.win);
 			.attr("class", "image");
 
 			piece.finishToDragAgain($f, true);
+		})
+
+		&& (Piece.hybrid = function (del) {
+			"use strict";
+
+			var $simili = $(".dragSimili");
+
+			game.deshybr[1] = function (uid) {
+				"use strict";
+				uid
+				&& uid.removeClass("dropHybrid"); //to erase shadow of .dragOriginal
+				$("#message").remove();
+				! $(".dropHybrid").length
+				&& (game.hybrid = 0);
+			}
+			game.hybrid = 1;
+
+			(parametres.formul.hybridHelp === true) //to indicate which pieces are 'hybrids':
+			&& $simili.removeClass("dragDropped dragSimili")
+			.css({
+				"z-index": ++parametres.index
+			})
+			.each(function () {
+				"use strict";
+				var $t = $(this),
+					piece = pieces[pieces[$t.data("instance")].duel[0]];
+				piece.$figure.addClass("dropHybrid");
+				piece.$cloneDuel.attr("class", "");
+				piece.$cloneGroup.attr("class", "");
+				Piece.manageDrop.call(piece.$cloneGroup, true);
+			})
+			&& (game.win -= $simili.length); //done by againStart() without indication of which pieces are 'hybrids'
+
+			$("<div>", { id: "message", html: parametres.message1 + parametres.message2 })
+			.prependTo($drawer);
 	})	);
 
 
@@ -788,6 +817,8 @@ console.log(game.win);
 				game.timt = setTimeout(Piece.calculate, game.delays[4]);
 				game.referWRel = refer.getBoundingClientRect().width;
 				game.ratio = game.referWRel / game.referWAbs;
+
+				game.responsive();
 		}	});
 
 		$("body").on({
