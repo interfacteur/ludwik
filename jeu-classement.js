@@ -13,6 +13,7 @@
 
 	serie: 1, //set initial
 	jeu: "Série ",
+	jeu: "Suivants",
 
 
 	collection: window.oiseaux, //cf. jeu-classement-fiche.js
@@ -81,10 +82,11 @@ $(function () {
 	"use strict";
 
 	var abalities = {
-		scrollBar: 34,
+		scrollBar: parametres.scrollBar,
 		sounds: {
 			audio: document.createElement("audio"),
 			format: function () {
+				"use strict";
 				return !! abalities.sounds.audio.canPlayType ? (
 						abalities.sounds.audio.canPlayType("audio/mpeg") ? ".mp3" :
 						abalities.sounds.audio.canPlayType('audio/ogg; codecs="vorbis"') ? ".ogg" :
@@ -97,7 +99,7 @@ $(function () {
 		$hipster = $("#hipster"),
 		code = $hipster.html(),
 		$sliding = $("#sliding"),
-		$toslide = $(".sliding"),
+		// $toslide = $(".sliding a"),
 		$order = $("#order"),
 		$again = $("#again"),
 		delays = [],
@@ -171,7 +173,8 @@ $(function () {
 			&& $birds.each(function (zi) { //from HTML code
 				games[parametres.serie - 1].push($(this).data("fiche"));
 			}));
-		$toslide.attr("data-jeu", parametres.jeu + parametres.serie);	
+		// $toslide.attr("data-jeu", parametres.jeu + parametres.serie);	
+		$sliding.attr("data-jeu", parametres.jeu);
 
 		birds = [];
 		sizes = [];
@@ -795,6 +798,9 @@ $(function () {
 					orderFrom.push(i);
 
 				while (orderL > 0) { //to do: optimize algo
+
+	/* cf. stocking in last: http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array */
+
 					orderRand = Math.floor(Math.random() * orderL);
 					orderTo.push(orderFrom[orderRand]);
 					orderTransit = orderFrom.slice(0,orderRand).concat(orderFrom.slice(orderRand + 1));

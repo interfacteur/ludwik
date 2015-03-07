@@ -8,7 +8,7 @@
 ;var parametres = {
 
 	message1 : "BRAVO !!",
-	message2 : " mais les deux puzzles sont encore mélangés",
+	message2 : " mais les deux oiseaux sont encore mélangés",
 	message3 : "<br>Puzzle effectué en ",
 	message4 : " secondes",
 
@@ -27,7 +27,7 @@
 	dropCourt: 24, //(pixels)
 	adjustMoment: 125, //pb of click on original <g> after a short drag (milliseconds)
 
-	filtres: "css/filtres.svg",
+	filtres: "css/filtres/filtres.svg",
 
 	sons: {
 		ok: "audio/confirmation/correct", //drop valide
@@ -37,7 +37,8 @@
 	},
 
 	formul: {
-		hybridHelp: $("#hybridHelp").length ? $("#hybridHelp").val() : false
+		hybridHelp: $("#hybridHelp").length ? $("#hybridHelp").val() : false,
+		melting: $("#melting").length ? $("#melting").val() : false
 	},
 
 	transition: function (delai, prop) {
@@ -749,7 +750,7 @@ if ($drawer.hasClass("transfigure"))
 			}
 			game.hybrid = 1;
 
-			(parametres.formul.hybridHelp === true) //to indicate which pieces are 'hybrids':
+			(parametres.formul.hybridHelp === "true") //to indicate which pieces are 'hybrids':
 			&& $simili.removeClass("dragDropped dragSimili")
 			.css({
 				"z-index": ++parametres.index
@@ -996,14 +997,17 @@ if ($drawer.hasClass("transfigure"))
 
 		game.total = currentIndex = shuffle.length - 1;
 		//http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-		while (0 !== currentIndex) {
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex -= 1;
-			temporaryValue = shuffle[currentIndex];
-			shuffle[currentIndex] = shuffle[randomIndex];
-			shuffle[randomIndex] = temporaryValue;
+		if (parametres.formul.melting === "true") {
+			console.log("oui")
+			while (0 !== currentIndex) {
+				randomIndex = Math.floor(Math.random() * currentIndex);
+				currentIndex -= 1;
+				temporaryValue = shuffle[currentIndex];
+				shuffle[currentIndex] = shuffle[randomIndex];
+				shuffle[randomIndex] = temporaryValue;
+			}
+			$drawer.html(shuffle.join("</figure>"));
 		}
-		$drawer.html(shuffle.join("</figure>"));
 
 		$figures = $(".figure");
 		$pieces = $(".figure svg");
