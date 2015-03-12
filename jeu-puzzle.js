@@ -1,7 +1,7 @@
 /*
 	par Ludwik : Parc naturel des Alpilles, jeu du puzzle
 	Gaëtan Langhade - Interfacteur
-	février 2015
+	février-mars 2015
 */
 
 /* Paramètres */
@@ -12,7 +12,7 @@
 	message3 : "<br>Puzzle effectué en ",
 	message4 : " secondes",
 
-	hauteur: .79, //cf. CSS #figure
+	hauteur: .63 + .13 + .04, //cf. #figure dans jeu-puzzle.css et [.life-alpilles-games, .lag-order] dans communs.css
 	index: 10, //réglage minimal en z-index d'un élément droppé
 
 	delai0: 750,
@@ -57,6 +57,8 @@
 
 
 
+
+
 /*
 
 vérfier sur MSIE
@@ -89,11 +91,6 @@ le deuxième click fonctionne partout sauf sur une autre pièce
 
 
 
-
-<!--
-to do
-noter contrainte pas de pièces d'une hauteur supérieure à la moitié ?
--->
 
 <!-- to do : better way fonds ok nok...-->
 
@@ -141,6 +138,7 @@ jquery-....min.js (ligne 2, col. 1808)
 	"use strict";
 
 	var $w = $(window),
+		$b = $("body"),
 
 		pieces = [],
 
@@ -158,7 +156,6 @@ jquery-....min.js (ligne 2, col. 1808)
 
 		$clock = $("#clock"),
 
-		$level = $("#levels"),
 		$levels = $("[name='lev']"),
 		$see = $("#see1"),
 
@@ -171,7 +168,6 @@ jquery-....min.js (ligne 2, col. 1808)
 			// clock: null,
 			// ratio: null,
 			// toEnd: null,
-			// levelsWAbs: null,
 			duality: false,
 			hybrid: 0,
 			deshybr: [doNothing],
@@ -183,14 +179,10 @@ jquery-....min.js (ligne 2, col. 1808)
 			play: null,
 			drag: null,
 			delays: [],
-			levelsWRel: $level.width(),
+			levelsWAbs: commonLAg.$levels.width(),
 			responsive: function () {
 				"use strict";
-				game.levelsWRel = $level.width();
-				if (! window.matchMedia("(min-width: " + (game.levelsWAbs * 2 + game.referWRel) + "px)").matches)
-					$game.addClass("mini")
-				else
-					$game.removeClass("mini")
+				commonLAg.responsive(game.levelsWAbs * 2 + game.referWRel);
 			},
 			sounds: {
 				audio: document.createElement("audio"),
@@ -201,12 +193,6 @@ jquery-....min.js (ligne 2, col. 1808)
 								".mp3" : game.sounds.audio.canPlayType('audio/ogg; codecs="vorbis"') ? ".ogg" : false	)
 						: false;
 		}	}	}
-
-
-
-
-
-
 
 
 
@@ -245,12 +231,11 @@ if ($drawer.hasClass("transfigure"))
 		for (var p in parametres)
 			p.indexOf("delai") == 0 && game.delays.push(parametres[p]);
 
-		parametres.hauteurInf = .99 - parametres.hauteur;
+		parametres.hauteurInf = 1 - parametres.hauteur;
 
 		for (var p in parametres.sons)
 			sounds[p] = new Sound(parametres.sons[p]);
 
-		game.levelsWAbs = game.levelsWRel;
 		game.responsive();
 
 		game.ratio = game.referWRel / game.referWAbs;
@@ -276,7 +261,7 @@ if ($drawer.hasClass("transfigure"))
 		(parseInt($("#webkit").css("left"), 10) < -4444)
 		&& (instancie.webkit = (function wk () {
 			"use strict";
-			$("<div>", { class: "hr" }).appendTo($("body"))
+			$("<div>", { class: "hr" }).appendTo($b)
 			.load(parametres.filtres);
 			return wk;
 		}) ())
@@ -346,8 +331,14 @@ if ($drawer.hasClass("transfigure"))
 		"use strict";
 		game.play = which;
 		$(".dragClick").removeClass("dragClick");
+		$b.removeClass("dragOver");
+		// game.hover = null;
 		which != null
-		&& pieces[which].$figure.addClass("dragClick");
+		&& pieces[which].$figure.addClass("dragClick")
+		.css("z-index", ++parametres.index)
+		&& $b.addClass("dragOver")
+		&& (game.drag = which);
+		// && (game.drag = game.hover = which);
 	}
 
 	Piece.appreciate = function (cl) {
@@ -417,7 +408,7 @@ if ($drawer.hasClass("transfigure"))
 		"use strict";
 		var harvest = ui.helper.offset();
 		game.deshybr[game.hybrid](ui.draggable); //serve to final Piece.hybrid()
-		game.drag = null;
+		// game.drag = null;
 		pieces[$(this).data("instance")].place({
 			left: harvest.left - game.windW * .5,
 			top: (harvest.top - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
@@ -491,6 +482,13 @@ if ($drawer.hasClass("transfigure"))
 		Y.sort(Piece.establish.sort);
 		this.$posX = $p.eq(X[0][0]);
 		this.$posY = $p.eq(Y[0][0]);
+
+		this.reset();
+		parseInt(this.$figure.width(), 10) === 0 //Google Chrome 34 Mac OS X 10.8.5: and apparently iPad
+		&& this.$dom.css("width", this.$dom.css("height"));
+			//http://stackoverflow.com/questions/27169534/in-google-chrome-getboundingclientrect-x-is-undefined
+			//http://stackoverflow.com/questions/22894461/getboundingclientrect-doesnt-work-outside-the-window
+		//http://stackoverflow.com/questions/tagged/getboundingclientrect
 	}
 	Piece.establish.toClone = function (tag) {
 		"use strict";
@@ -505,21 +503,24 @@ if ($drawer.hasClass("transfigure"))
 
 
 /* Prototype */
-
-	Piece.prototype.calculate = function () {
+	Piece.prototype.reset = function () {
 		"use strict";
-		var dimension = this.SVGgroup.getBoundingClientRect(),
-			harvest, x, y, w;
-
 		this.$figure.css("height", "100%");
 		this.$dom.css({
 			"margin": 0,
 			"height": "200%"
-		});
+	});	}
+	Piece.prototype.calculate = function () {
+		"use strict";
+		var dimension, harvest, x, y, w;
 
+		this.reset();
+
+		dimension = this.SVGgroup.getBoundingClientRect();
 		harvest = this.$figure.offset();
+
 		x = this.$posX.offset().left - harvest.left - 3; //- 3 : padding for usability and filter
-		x < 0 
+		x < 0
 		&& (x = 0);
 		y = this.$posY.offset().top - harvest.top;
 		w = dimension.width + 6;
@@ -530,7 +531,7 @@ if ($drawer.hasClass("transfigure"))
 		});
 		this.$figure.css({
 			"width": w,
-			"height": dimension.height
+			"height": Math.floor(dimension.height)
 	});	}
 
 	Piece.prototype.manageDrag = function (state) {
@@ -553,6 +554,8 @@ if ($drawer.hasClass("transfigure"))
 		"use strict";
 
 		var piece = this; //setTimeout...
+
+		game.drag = null;
 
 		setTimeout(function () { //piecesGroups : clicked by short drag: vs Piece.playable
 			"use strict";
@@ -652,7 +655,7 @@ if ($drawer.hasClass("transfigure"))
 		})
 		.appendTo($drawer);
 
-		return Piece.toBrand.call(fig, null, { helper: this.$againClone });			
+		return Piece.toBrand.call(fig, null, { helper: this.$againClone });
 	}
 
 	Piece.prototype.againStart = function (duel) {
@@ -816,13 +819,14 @@ if ($drawer.hasClass("transfigure"))
 				game.windW = $w.width();
 				game.windH = $w.height();
 				game.timt = setTimeout(Piece.calculate, game.delays[4]);
+
 				game.referWRel = refer.getBoundingClientRect().width;
 				game.ratio = game.referWRel / game.referWAbs;
 
 				game.responsive();
 		}	});
 
-		$("body").on({
+		$b.on({
 			click: function (ze) {
 				"use strict";
 				var ind = game.play;
@@ -975,7 +979,7 @@ if ($drawer.hasClass("transfigure"))
 		$("#see2").on({
 			click: function (ze) {
 				"use strict";
-				$see.trigger("click", [0, true]);
+				$see.trigger("click", [0, true]); //to do: déshybridation
 	}	});	}
 
 
@@ -998,7 +1002,6 @@ if ($drawer.hasClass("transfigure"))
 		game.total = currentIndex = shuffle.length - 1;
 		//http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 		if (parametres.formul.melting === "true") {
-			console.log("oui")
 			while (0 !== currentIndex) {
 				randomIndex = Math.floor(Math.random() * currentIndex);
 				currentIndex -= 1;

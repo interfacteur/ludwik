@@ -1,7 +1,7 @@
 /*
 	par Ludwik : Parc naturel des Alpilles, jeu du classement
 	Gaëtan Langhade - Interfacteur
-	février 2015
+	février-mars 2015
 */
 
 
@@ -13,7 +13,7 @@
 
 	serie: 1, //set initial
 	jeu: "Série ",
-	jeu: "Suivants",
+	jeu: "Série suivante \u003E",
 
 
 	collection: window.oiseaux, //cf. jeu-classement-fiche.js
@@ -57,6 +57,13 @@ delete window.oiseaux; //to do: check "ramasse-miettes"
 
 
 /*
+to do au 150310 :
+nommer les fonctions de callback ?
+exemple toScale
+	notamment Bird.prototype.ligature.tie = function
+
+
+
 to do au 150213 :
 
 et entre 2 et n pièces ?
@@ -78,10 +85,19 @@ surtout au clavier
 */
 
 
+
+
+
 $(function () {
 	"use strict";
 
 	var abalities = {
+		// referWRel: null,
+		hsAbs: commonLAg.$levels.width(),
+		responsive: function () {
+			"use strict";
+			commonLAg.responsive(abalities.hsAbs * 2 + abalities.referWRel);
+		},
 		scrollBar: parametres.scrollBar,
 		sounds: {
 			audio: document.createElement("audio"),
@@ -94,7 +110,6 @@ $(function () {
 					) : false;
 		}	}	},
 //Generic variables ----------------------------------------------------------------------------
-		$w = $(window),
 		$b = $("body"),
 		$hipster = $("#hipster"),
 		code = $hipster.html(),
@@ -102,6 +117,8 @@ $(function () {
 		// $toslide = $(".sliding a"),
 		$order = $("#order"),
 		$again = $("#again"),
+		$LAgTitle = $("#LAgTitle"),
+		LAgTitle = $LAgTitle.html(),
 		delays = [],
 		sounds = [],
 		games = [],
@@ -136,6 +153,9 @@ $(function () {
 
 	instancie.init = function ii (cllbck) { //actualize variables (at loading, and 'play again' and 'play with other birds')
 		"use strict";
+
+		abalities.referWRel = $hipster.width();
+		abalities.responsive();
 
 		hipsterWidthX = $hipster.innerWidth();
 		hipsterWidthS = hipsterWidthX - abalities.scrollBar;
@@ -173,8 +193,7 @@ $(function () {
 			&& $birds.each(function (zi) { //from HTML code
 				games[parametres.serie - 1].push($(this).data("fiche"));
 			}));
-		// $toslide.attr("data-jeu", parametres.jeu + parametres.serie);	
-		$sliding.attr("data-jeu", parametres.jeu);
+		$LAgTitle.html(LAgTitle + " (" + parametres.serie + "/" + parametres.total + ")");
 
 		birds = [];
 		sizes = [];
@@ -726,7 +745,7 @@ $(function () {
 
 
 //Events management ----------------------------------------------------------------------------
-	$w.on({
+	$(window).on({
 		resize: function (ze) {
 			"use strict";
 
@@ -738,6 +757,9 @@ $(function () {
 
 			hipsterWidthX = $hipster.innerWidth();
 			hipsterWidthS = hipsterWidthX - abalities.scrollBar;
+
+			abalities.referWRel = $hipster.width();
+			abalities.responsive();
 
 			sizes.forEach(function (val) {
 				val.position();
@@ -755,16 +777,17 @@ $(function () {
 		.css(parametres.transition(0))
 		.css("height", hipsterHeightX)
 		.addClass("init")
-		.html(write)
-		.removeClass("init")
-		.removeAttr("style");
-
+		.html("");
+	
 		setTimeout(function () {
 			"use strict";
+			$hipster.html(write)
+			.removeClass("init")
+			.removeAttr("style");
 			instancie.init(instancie);
 			$hipster.data("stop",false);
 			$b.removeClass("stop");
-		}, delays[4]);
+		}, delays[0]);
 	}
 
 //Link direct to good order
@@ -839,7 +862,7 @@ $(function () {
 
 			ze.preventDefault();
 
-			parametres.serie = ! parametres.bis ?
+			parametres.serie =! parametres.bis ?
 				(parametres.serie < games.length ? parametres.serie + 1 : 1)
 				:
 				parametres.serie;
