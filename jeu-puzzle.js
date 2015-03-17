@@ -41,25 +41,14 @@
 		melting: $("#melting").length ? $("#melting").val() : false
 	},
 
-	transition: function (delai, prop) {
-		var pr = prop ? prop + " " : "";
-		return {
-			"-webkit-transition": pr + delai + "ms",
-			"-moz-transition": pr + delai + "ms",
-			"-o-transition": pr + delai + "ms",
-			"transition": pr + delai + "ms"
-	}	}
-
-
 }
 
 
 
 
-
-
-
 /*
+to do : au click trigger le drag plutôt que passer par le curseur ?
+
 
 vérfier sur MSIE
 	et si alternative pour filtres
@@ -179,11 +168,6 @@ jquery-....min.js (ligne 2, col. 1808)
 			play: null,
 			drag: null,
 			delays: [],
-			levelsWAbs: commonLAg.$levels.width(),
-			responsive: function () {
-				"use strict";
-				commonLAg.responsive(game.levelsWAbs * 2 + game.referWRel);
-			},
 			sounds: {
 				audio: document.createElement("audio"),
 				format: function () {
@@ -197,31 +181,13 @@ jquery-....min.js (ligne 2, col. 1808)
 
 
 
-
-
+/* jeu "des milieux" ? */
 if ($drawer.hasClass("transfigure"))
 	return;
-
-
-
-
-
-
 
 //Pseudo-class Location ----------------------------------------------------------------------------
 	/* TO DO <g data-transjectif=""
 	*/
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -235,8 +201,6 @@ if ($drawer.hasClass("transfigure"))
 
 		for (var p in parametres.sons)
 			sounds[p] = new Sound(parametres.sons[p]);
-
-		game.responsive();
 
 		game.ratio = game.referWRel / game.referWAbs;
 
@@ -255,10 +219,12 @@ if ($drawer.hasClass("transfigure"))
 		game.duality = $("[data-dueljectif]").length;
 		game.duality = game.duality > 0 && game.duality % 2 == 0 ? [] : false;
 
+		$(".form").css(commonLAg.transition(game.delays[0], "opacity"));
+
 
 /* WEBKIT
 	to call SVG filters from CSS */
-		(parseInt($("#webkit").css("left"), 10) < -4444)
+		commonLAg.webkit
 		&& (instancie.webkit = (function wk () {
 			"use strict";
 			$("<div>", { class: "hr" }).appendTo($b)
@@ -345,7 +311,7 @@ if ($drawer.hasClass("transfigure"))
 		"use strict";
 		$stage.addClass(cl);
 		setTimeout(function () {
-			$svgBg[cl].css(parametres.transition(game.delays[0]));
+			$svgBg[cl].css(commonLAg.transition(game.delays[0]));
 			$stage.removeClass(cl);
 			setTimeout(function () {
 				$svgBg[cl].removeAttr("style");
@@ -369,7 +335,7 @@ if ($drawer.hasClass("transfigure"))
 				Piece.hybrid();
 			}, game.delays[0] + 50);
 
-		var time = game.clock.getTime();
+		var time = game.clock.getTime() - 1; //less 1 bad id.
 		game.clock.stop();
 		pieces.forEach(function (val) {
 			"use strict";
@@ -380,7 +346,7 @@ if ($drawer.hasClass("transfigure"))
 		$drawer.html(
 			parametres.message1
 			+ parametres.message3
-			+ (time - 1) + "-" + time
+			+ time
 			+ parametres.message4
 	);	}
 
@@ -592,7 +558,7 @@ if ($drawer.hasClass("transfigure"))
 		this.queue = doNothing;
 		Piece.appreciate(app || "ok");
 		game.win ++;
-		$f.css(parametres.transition(delay, "opacity"))
+		$f.css(commonLAg.transition(delay, "opacity"))
 		.addClass("dragDropped");
 		setTimeout(function () {
 			"use strict";
@@ -601,7 +567,7 @@ if ($drawer.hasClass("transfigure"))
 
 		if (! stop) { //cf. Piece.prototype.stay()
 			this.$cloneGroup.attr("class", "g");
-			this.$cloneImage.css(parametres.transition(delay, "opacity"))
+			this.$cloneImage.css(commonLAg.transition(delay, "opacity"))
 			.attr("class", "image");
 
 			this.finishToDragAgain($f, false);
@@ -642,7 +608,7 @@ if ($drawer.hasClass("transfigure"))
 	Piece.prototype.againHelper = function (ev, fig) {
 		"use strict";
 
-		fig.css(parametres.transition(0, "opacity"))
+		fig.css(commonLAg.transition(0, "opacity"))
 		.css("z-index", -1)
 		.removeClass("dragDropped dragSimili");
 
@@ -665,7 +631,7 @@ if ($drawer.hasClass("transfigure"))
 
 		game.win --;
 
-		this[! duel ? "$cloneImage" : "$cloneDuel"].css(parametres.transition(0, "opacity"))
+		this[! duel ? "$cloneImage" : "$cloneDuel"].css(commonLAg.transition(0, "opacity"))
 		.attr("class", "")
 		this.$cloneGroup.attr("class", "");
 	}
@@ -732,7 +698,7 @@ if ($drawer.hasClass("transfigure"))
 			$f.addClass("dragSimili");
 
 			piece.$cloneGroup.attr("class", "g");
-			piece.$cloneDuel.css(parametres.transition(delay, "opacity"))
+			piece.$cloneDuel.css(commonLAg.transition(delay, "opacity"))
 			.attr("class", "image");
 
 			piece.finishToDragAgain($f, true);
@@ -822,8 +788,6 @@ if ($drawer.hasClass("transfigure"))
 
 				game.referWRel = refer.getBoundingClientRect().width;
 				game.ratio = game.referWRel / game.referWAbs;
-
-				game.responsive();
 		}	});
 
 		$b.on({

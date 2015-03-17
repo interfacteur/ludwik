@@ -41,15 +41,6 @@
 
 	// scale: 300,
 
-	transition: function (delai, prop) {
-		var pr = prop ? prop + " " : "";
-		return {
-			"-webkit-transition": pr + delai + "ms",
-			"-moz-transition": pr + delai + "ms",
-			"-o-transition": pr + delai + "ms",
-			"transition": pr + delai + "ms"
-	}	},
-
 	re: [/(src=")([^"]+)(" data-fiche=")([^"]+)(")/gi]
 		// var $li = code.replace(/\r|\n|\t/g,"").match(/<li.*?>.+?<\/li>/)[0];
 }
@@ -57,31 +48,16 @@ delete window.oiseaux; //to do: check "ramasse-miettes"
 
 
 /*
-to do au 150310 :
+to do
 nommer les fonctions de callback ?
 exemple toScale
 	notamment Bird.prototype.ligature.tie = function
+		non car celle-ci ne sert quasiement qu'à la définition du callback ?
+Size.prototype.result ?
+	attention au  niveau d'imbrication
 
+Les setTimeout ? les événements ????
 
-
-to do au 150213 :
-
-et entre 2 et n pièces ?
-
-tests de compatibilité dont terminaux mobiles
-IE 9 et terminaux mobiles
-
-détection du support de
-	section via Modernizr
-	audio via Modernizr
-	forEach
-	Object.keys
-=> d'où page alternative
-
-ergo et habillage
-
-attributs ARIA ?
-surtout au clavier
 */
 
 
@@ -92,12 +68,6 @@ $(function () {
 	"use strict";
 
 	var abalities = {
-		// referWRel: null,
-		hsAbs: commonLAg.$levels.width(),
-		responsive: function () {
-			"use strict";
-			commonLAg.responsive(abalities.hsAbs * 2 + abalities.referWRel);
-		},
 		scrollBar: parametres.scrollBar,
 		sounds: {
 			audio: document.createElement("audio"),
@@ -113,8 +83,8 @@ $(function () {
 		$b = $("body"),
 		$hipster = $("#hipster"),
 		code = $hipster.html(),
-		$sliding = $("#sliding"),
-		// $toslide = $(".sliding a"),
+		$slidePrev = $("#slidePrev"),
+		$slideNext = $("#slideNext"),
 		$order = $("#order"),
 		$again = $("#again"),
 		$LAgTitle = $("#LAgTitle"),
@@ -149,13 +119,8 @@ $(function () {
 			return .5 - Math.random();
 	});	});
 
-	$(".order").css(parametres.transition(delays[4],"opacity"));
-
 	instancie.init = function ii (cllbck) { //actualize variables (at loading, and 'play again' and 'play with other birds')
 		"use strict";
-
-		abalities.referWRel = $hipster.width();
-		abalities.responsive();
 
 		hipsterWidthX = $hipster.innerWidth();
 		hipsterWidthS = hipsterWidthX - abalities.scrollBar;
@@ -170,7 +135,7 @@ $(function () {
 		parametres.infos = {};
 		panel = 0;
 
-		$hipster.css(parametres.transition(delays[4]));
+		$hipster.css(commonLAg.transition(delays[4]));
 
 		$birds.each(function (ind) {
 			"use strict";
@@ -238,7 +203,8 @@ $(function () {
 		this.term = Number(this.$dom.data("size"));
 		this.infos = this.$dom.data("fiche");
 		this.fiche = parametres.infos[this.infos];
-		this.$dom.attr("alt",this.fiche.Nom);
+		this.$dom.attr("alt", this.fiche.Nom);
+		this.$dom.attr("title", this.fiche.Nom);
 		this.drag();
 	}
 
@@ -271,6 +237,7 @@ $(function () {
 		birdDrag.$dom[(evStart ? "add" : "remove") + "Class"]("birds-dragging");
 
 		(	evStart //to do: to check: jQuery UI does it on Firefox but not on webkit ?
+			&& birdDrag.stateDrop.$figcaption.attr("data-caption", "") /* added later */
 			&& birdDrag.$dom.css({
 				"width": birdDrag.$dom.width(),
 				"height": birdDrag.$dom.height()
@@ -392,14 +359,15 @@ $(function () {
 		if (! this instanceof Size)
 			throw new Error("Attention à l'instanciation");
 		this.$dom = $sizes.eq(ind);
-		this.$dom.css(parametres.transition(delays[1]));
+		this.$dom.css(commonLAg.transition(delays[1]));
 		this.term = ind + 1;
 		this.stateDrop = birds["b" + this.$dom.find("img").data("size")];
 		this.stateOver = this.stateDrop;
 		this.$figure = this.$dom.find(".nest:eq(0)");
-		this.$figure.css(parametres.transition(delays[1]));
+		this.$figure.css(commonLAg.transition(delays[1]));
 		this.$figcaption = this.$figure.find(".nest-caption:eq(0)");
-		this.$figcaption.css(parametres.transition(delays[1]));
+		this.$figcaption.css(commonLAg.transition(delays[1]))
+		.attr("data-caption", this.stateDrop.fiche.Nom); /* added later */
 		this.position();
 		this.drop();
 	}
@@ -509,6 +477,8 @@ $(function () {
 			args.callback && (callback = args.callback);
 		}
 
+		sizeInstance.$figcaption.attr("data-caption", ""); /* added later */
+
 		ev !== null //only from mouse action
 		&& sizeInstance.$dom.addClass("sizesB-over")
 		&& sizeInstance.$figcaption.css("background-image", "url(" + birdInstance.picSrc + ")");
@@ -516,7 +486,7 @@ $(function () {
 
 		if (birdDropZone === birdInstance) //recursive drag
 			return callback ? callback() : null; //(trigger draggedDrop from a#order)
-    
+
 		if (birdStages == 1 || birdDropZone.stateOut) { //direct drop - or no visual bird over the dropped zone
 			sizeDragBird.stateOver = birdDropZone; //to modify state of the origin zone of the dragged bird
 			sizeInstance.stateOver = birdInstance; //to modify state of the the dropped zone
@@ -606,6 +576,8 @@ $(function () {
 
 		birdInstance.stateOut = false;
 
+		sizeInstance.$figcaption.attr("data-caption", birdInstance.fiche.Nom); /* added later */
+
 		birdInstance.$dom.removeClass("drag-out")
 		.stop(true)
 		.css({ //to move the dragged bird to the dropped zone
@@ -649,7 +621,7 @@ $(function () {
 			"use strict";
 
 			val.stateOver.$dom.stop(true,true);
-			
+
 			if (val.stateOver == val.stateDrop)
 				return;
 
@@ -689,12 +661,14 @@ $(function () {
 
 		$hipster.removeClass("drop-transition");
 
+
 		sizes.forEach(function (val, ind) {
 			! val.stateDrop.stateOut
+			&& val.$figcaption.attr("data-caption", val.stateOver.fiche.Nom) /* added later */
 			&& (bravo += (val.term == val.stateDrop.term));
 		});
 
-		(	
+		(
 			bravo == parametres.total
 			&& sounds["win"].play()
 			&& Bird.result()
@@ -758,9 +732,6 @@ $(function () {
 			hipsterWidthX = $hipster.innerWidth();
 			hipsterWidthS = hipsterWidthX - abalities.scrollBar;
 
-			abalities.referWRel = $hipster.width();
-			abalities.responsive();
-
 			sizes.forEach(function (val) {
 				val.position();
 	})	}	});
@@ -774,11 +745,11 @@ $(function () {
 		.removeClass("direct bravo confirmation");
 
 		$hipster.data("stop",true)
-		.css(parametres.transition(0))
+		.css(commonLAg.transition(0))
 		.css("height", hipsterHeightX)
 		.addClass("init")
 		.html("");
-	
+
 		setTimeout(function () {
 			"use strict";
 			$hipster.html(write)
@@ -854,34 +825,43 @@ $(function () {
 	})	});	}	});
 
 //Link to play with other birds
-	$sliding.on({
+	$slidePrev.on({
+		click: function (ze) {
+			ze.preventDefault();
+			"use strict";
+			parametres.serie > 1
+			&& --parametres.serie
+			|| (parametres.serie = games.length);
+			toSlide();
+	}	});
+	$slideNext.on({
 		click: function (ze) {
 			"use strict";
-
-			var orderL = 0;
-
 			ze.preventDefault();
-
-			parametres.serie =! parametres.bis ?
-				(parametres.serie < games.length ? parametres.serie + 1 : 1)
+			parametres.serie = parametres.serie != parametres.bis ?
+				(parametres.serie < games.length ? ++parametres.serie : 1)
 				:
 				parametres.serie;
 			parametres.bis = false;
-
-			$hipster.organize(function () {
+			toSlide();
+	}	});
+	function toSlide () {
+		"use strict";
+		var orderL = 0;
+		$hipster.organize(function () {
+			"use strict";
+			return code.replace(parametres.re[0], function (match, p1, p2, p3, p4, p5) {
 				"use strict";
-				return code.replace(parametres.re[0], function (match, p1, p2, p3, p4, p5) {
-					"use strict";
-					return [
-						p1,
-						parametres.collection[games[parametres.serie - 1][orderL]].param.source,
-						p3,
-						games[parametres.serie - 1][orderL++],
-						p5
-					].join("");
-	})	});	}	});
+				return [
+					p1,
+					parametres.collection[games[parametres.serie - 1][orderL]].param.source,
+					p3,
+					games[parametres.serie - 1][orderL++],
+					p5
+				].join("");
+	})	});	}
 	parametres.bis
-	&& $sliding.trigger("click");
+	&& $slideNext.trigger("click");
 
 
 
