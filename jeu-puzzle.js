@@ -4,6 +4,8 @@
 	février-mars 2015
 */
 
+
+
 /* Paramètres */
 ;var parametres = {
 
@@ -40,87 +42,12 @@
 		hybridHelp: $("#hybridHelp").length ? $("#hybridHelp").val() : false,
 		melting: $("#melting").length ? $("#melting").val() : false
 	},
-
 }
 
 
 
 
-/*
-to do : au click trigger le drag plutôt que passer par le curseur ?
 
-
-vérfier sur MSIE
-	et si alternative pour filtres
-	et question du pointer-events
-
-
-to do :
-pointer-events msie 9 cf. notes in .css
-et vérifier dans svg.css
-	Does not work on SVG elements in Safari 5.1 or Android <= 4.1
-
-
-
-
-<!-- to do: labels, submit button? -->
-
-
-
-
-
-to do : effets avec voir ?
-
-to do : couleur d'appréciation avec une image paysage ?
-
-to do : laisser le deuxième click désactiver le drop au click ????
-le deuxième click fonctionne partout sauf sur une autre pièce
-	car c'est alors l'autre pièce qui devient déplaçable au click suivant
-?? suffisamment intuitif ?
-
-
-
-
-<!-- to do : better way fonds ok nok...-->
-
-	GC fond blanc via les CSS, sans <rect sup ?
-
-<!-- enable-background="new 0 0 726 726" -->
-
-
-to do
-CONFORMITE DU SVG GENERE :
-<g data-instance="n"
-n'est pas conforme
-	mais comme il s'agit d'éléments clonables, il est plus difficile de passer par $element.data()
-
-
-
-MAC webkit
-
-taille du chrono
-"empreinte" partie supérieure (et inféfieure) du svg "stage"
-
-Safari
-	oiseau unique : tête indropable ?
-
-GC 34
-	les pièces n'apparaissent pas
-
-Canary
-
-
-
-
-
-
-
-Error: cannot call methods on draggable prior to initialization; attempted to call method 'disable'
-jquery-....min.js (ligne 2, col. 1808)
-
-
-
-*/
 
 
 ;$(function () {
@@ -148,10 +75,6 @@ jquery-....min.js (ligne 2, col. 1808)
 		$levels = $("[name='lev']"),
 		$see = $("#see1"),
 
-		sounds = [],
-
-		doNothing = function () { "use strict"; },
-
 		game = {
 			// timt: null,
 			// clock: null,
@@ -159,7 +82,7 @@ jquery-....min.js (ligne 2, col. 1808)
 			// toEnd: null,
 			duality: false,
 			hybrid: 0,
-			deshybr: [doNothing],
+			deshybr: [commonLAg.doNothing],
 			windW: $w.width(),
 			windH: $w.height(),
 			referWAbs: refer.getAttribute("width"),
@@ -168,26 +91,20 @@ jquery-....min.js (ligne 2, col. 1808)
 			play: null,
 			drag: null,
 			delays: [],
-			sounds: {
-				audio: document.createElement("audio"),
-				format: function () {
-					"use strict";
-					return !! game.sounds.audio.canPlayType ?
-						(	game.sounds.audio.canPlayType("audio/mpeg") ?
-								".mp3" : game.sounds.audio.canPlayType('audio/ogg; codecs="vorbis"') ? ".ogg" : false	)
-						: false;
-		}	}	}
+		}
 
 
+// iPad
+// Android
+// MSIE
+// et question du pointer-events
+// pointer-events msie 9 cf. notes in .css
+
+// et si alternative pour filtres
+
+// au click : position() ?
 
 
-/* jeu "des milieux" ? */
-if ($drawer.hasClass("transfigure"))
-	return;
-
-//Pseudo-class Location ----------------------------------------------------------------------------
-	/* TO DO <g data-transjectif=""
-	*/
 
 
 
@@ -199,8 +116,7 @@ if ($drawer.hasClass("transfigure"))
 
 		parametres.hauteurInf = 1 - parametres.hauteur;
 
-		for (var p in parametres.sons)
-			sounds[p] = new Sound(parametres.sons[p]);
+		commonLAg.Sound.init(parametres.sons);
 
 		game.ratio = game.referWRel / game.referWAbs;
 
@@ -231,7 +147,17 @@ if ($drawer.hasClass("transfigure"))
 			.load(parametres.filtres);
 			return wk;
 		}) ())
-		|| (instancie.webkit = doNothing);
+		|| (instancie.webkit = commonLAg.doNothing);
+
+
+/* TACTILE - & MSIE?
+	lack of resources for CSS transitions */
+		commonLAg.touch
+		&& (commonLAg.transition = function () {
+			"use strict";
+			return {}
+		});
+
 
 		return ii;
 	}) ();
@@ -255,7 +181,7 @@ if ($drawer.hasClass("transfigure"))
 		this.tmt["manage"] = 0;
 		this.tmt["click"] = 0;
 		//this.state = null; /* null: starting; -1: invalid; 0: neutral; .5: almost; 1: valid */
-		this.queue = doNothing;
+		this.queue = commonLAg.doNothing;
 
 		this.$dom = $pieces.eq(ind);
 		this.$figure = $figures.eq(ind);
@@ -293,6 +219,16 @@ if ($drawer.hasClass("transfigure"))
 			val.calculate();
 	});	}
 
+	Piece.repos = function () { //added later
+		"use strict";
+		game.windW = $w.width();
+		pieces.forEach(function (val) {
+			"use strict";
+			val.$figure.hasClass("dragDragged")
+			&& val.repos(val.$figure.offset().left, false);
+			val.calculate();
+	});	}
+
 	Piece.playable = function (which) {
 		"use strict";
 		game.play = which;
@@ -317,7 +253,7 @@ if ($drawer.hasClass("transfigure"))
 				$svgBg[cl].removeAttr("style");
 			}, game.delays[0] + 100);
 		}, game.delays[1]);
-		sounds[cl].play();
+		commonLAg.sounds[cl].turnon();
 		return true;
 	}
 
@@ -370,13 +306,62 @@ if ($drawer.hasClass("transfigure"))
 		return ui.helper.addClass("dragClone");
 	}
 
+	Piece.toBrandTactileIntro = function (ze) {
+		"use strict";
+		Piece.toBrandTactile(ze);
+	}
+	Piece.toBrandTactile = commonLAg.doNothing;
+	commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover event when dragging?
+		"use strict";
+
+		$targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
+
+		game.$tactileP1 = null;
+		game.$tactileP0 = null;
+
+		Piece.toBrandTactile = function (ze) {
+			"use strict";
+
+			if (new Date().getTime() % 12 != 0)
+				return;
+
+			game.$tactileP = $(document.elementFromPoint(ze.pageX, ze.pageY)); //element pseudo hover
+
+		//if "hover" element is a piece
+			game.$tactileP.prop("tagName").toLowerCase() == "path"
+			&& game.$tactileP.parents($stage).length
+			&& (game.$tactileP1 = game.$tactileP.parent("g"));
+
+		//if same "hover" piece than previous, or if neither "hover" piece nor previous
+			if (game.$tactileP1 == game.$tactileP0)
+				return game.$tactileP1 = null;
+
+		//if previous piece exists, it is no more "hover"
+			game.$tactileP0 !== null
+			&& game.$tactileP0.trigger("mouseout")
+			&& (game.$tactileP0 = null);
+
+		//if "hover" piece exists
+			game.$tactileP1 != null
+			&& game.$tactileP1.trigger("mouseover")
+			&& (game.$tactileP0 = game.$tactileP1)
+			&& (game.$tactileP1 = null);
+	}	});
+
 	Piece.toFix = function (ev, ui) { //drag: stop (coming after toCheck)
 		"use strict";
-		var harvest = ui.helper.offset();
+
+		var piece = pieces[$(this).data("instance")],
+			harvest = ui.helper.offset(),
+			left = harvest.left - game.windW * .5; //added later
+
+		harvest.top < 10
+		&& (harvest.top = 10);
 		game.deshybr[game.hybrid](ui.draggable); //serve to final Piece.hybrid()
 		// game.drag = null;
-		pieces[$(this).data("instance")].place({
-			left: harvest.left - game.windW * .5,
+
+		piece.place({
+			left: piece.repos(game.windW / 2 + left, left),
 			top: (harvest.top - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
 			replayable: harvest
 	});	}
@@ -467,8 +452,8 @@ if ($drawer.hasClass("transfigure"))
 		return Piece.establish[meth].call(this, sup);
 	}
 
-
 /* Prototype */
+
 	Piece.prototype.reset = function () {
 		"use strict";
 		this.$figure.css("height", "100%");
@@ -476,6 +461,7 @@ if ($drawer.hasClass("transfigure"))
 			"margin": 0,
 			"height": "200%"
 	});	}
+
 	Piece.prototype.calculate = function () {
 		"use strict";
 		var dimension, harvest, x, y, w;
@@ -499,6 +485,33 @@ if ($drawer.hasClass("transfigure"))
 			"width": w,
 			"height": Math.floor(dimension.height)
 	});	}
+
+	Piece.prototype.repos = function (pos, back) { //added later (no drop piece out of body, and no piece out of body after resizing window)
+		"use strict";
+		var miw = game.windW / 2,
+			marge = Math.ceil(game.windW * .04),
+			dim, action;
+		marge = marge > 10 ? 10 : marge;
+		(	(miw == marge)
+			&& (action = true)
+			&& (pos = 0)	)
+		||
+		(	pos < marge
+			&& (action = true)
+			&& (pos = marge - miw)	)
+		||
+		(	(dim = this.$figure.width())
+			&& (pos > game.windW - dim - marge)
+			&& (action = true)
+			&& (pos = miw - dim - marge)	)
+		return action ?
+			(	back ?
+					pos
+					:
+					this.$figure.css("left", pos)	)
+			:
+			back;
+	}
 
 	Piece.prototype.manageDrag = function (state) {
 		"use strict";
@@ -555,7 +568,7 @@ if ($drawer.hasClass("transfigure"))
 
 		// this.state = 1;
 
-		this.queue = doNothing;
+		this.queue = commonLAg.doNothing;
 		Piece.appreciate(app || "ok");
 		game.win ++;
 		$f.css(commonLAg.transition(delay, "opacity"))
@@ -600,6 +613,7 @@ if ($drawer.hasClass("transfigure"))
 				"use strict";
 				that.againStart(duel);
 			},
+			drag: Piece.toBrandTactile,
 			stop: function () {
 				"use strict";
 				that.againStop(fig);
@@ -648,7 +662,7 @@ if ($drawer.hasClass("transfigure"))
 /* Conditionnal methods: puzzle with possible "hybridation" cf. data-dueljectif */
 
 	! game.duality
-	&& (Piece.prototype.dualize = Piece.armor = Piece.prototype.armor = Piece.hybrid = doNothing)
+	&& (Piece.prototype.dualize = Piece.armor = Piece.prototype.armor = Piece.hybrid = commonLAg.doNothing)
 
 	|| ((Piece.prototype.dualize = function () {
 			"use strict";
@@ -745,35 +759,6 @@ if ($drawer.hasClass("transfigure"))
 
 
 
-//Pseudo-class Sound ----------------------------------------------------------------------------
-	function Sound (source) {
-		"use strict";
-		if (! this instanceof Sound)
-			throw new Error("Attention à l'instanciation");
-		this.source = source + game.sounds.format();
-	}
-	if (game.sounds.format()) {
-		Sound.prototype.confirmation = function () {
-			"use strict";
-			return new Audio(this.source);
-		}
-		Sound.prototype.play = function () {
-			"use strict";
-			this.confirmation().play();
-			return true;
-	}	}
-	else
-		Sound.prototype.play = function () {
-			"use strict";
-			return true;
-		}
-
-
-
-
-
-
-
 //Classical events ----------------------------------------------------------------------------
 	instancie.classicalEvents = function () {
 		"use strict";
@@ -784,7 +769,7 @@ if ($drawer.hasClass("transfigure"))
 				clearTimeout(game.timt);
 				game.windW = $w.width();
 				game.windH = $w.height();
-				game.timt = setTimeout(Piece.calculate, game.delays[4]);
+				game.timt = setTimeout(Piece.repos, game.delays[3]);
 
 				game.referWRel = refer.getBoundingClientRect().width;
 				game.ratio = game.referWRel / game.referWAbs;
@@ -793,13 +778,18 @@ if ($drawer.hasClass("transfigure"))
 		$b.on({
 			click: function (ze) {
 				"use strict";
-				var ind = game.play;
+				var ind = game.play,
+					left, h, pY;
 				if (ind == null || pieces[ind].$figure.has($(ze.target)).length)
 					return;
+				left = ze.pageX - (pieces[ind].$figure.width() / 2) - game.windW * .5; //added later
+				h = pieces[ind].$figure.height() / 2;
+				pY = ze.pageY;
+				pY = pY < h + 10 ? h + 10 : pY;
 				Piece.playable(null);
 				pieces[ind].place({
-					left: ze.pageX - (pieces[ind].$figure.width() / 2) - game.windW * .5,
-					top: (ze.pageY - (pieces[ind].$figure.height() / 2) - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
+					left: pieces[ind].repos(game.windW / 2 + left, left),
+					top: (pY - h - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
 					replayable: false
 		});	}	});
 
@@ -843,8 +833,9 @@ if ($drawer.hasClass("transfigure"))
 
 		$targetGroups.on({
 			click: Piece.toCheckClick,
-			mouseover: function () {
+			mouseover: function (ze) {
 				"use strict";
+
 				var $t = $(this),
 					cl,
 					filigree;
@@ -871,17 +862,9 @@ if ($drawer.hasClass("transfigure"))
 				&& $t.attr("class", "mig")
 				&& $t.data("filigree", filigree);
 			},
-			touchstart: function () {
-				"use strict";
-				$(this).trigger("mouseover");
-			},
 			mousemove: function () {
 				"use strict";
-				$(this).trigger("mouseover");
-			},
-			touchmove: function () {
-				"use strict";
-				$(this).trigger("mouseover");
+				$(this).trigger("mouseover", true);
 			},
 			mouseout: function () {
 				"use strict";
@@ -899,10 +882,6 @@ if ($drawer.hasClass("transfigure"))
 					$t.attr("class", "");
 					$t.data("filigree", false);
 				}, game.delays[3]));
-			},
-			touchend: function () {
-				"use strict";
-				$(this).trigger("mouseout");
 		}	});
 
 		$see.on({
@@ -1003,6 +982,7 @@ if ($drawer.hasClass("transfigure"))
 				cursor: "move",
 				disabled: true,
 				start: Piece.toBrand,
+				drag: Piece.toBrandTactileIntro, //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 				stop: Piece.toFix
 			});
 
@@ -1024,7 +1004,44 @@ if ($drawer.hasClass("transfigure"))
 	instancie(true); //can not be called a second time without Piece.establish cf. delete Piece.establish
 
 
+
+
 /*
+JEU MILIEU
+couleur d'appréciation
+if ($drawer.hasClass("transfigure"))
+	return;
+<g data-transjectif=""
+
+
+TO DO
+<!-- to do: labels, submit button? -->
+au click trigger le drag plutôt que passer par le curseur ?
+laisser le deuxième click désactiver le drop au click ????
+	le deuxième click fonctionne partout sauf sur une autre pièce
+		car c'est alors l'autre pièce qui devient déplaçable au click suivant
+	?? suffisamment intuitif ?
+quid du bouton résultat ? si oui, avec effets ?
+
+
+QUESTIONS
+Error: cannot call methods on draggable prior to initialization; attempted to call method 'disable'
+	jquery-....min.js (ligne 2, col. 1808)
+pointer-events "Does not work on SVG elements in Safari 5.1 or Android <= 4.1"
+constat ancien : compat Safari oiseau unique tête indropable ?
+taille du chrono : certains webkit ? Android ?
+
+
+SVG
+"empreinte" partie supérieure (et inféfieure) du svg "stage"
+<!-- to do : better way fonds ok nok...-->
+	GC fond blanc via les CSS, sans <rect sup ?
+	<!-- enable-background="new 0 0 726 726" -->
+CONFORMITE DU SVG GENERE :
+	<g data-instance="n"
+	n'est pas conforme
+	mais comme il s'agit d'éléments clonables, il est plus difficile de passer par $element.data()
 */
+
 
 });

@@ -32,7 +32,7 @@
 
 	padding: 48, //.bravo .hipster dans les CSS
 
-	sounds: {
+	sons: {
 		drop: "audio/confirmation/correct",
 		win: "audio/confirmation/wrong"
 	},
@@ -47,8 +47,53 @@
 delete window.oiseaux; //to do: check "ramasse-miettes"
 
 
+
+
+
+
+
+$(function () {
+	"use strict";
+
+	var abalities = {
+			scrollBar: parametres.scrollBar
+		},
+//Generic variables ----------------------------------------------------------------------------
+		$b = $("body"),
+		$hipster = $("#hipster"),
+		code = $hipster.html(),
+		$slidePrev = $("#slidePrev"),
+		$slideNext = $("#slideNext"),
+		$order = $("#order"),
+		$again = $("#again"),
+		$LAgTitle = $("#LAgTitle"),
+		LAgTitle = $LAgTitle.html(),
+		delays = [],
+		games = [],
+		wids = [],
+		//to actualize at 'play again' and at 'play with other birds':
+		$birds = $(".birds"),
+		$sizes = $(".sizesB"),
+		hipsterWidthX, hipsterWidthS,
+		hipsterHeightX, hipsterHeightS,
+		birds, sizes,
+		panel, ratio;
+
+
+
 /*
+bonus à distribution aléatoire montré par L. 150318
+	c'est la deuxième fois qu'il le voit
+
 to do
+entre 2 et n pièces ?
+détection du support de
+	section via Modernizr
+	audio via Modernizr
+	forEach
+	Object.keys
+=> d'où page alternative
+
 nommer les fonctions de callback ?
 exemple toScale
 	notamment Bird.prototype.ligature.tie = function
@@ -61,45 +106,7 @@ Les setTimeout ? les événements ????
 */
 
 
-
-
-
-$(function () {
-	"use strict";
-
-	var abalities = {
-		scrollBar: parametres.scrollBar,
-		sounds: {
-			audio: document.createElement("audio"),
-			format: function () {
-				"use strict";
-				return !! abalities.sounds.audio.canPlayType ? (
-						abalities.sounds.audio.canPlayType("audio/mpeg") ? ".mp3" :
-						abalities.sounds.audio.canPlayType('audio/ogg; codecs="vorbis"') ? ".ogg" :
-						false
-					) : false;
-		}	}	},
-//Generic variables ----------------------------------------------------------------------------
-		$b = $("body"),
-		$hipster = $("#hipster"),
-		code = $hipster.html(),
-		$slidePrev = $("#slidePrev"),
-		$slideNext = $("#slideNext"),
-		$order = $("#order"),
-		$again = $("#again"),
-		$LAgTitle = $("#LAgTitle"),
-		LAgTitle = $LAgTitle.html(),
-		delays = [],
-		sounds = [],
-		games = [],
-		wids = [],
-		//to actualize at 'play again' and at 'play with other birds':
-		$birds = $(".birds"),
-		$sizes = $(".sizesB"),
-		hipsterWidthX, hipsterWidthS,
-		hipsterHeightX, hipsterHeightS,
-		birds, sizes,
-		panel, ratio;
+	commonLAg.Sound.init(parametres.sons);
 
 	parametres.serie > $birds.length
 	&& (parametres.serie = 1);
@@ -118,6 +125,12 @@ $(function () {
 		val.sort(function (a, b) {
 			return .5 - Math.random();
 	});	});
+
+
+
+
+
+
 
 	instancie.init = function ii (cllbck) { //actualize variables (at loading, and 'play again' and 'play with other birds')
 		"use strict";
@@ -555,7 +568,7 @@ $(function () {
 		Bird.manage("disable");
 
 		! cllbck
-		&& sounds["drop"].play();
+		&& commonLAg.sounds["drop"].turnon();
 
 		var sizeInstance = sizes[$sizes.index($(this))], //dropped zone
 			birdInstance = birds["b" + ui.draggable.data("size")], //dragged bird
@@ -670,7 +683,7 @@ $(function () {
 
 		(
 			bravo == parametres.total
-			&& sounds["win"].play()
+			&& commonLAg.sounds["win"].turnon()
 			&& Bird.result()
 		)
 		|| (
@@ -679,38 +692,6 @@ $(function () {
 		)
 		|| Bird.manage("enable");
 	}
-
-
-
-
-
-
-
-//Pseudo-classe Sound ----------------------------------------------------------------------------
-	function Sound (source) {
-		"use strict";
-		if (! this instanceof Sound)
-			throw new Error("Attention à l'instanciation");
-		this.source = source + abalities.sounds.format();
-	}
-	if (abalities.sounds.format()) {
-		Sound.prototype.confirmation = function () {
-			"use strict";
-			return new Audio(this.source);
-		}
-		Sound.prototype.play = function () {
-			"use strict";
-			this.confirmation().play();
-			return true;
-	}	}
-	else
-		Sound.prototype.play = function () {
-			"use strict";
-			return true;
-		}
-
-	for (var p in parametres.sounds)
-		sounds[p] = new Sound(parametres.sounds[p]);
 
 
 
