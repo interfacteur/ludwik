@@ -15,6 +15,10 @@ accès par ancre aux jeux N des tailles et cache-cache
 "use strict";
 
 var commonLAg = {
+	re: {
+		iaye: /(iphone|ipod|ipad)/,
+		msie: /trident.*rv[ :]*11\./
+	},
 	nav: navigator.userAgent.toLowerCase(),
 	doNothing: function () { },
 	returnTrue: function () { //to string logical conditions
@@ -27,12 +31,62 @@ var commonLAg = {
 
 
 
-
 $(function () {
 	"use strict";
 
-	var $b = $("body"),
+	var $w = $(window),
+		$b = $("body"),
 		$head = $("#lifeAlpillesGame");
+
+
+
+
+
+
+
+//Compatibility ----------------------------------------------------------------------------
+	commonLAg.webkit = parseInt($("#webkit").css("left"), 10) < -4444;
+
+
+	commonLAg.iaye = commonLAg.nav.match(commonLAg.re.iaye); //http://www.sitepoint.com/jquery-detect-mobile-devices-iphone-ipod-ipad/
+
+
+	commonLAg.msie = 0 /*@cc_on + parseInt(commonLAg.nav.split("msie")[1], 10) @*/;
+	(commonLAg.nav.indexOf("trident") > 0)
+	&& (commonLAg.msie === 0)
+	&& (commonLAg.msie = !! commonLAg.nav.match(commonLAg.re.msie) ? 11 : 0);
+	commonLAg.msieLowerOrEqualAt = function (version) {
+		return 1 / (commonLAg.msie - 1) > 1 / parseInt(version, 10);
+	}
+
+	commonLAg.msieUp11 = commonLAg.msieLowerOrEqualAt(11);
+	commonLAg.msieUp11
+	&& $b.addClass("msie");
+
+
+commonLAg.debug = false;
+	//http://www.stucox.com/blog/you-cant-detect-a-touchscreen/
+		/* http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript/4819886#4819886
+		https://github.com/Modernizr/Modernizr/issues/548 */
+	commonLAg.tactile = commonLAg.doNothing;
+	(commonLAg.touch = "ontouchstart" in window ? "ontouchstart"
+		: "onmsgesturechange" in window ? "onmsgesturechange" : commonLAg.debug) //MSIE 10 11
+	&& (commonLAg.tactile = function (clbck, trigger) { //actived at first touch event
+		"use strict";
+		var callback = clbck;
+		if (commonLAg.tactile.init === true || trigger === true) {
+			commonLAg.tactile.init = true;
+			callback();
+		}
+		else
+			window.addEventListener(commonLAg.touch.substring(2), function setHasTouch () {
+				"use strict";
+				commonLAg.tactile.init = true;
+				callback();
+				window.removeEventListener(commonLAg.touch, setHasTouch);
+			}, false);
+		return true;
+	});
 
 
 
@@ -49,7 +103,7 @@ $(function () {
 	};
 	(	(commonLAg.audioCompat = (function () {
 			"use strict";
-			var audio = document.createElement("audio")
+			var audio = document.createElement("audio");
 			return !! audio.canPlayType ?
 				(	audio.canPlayType("audio/mpeg") ?
 						".mp3" : audio.canPlayType('audio/ogg; codecs="vorbis"') ? ".ogg" : false	)
@@ -62,7 +116,7 @@ $(function () {
 			this.key = key;
 			this.srce = srce + commonLAg.Sound.audioCompat;
 			this.audio = new Audio(this.srce);
-			this.readable = false;
+			this.readable = ! commonLAg.iaye ? false : true; //loaded when playing: http://www.ibm.com/developerworks/library/wa-ioshtml5/
 			this.stall = commonLAg.doNothing;
 			this.readdom();
 		})
@@ -112,8 +166,10 @@ $(function () {
 		return this;
 	})
 	&& (commonLAg.Sound.prototype.turnoff = commonLAg.Sound.prototype.turnon);
+
 	commonLAg.Sound.audioCompat = commonLAg.audioCompat;
 	delete commonLAg.audioCompat;
+
 	commonLAg.Sound.init = function (sd) { //sd : object of sounds path without extension (mp3 and ogg)
 		"use strict";
 		commonLAg.sounds = commonLAg.sounds || [];
@@ -144,52 +200,8 @@ $(function () {
 
 
 
-//Compatibility ----------------------------------------------------------------------------
-	commonLAg.webkit = parseInt($("#webkit").css("left"), 10) < -4444;
-
-
-	commonLAg.msie = 0 /*@cc_on + parseInt(commonLAg.nav.split("msie")[1], 10) @*/;
-	(commonLAg.nav.indexOf("trident") > 0)
-	&& (commonLAg.msie === 0)
-	&& (commonLAg.msie = !! commonLAg.nav.match(/trident.*rv[ :]*11\./) ? 11 : 0);
-	commonLAg.msieLowerOrEqualAt = function (version) {
-		return 1 / (commonLAg.msie - 1) > 1 / parseInt(version, 10);
-	}
-
-	commonLAg.msieUp11 = commonLAg.msieLowerOrEqualAt(11);
-	commonLAg.msieUp11
-	&& $b.addClass("msie");
-
-
-commonLAg.debug = false;
-	//http://www.stucox.com/blog/you-cant-detect-a-touchscreen/
-		/* http://stackoverflow.com/questions/4817029/whats-the-best-way-to-detect-a-touch-screen-device-using-javascript/4819886#4819886
-		https://github.com/Modernizr/Modernizr/issues/548 */
-	commonLAg.tactile = commonLAg.doNothing;
-	(commonLAg.touch = "ontouchstart" in window ? "ontouchstart"
-		: "onmsgesturechange" in window ? "onmsgesturechange" : commonLAg.debug) //MSIE 10 11
-	&& (commonLAg.tactile = function (clbck, trigger) { //will be actived at first screen tactile contact
-		"use strict";
-		var callback = clbck;
-		if (commonLAg.tactile.init || trigger === true)
-			callback();
-		else
-			window.addEventListener(commonLAg.touch.substring(2), function setHasTouch () {
-				"use strict";
-				commonLAg.tactile.init = true;
-				callback();
-				window.removeEventListener(commonLAg.touch, setHasTouch);
-			}, false);
-	});
-
-
-
-
-
-
-
 //Menu on resizing: without actualization of 'vh' in tactile, MSIE ----------------------------------------------------------------------------
-	commonLAg.touch
+	commonLAg.touch != false
 	&& $b.addClass("likelyTactile")
 //http://stackoverflow.com/questions/28139752/ios-vh-on-viewport-orientation-change
 //http://stackoverflow.com/questions/20046337/css3-viewport-height-does-not-seem-to-work-on-ipad
@@ -197,6 +209,8 @@ commonLAg.debug = false;
 		"use strict";
 		commonLAg.tactileResize = function () { //menu size when rotate iPad
 			"use strict";
+			if (commonLAg.reload === true) //jeu-cache
+				return document.location.reload();
 			clearTimeout(commonLAg.tmt);
 			commonLAg.tmt = setTimeout(function () {
 				"use strict";
@@ -221,14 +235,20 @@ commonLAg.debug = false;
 					height: h04,
 					"line-height": h04
 				});
-			}, 500);
+			}, 1250);
 		}
-		$(window).on({
+		$w.on({
 			resize:  commonLAg.tactileResize
-	});	}, commonLAg.debug || commonLAg.msieUp11);
-
-
-
+	});	}, commonLAg.msieUp11 || commonLAg.debug)
+	&& (commonLAg.reload = function () { //before first touch event
+		"use strict";
+		typeof commonLAg.tactile.init === "undefined"
+		&& document.location.reload()
+		|| $w.off("resize", commonLAg.reload);
+	})
+	&& $w.on({
+		resize: commonLAg.reload
+	});
 
 
 

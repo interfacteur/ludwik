@@ -106,5 +106,8 @@ var parametres = {
 	}	});
 
 	parametres.ready = true;
+
+	commonLAg.reload = true; //on resize...
+
 });
 

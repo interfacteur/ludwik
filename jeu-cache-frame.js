@@ -61,6 +61,21 @@ G Chrome le top de $porthole quand est relatif;
 $(function annm () {
 	"use strict";
 
+
+
+/*
+ 	event on #hasMess: move #hasPorthole
+
+	event on #hasFigurembed: display of #hasCaption
+		getting $figurembed.data("active")
+		setting $caption.data("active")
+
+	event on path: define #hasCaption
+		setting $figurembed.data("active")
+
+*/
+
+
 	var wp = window.parent,
 		commonLAg = wp.commonLAg;
 
@@ -92,6 +107,7 @@ $(function annm () {
 		};
 	// game.ratio = game.w / game.h;
 
+//for manipulation from parent
 	wpI.$b = $b;
 	wpI.$cargo = $cargo;
 	wpI.total = parseInt($b.data("total"), 10);
@@ -101,20 +117,8 @@ $(function annm () {
 
 
 
-/*
- 	event on #hasMess: move hasPorthole
 
-	event on #hasFigurembed: display of hasCaption
-		getting $figurembed.data("active")
-		setting $caption.data("active")
-	event on path: define hasCaption
-		setting $figurembed.data("active")
-
-
-*/
-
-
-	wpI.empty = function () {
+	wpI.empty = function () { //when sliding between views from parent: first, erase information 
 		"use strict";
 		var active = $caption.data("active");
 		active
@@ -124,7 +128,8 @@ $(function annm () {
 		.html("")
 		.removeClass("active");
 	}
-	wpI.playable = function () {
+
+	wpI.playable = function () { //when sliding between views from parent: last, adapt style and load sounds
 		"use strict";
 		readable();
 		if (game.currnt[wpI.currnt])
@@ -133,13 +138,9 @@ $(function annm () {
 		sounds = {};
 		playable();
 	}
-	function readable () {
-		"use strict";
-		wpI.currnt == parametres.pictureClear
-		&& $b.addClass("picture-clear")
-		|| $b.removeClass("picture-clear");
-	}
-	function playable () {
+
+
+	function playable () { //load sounds of each view
 		"use strict";
 		$(".path-map" + wpI.currnt + " path").each(function () {
 			"use strict";
@@ -149,51 +150,62 @@ $(function annm () {
 		commonLAg.Sound.init(sounds);
 	}
 
-	$porthole.data("pos-percent", 1);
-
-	function toPoint (ze) { //light on picture: mouse devices
+	function readable () { //too clear view: modify style of text
 		"use strict";
+		wpI.currnt == parametres.pictureClear
+		&& $b.addClass("picture-clear")
+		|| $b.removeClass("picture-clear");
+	}
+
+	function toBirdOver () { //fix information (text, sound) from "hover" bird
+		"use strict";
+		clearTimeout(game.tmt);
+		$figurembed.data("active", $(this).attr("id"));
+		return true;
+	}
+
+	function toBirdOut () { //erase information (text, sound) from "hover" bird
+		"use strict";
+		game.tmt = setTimeout(function () {
+			"use strict";
+			$figurembed.data("active", false);
+	}, 125);	}
+
+	function toReveal (ze) { //move light and actualize information about "hover" bird
+		"use strict";
+
+		var active = $figurembed.data("active");
+
 		if ($b.hasClass("transit"))
 			return;
-
-
-
-		// (	! toPoint.yet
-
-
-		// 	&& delete commonLAg.tactile
-		// 	&&	((	$porthole.draggable("instance")
-		// 			&& $porthole.draggable("disable")	)
-		// 		|| true	)
-		// 	&& (toPoint.yet = true)	);
-
 
 		$porthole.data("pos-percent", 0)
 		.position({
 			of: ze,
 			within: $mess
-	});	}
+		});
 
-/*
-	toPoint.init = function () { //light on picture: between mouse devices and tactile devices
-		"use strict";
-		$mess.off("mouseover")
-		.on({
-			mousemove: toPoint
-	});	}
-	commonLAg.tactile
-	&& commonLAg.tactile(function () { //light on picture: tactile devices
-		"use strict";
-		$porthole.draggable({
-			addClasses: false,
-			cursorAt: {
-				bottom: 0,
-				left: game.mi
-	}	});	});
+		if ($caption.data("active") === active)
+			return;
 
-*/
+		(	active
+			&& commonLAg.sounds[active].turnon()
+			&& $caption.html(
+				parametres.t[0]
+				+ oiseaux[active].Nom
+				+ parametres.t[1]
+				+ oiseaux[active].Groupe
+				+ parametres.t[2]
+			)
+			.addClass("active")	)
+		|| commonLAg.sounds[$caption.data("active")].turnoff()
+		&& $caption.html("")
+		.removeClass("active");
 
-	function sway () { //position of light on picture when resizing
+		$caption.data("active", active);
+	}
+
+	function toSway () { //position of light on picture when resizing
 		"use strict";
 		game.w = $cargo.width();
 		game.h = $cargo.height();
@@ -205,63 +217,6 @@ $(function annm () {
 			"top":  parseInt($porthole.css("top"), 10) / $cargo.height() * 100 + "%"
 	});	}
 
-	$path.on({ //information (text, sound) about hover birds
-		touchmove: function () {
-			"use strict";
-			clearTimeout(game.tmt);
-			$figurembed.data("active", $(this).attr("id"));
-		},
-		mousemove: function () {
-			"use strict";
-			clearTimeout(game.tmt);
-			$figurembed.data("active", $(this).attr("id"));
-		},
-		// touchend: function () {
-		// 	"use strict";
-		// 	game.tmt = setTimeout(function () {
-		// 		"use strict";
-		// 		$figurembed.data("active", false);
-		// },
-		// touchleave: function () {
-		// 	"use strict";
-		// 	game.tmt = setTimeout(function () {
-		// 		"use strict";
-		// 		$figurembed.data("active", false);
-		// },
-		mouseout: function () {
-			"use strict";
-			game.tmt = setTimeout(function () {
-				"use strict";
-				$figurembed.data("active", false);
-	});	}	});
-
-	$figurembed.on({
-		touchmove: function () {
-			"use strict";
-			$figurembed.trigger("mousemove");
-		},
-		mousemove: function () {
-			"use strict";
-			var active = $figurembed.data("active");
-			if ($caption.data("active") === active)
-				return;
-			(	active
-				&& commonLAg.sounds[active].turnon()
-				&& $caption.html(
-					parametres.t[0]
-					+ oiseaux[active].Nom
-					+ parametres.t[1]
-					+ oiseaux[active].Groupe
-					+ parametres.t[2]
-				)
-				.addClass("active")	)
-			|| commonLAg.sounds[$caption.data("active")].turnoff()
-			&& $caption.html("")
-			.removeClass("active");
-			$caption.data("active", active);
-	}	});
-
-
 
 	$cargo.on({ //init at first loading
 		load: function () {
@@ -270,49 +225,73 @@ $(function annm () {
 			if (game.init === true)
 				return;
 
-			var demi = $b.width() / 2;
-
 			game.init = true;
 			game.currnt[wpI.currnt] = true;
 
 			$cargo.off("load"); //cf. jeu-cache.js
 
+			commonLAg.msie == 9
+			&& $b.addClass("msie9");
+
 			$("#hasWaterline").css(commonLAg.transition(parametres.delai1, "opacity"));
 			$b.addClass("init");
+			$porthole.data("pos-percent", 0);
 
 			game.w = $cargo.width();
 			game.h = $cargo.height();
 			game.mi = $porthole.width() / 2;
 
-			commonLAg.msie = 9
-			&& $b.addClass("msie9");
-
 			playable(); //load sounds
 
 			readable(); //added later: only one clear picture is the specification, and no time for other solutions :)
 
-			// ! commonLAg.tactile
-			// && (toPoint.yet = true)
-			// && 
-			$mess.on({
-				mouseover: toPoint,
-				mousemove: toPoint,
-				touchstart: toPoint,
-				touchmove: toPoint
+			$path.on({ //MOUSE: fix information (text, sound) from "hover" bird
+				mousemove: toBirdOver,
+				mouseout: toBirdOut
 			});
-/*			|| $mess.on({
-				mouseover: toPoint.init //any versions of Chrome with commonLAg.tactile AND some iPhones with mouseover ?
-			}); */
+
+			$mess.on({ //MOUSE: move light and display "hover" bird information
+				mouseover: toReveal,
+				mousemove: toReveal
+			});
+
+			commonLAg.touch != false //TACTILE
+			&& (commonLAg.stroking = function (ze) {
+				"use strict";
+				ze.preventDefault();
+
+				! commonLAg.stroking.init
+				&& $mess.off()
+				&& $path.off()
+				&& (commonLAg.stroking.init = true);
+
+				// if (new Date().getTime() % 12 != 0)
+				// 	return;
+
+			/* fix information (text, sound) from "hover" bird */
+				game.tactileP = document.elementFromPoint(ze.pageX, ze.pageY); //element pseudo hover
+
+				game.tactileP.tagName.toLowerCase() == "path"
+				&& toBirdOver.call(game.tactileP)
+				|| toBirdOut();
+
+			/* move light and display "hover" bird information */
+				toReveal(ze);
+			})
+			&& ("touchstart touchmove".split(" ")).forEach(function (val) {
+				document.addEventListener(val, commonLAg.stroking, false);
+			});
+
 
 			$w.on({
-				resize: sway,
+				resize: toSway,
 			});
 
 			wpI.ready = true;
 
+
 	}	}).get(0).complete && $cargo.trigger("load");
 
+
 });
-
-
 
