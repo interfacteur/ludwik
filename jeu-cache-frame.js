@@ -1,3 +1,4 @@
+//...
 /*
 	pour Ludwik : Parc naturel des Alpilles, jeu du cache cache
 	Gaëtan Langhade - Interfacteur
@@ -8,70 +9,35 @@
 ;var parametres = {
 
 	delai1: 1000,
-	delai2: 150,
-	delai3: 240,
+	delai2: 240,
+	delai3: 290, /* parametres.delai2 + 50 */
 
-	parent: "../jeu-cache.html",
+	parent: "jeu-cache.html",
 
 	accessons: "audio/chants/",
 
 	pictureClear: 3,
 
-	t: ["* ", "<br>(", ")"]
+	t: ["* ", "<br>(", ")"],
 
+	re: [/path/i]
 }
 
 
-/* 150318
-zones sensibles ? sans doute via SVG
-	avec un setTimeout
 
-sons : soit mp3 et ogg, soit mp3 et soundmanager ?
-
-iframe recursive
-
-	proto : DnD et position ?
-	au click : trigger drag ? si oui bon pour puzzle plus que pour ici
-
-sans iframe ?
-	en partant de l'iframe en question et en introduisant une zone supérieure relative...
-	semble impossible à cause de background-attachment: fixed
-	mais bg position fixed calculé sur body ?
-
-
-*//*
-IE 9 et terminaux mobiles
-
-détection et alternative ?
-
-
-OK
-to do : controle de chargement des frames
-to do : formulaire outils
-to do : autres pages
-idées : hallo
-au survol : sinon au drag and drop
-
-
-BUG OK
-G Chrome le top de $porthole quand est relatif;
-*/
-
-
+//COMING AFTER jeu-cache.js
 $(function annm () {
 	"use strict";
 
+/* 	event on #hasMess:
 
+ 		move #hasPorthole
 
-/*
- 	event on #hasMess: move #hasPorthole
+ 		to fix if "hover" bird :
+	 		- mouse: get event.target
+			- touch: get intersection of event coordinates with elements
 
-	event on #hasFigurembed: display of #hasCaption
-		getting $figurembed.data("active")
-		setting $caption.data("active")
-
-	event on path: define #hasCaption
-		setting $figurembed.data("active")
+		display (if "hover" bird) or not information on setting $caption.data("active")
 
 */
 
@@ -90,12 +56,14 @@ $(function annm () {
 		$b = $("body"),
 		$cargo = $("#hasCargo"),
 		$mess = $("#hasMess"),
+		mess = $mess.get(0),
 		$caption = $("#hasCaption"),
 		$figurembed = $("#hasFigurembed"),
 		$porthole = $("#hasPorthole"),
 		$path = $("path"),
 		sounds = {},
 		game = {
+			posMy: "center",
 			init: false,
 			currnt: [],
 			// tmt: null,
@@ -107,24 +75,26 @@ $(function annm () {
 		};
 	// game.ratio = game.w / game.h;
 
-//for manipulation from parent
+
+
+
+
+
+
+//Manipulation from parent ----------------------------------------------------------------------------
+
 	wpI.$b = $b;
 	wpI.$cargo = $cargo;
 	wpI.total = parseInt($b.data("total"), 10);
 	wpI.currnt = parseInt($b.data("current"), 10);
-	wpI.srce = $b.data("source").split(",");
 	wpI.inclass = $b.data("inclass");
-
-
-
 
 	wpI.empty = function () { //when sliding between views from parent: first, erase information 
 		"use strict";
 		var active = $caption.data("active");
-		active
+		active !== -1
 		&& commonLAg.sounds[active].turnoff();
-		$figurembed.data("active", false);
-		$caption.data("active", false)
+		$caption.data("active", -1)
 		.html("")
 		.removeClass("active");
 	}
@@ -139,6 +109,13 @@ $(function annm () {
 		playable();
 	}
 
+
+
+
+
+
+
+//Generics methods ----------------------------------------------------------------------------
 
 	function playable () { //load sounds of each view
 		"use strict";
@@ -157,38 +134,35 @@ $(function annm () {
 		|| $b.removeClass("picture-clear");
 	}
 
-	function toBirdOver () { //fix information (text, sound) from "hover" bird
+	function toSway () { //position of light on picture when resizing - on tactile device, resizing reloads the page
 		"use strict";
-		clearTimeout(game.tmt);
-		$figurembed.data("active", $(this).attr("id"));
-		return true;
-	}
+		game.w = $cargo.width();
+		game.h = $cargo.height();
+		game.mi = $porthole.width() / 2;
+		$porthole.data("pos-percent") !== 1
+		&& $porthole.data("pos-percent", 1)
+		.css({
+			"left": parseInt($porthole.css("left"), 10) / game.w * 100 + "%",
+			"top":  parseInt($porthole.css("top"), 10) / $cargo.height() * 100 + "%"
+	});	}
 
-	function toBirdOut () { //erase information (text, sound) from "hover" bird
+	function toShine (ze) { //move light
 		"use strict";
-		game.tmt = setTimeout(function () {
-			"use strict";
-			$figurembed.data("active", false);
-	}, 125);	}
-
-	function toReveal (ze) { //move light and actualize information about "hover" bird
-		"use strict";
-
-		var active = $figurembed.data("active");
-
-		if ($b.hasClass("transit"))
-			return;
-
 		$porthole.data("pos-percent", 0)
 		.position({
 			of: ze,
-			within: $mess
-		});
+			my: game.posMy,
+			collision: "fit",
+			within: $w
+	});	}
 
-		if ($caption.data("active") === active)
+	function toInform (active) { //actualize information about "hover" bird
+		"use strict";
+
+		if ($caption.data("active") === active) //-1 vs false ? #9917 ($.data returns undefined for any stored false value) – jQuery Core - Bug Tracker (http://bugs.jquery.com/ticket/9917)
 			return;
 
-		(	active
+		(	active !== -1
 			&& commonLAg.sounds[active].turnon()
 			&& $caption.html(
 				parametres.t[0]
@@ -205,25 +179,39 @@ $(function annm () {
 		$caption.data("active", active);
 	}
 
-	function toSway () { //position of light on picture when resizing
+	function toRevealMouse (ze) { //MOUSE: manage moving light and actualizing information about "hover" bird
 		"use strict";
-		game.w = $cargo.width();
-		game.h = $cargo.height();
-		game.mi = $porthole.width() / 2;
-		$porthole.data("pos-percent") !== 1
-		&& $porthole.data("pos-percent", 1)
-		.css({
-			"left": parseInt($porthole.css("left"), 10) / game.w * 100 + "%",
-			"top":  parseInt($porthole.css("top"), 10) / $cargo.height() * 100 + "%"
-	});	}
+		var t = ze.target;
+		if ($b.hasClass("transit"))
+			return;
+		toShine(ze);
+		toInform(t.tagName.search(parametres.re[0]) < 0 ? -1 : $(t).attr("id"));
+	}
+
+	function toRevealTouch (ze, active) { //TOUCH: manage moving light and actualizing information about "hover" bird
+		"use strict";
+		if ($b.hasClass("transit"))
+			return;
+		toShine(ze);
+		toInform(active);
+	}
 
 
-	$cargo.on({ //init at first loading
+
+
+
+
+
+//At first loading ----------------------------------------------------------------------------
+
+	$cargo.on({
 		load: function () {
 			"use strict";
-
 			if (game.init === true)
 				return;
+
+
+		/* init */
 
 			game.init = true;
 			game.currnt[wpI.currnt] = true;
@@ -234,54 +222,77 @@ $(function annm () {
 			&& $b.addClass("msie9");
 
 			$("#hasWaterline").css(commonLAg.transition(parametres.delai1, "opacity"));
-			$b.addClass("init");
+			$b.removeClass("transit")
+			.addClass("init");
+
 			$porthole.data("pos-percent", 0);
+			$figurembed.add($caption).data("active", -1);
 
 			game.w = $cargo.width();
 			game.h = $cargo.height();
 			game.mi = $porthole.width() / 2;
 
-			playable(); //load sounds
 
+		/* prepare */
+
+			playable(); //load sounds
 			readable(); //added later: only one clear picture is the specification, and no time for other solutions :)
 
-			$path.on({ //MOUSE: fix information (text, sound) from "hover" bird
-				mousemove: toBirdOver,
-				mouseout: toBirdOut
-			});
+
+		/* events */
 
 			$mess.on({ //MOUSE: move light and display "hover" bird information
-				mouseover: toReveal,
-				mousemove: toReveal
+				mouseover: toRevealMouse,
+				mousemove: toRevealMouse,
 			});
 
-			commonLAg.touch != false //TACTILE
-			&& (commonLAg.stroking = function (ze) {
+			$b.on({ //MSIE pseudo-tacile
+				mouseover: function () {
+					"use strict";
+					game.posMy = "center";
+					$b.off();
+			}	})
+
+			commonLAg.touch != false //TOUCH
+			&& (game.posMy = "bottom")
+			&& (commonLAg.stroking = function (ze) {//replace $mess.on()
 				"use strict";
 				ze.preventDefault();
+				var ore = ze,
+					tactTouch = typeof ze.pageX == "number" && (ze.pageX != 0 || ze.pageY != 0) ? ze
+					: typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX != 0 || ze.touches[0].pageY != 0) ? ze.touches[0] : null,//Google Chrome on Android
+					active;
+
+				if (tactTouch === null) //to do: check on a lot of tactile devices (touchanged ? touchtarget ?)
+					return;
 
 				! commonLAg.stroking.init
 				&& $mess.off()
-				&& $path.off()
 				&& (commonLAg.stroking.init = true);
 
-				// if (new Date().getTime() % 12 != 0)
-				// 	return;
+			/* mixt of events objects - because position() doesn't work with ze.touches[0] */
+				if (tactTouch !== ze) {
+					ore = {};
+					for (var p in ze)
+						ore[p] = ze[p];
+					ore.pageX = tactTouch.pageX;
+					ore.pageY = tactTouch.pageY;
+				}
 
-			/* fix information (text, sound) from "hover" bird */
-				game.tactileP = document.elementFromPoint(ze.pageX, ze.pageY); //element pseudo hover
+			// if (new Date().getTime() % 12 != 0) //to do: optimization?
+			// 	return;
 
-				game.tactileP.tagName.toLowerCase() == "path"
-				&& toBirdOver.call(game.tactileP)
-				|| toBirdOut();
+			/* fix information (text, sound) from "hover" bird
+				with element pseudo hover - because event.target is without this precision on my tests on iPad */
+				game.touchPoint = document.elementFromPoint(ore.pageX, ore.pageY - game.mi);
+				active = game.touchPoint.tagName.search(parametres.re[0]) > -1 ? game.touchPoint.id : -1;
 
 			/* move light and display "hover" bird information */
-				toReveal(ze);
+				toRevealTouch(ore, active);
 			})
-			&& ("touchstart touchmove".split(" ")).forEach(function (val) {
-				document.addEventListener(val, commonLAg.stroking, false);
+			&& ("touchstart touchmove mouseover mousemove".split(" ")).forEach(function (val) {
+				mess.addEventListener(val, commonLAg.stroking, false);
 			});
-
 
 			$w.on({
 				resize: toSway,
@@ -289,9 +300,27 @@ $(function annm () {
 
 			wpI.ready = true;
 
+			wpI.preload(); //preload main picture for previous and next set
 
 	}	}).get(0).complete && $cargo.trigger("load");
 
 
 });
 
+
+
+/* 150330
+to do
+
+sans iframe ?
+	en partant de l'iframe en question et en introduisant une zone supérieure relative...
+	semble impossible à cause de background-attachment: fixed
+	mais bg position fixed calculé sur body ?
+
+
+IE 9
+
+détection et alternative ?
+
+*/
+//...

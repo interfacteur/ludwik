@@ -381,7 +381,7 @@ Les setTimeout ? les événements ????
 		this.$figcaption = this.$figure.find(".nest-caption:eq(0)");
 		this.$figcaption.css(commonLAg.transition(delays[1]))
 		.attr("data-caption", this.stateDrop.fiche.Nom); /* added later */
-		this.position();
+		this.getPosition();
 		this.drop();
 	}
 
@@ -404,7 +404,7 @@ Les setTimeout ? les événements ????
 			val.stateDrop.$dom.draggable(state);
 	});	}
 
-	Size.prototype.position = function () { //position on the page
+	Size.prototype.getPosition = function () { //position on the page
 		"use strict";
 		this.max = this.$dom.width();
 		this.pos = this.$figure.offset();
@@ -714,7 +714,7 @@ Les setTimeout ? les événements ????
 			hipsterWidthS = hipsterWidthX - abalities.scrollBar;
 
 			sizes.forEach(function (val) {
-				val.position();
+				val.getPosition();
 	})	}	});
 
 	$hipster.organize = function (write) {

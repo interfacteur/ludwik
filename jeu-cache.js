@@ -10,6 +10,9 @@ var parametres = {
 }
 
 
+
+
+//COMING BEFORE jeu-cache-frame.js
 ;$(function () {
 	"use strict";
 
@@ -33,6 +36,20 @@ var parametres = {
 		$LAgTitle.html(LAgTitle + " (" + pI.currnt + "/" + pI.total + ")");
 	})();
 
+	pI.linkup = function (n) { //to target the index of previous or next view (n is direction: -1 for previous, 1 for next)
+		"use strict";
+		return n == 1 ?
+			(pI.currnt == pI.total ? 1 : pI.currnt + 1) //next
+			:
+			(pI.currnt == 1 ? pI.total : pI.currnt - 1); //previous
+	}
+
+	pI.preload = function () { //to preload main picture for previous and next view
+		"use strict";
+		var images = [
+			$("<img>", { src: commonLAg.sourceCache[0] + pI.linkup(-1) + commonLAg.sourceCache[1]}),
+			$("<img>", { src: commonLAg.sourceCache[0] + pI.linkup(1) + commonLAg.sourceCache[1]})
+	];	}
 
 	function toSlide (dir) { //to slide to previous or next view
 		"use strict";
@@ -44,24 +61,20 @@ var parametres = {
 
 		pI.$b.removeClass(pI.inclass + pI.currnt)
 		.addClass("transit");
-		pI.currnt = dir == 1 ?
-			(pI.currnt == pI.total ? 1 : ++pI.currnt)
-			:
-			(pI.currnt == 1 ? pI.total : --pI.currnt);
-
+		pI.currnt = pI.linkup(dir);
 		toSlide.inload(game.init, pI.currnt, { //load main picture of the view
 			comp: [0, 1],
-			srce: [2, 1]
+			srce: [0, 1]
 		});
 		toSlide.inload(game.init, pI.currnt, { //load background picture of the view
 			comp: [1, 0],
-			srce: [2, 3]
+			srce: [0, 2]
 	});	}
 	toSlide.inload = function (gin, pic, args) { //load the 2 pictures before displaying view
 		"use strict";
 		if (gin < game.init)
 			return;
-		var image = $("<img>", { src: pI.srce[args.srce[0]] + pic + pI.srce[args.srce[1]]}),
+		var image = $("<img>", { src: commonLAg.sourceCache[args.srce[0]] + pic + commonLAg.sourceCache[args.srce[1]]}),
 			nit = game.locInit[gin];
 		image.on({
 			load: function () {
@@ -76,7 +89,7 @@ var parametres = {
 	}
 	toSlide.transit = function (gin, pic) { //to display previous / next view
 		"use strict";
-		pI.$cargo.attr("src", pI.srce[0] + pic + pI.srce[1])
+		pI.$cargo.attr("src", commonLAg.sourceCache[0] + pic + commonLAg.sourceCache[1])
 		.on({
 			load: function nit () {
 				"use strict";
@@ -87,6 +100,7 @@ var parametres = {
 				.addClass(pI.inclass + pic);
 				$LAgTitle.html(LAgTitle + " (" + pic + "/" + pI.total + ")");
 				pI.playable();
+				pI.preload(); //preload main picture for previous and next view
 		}	}).get(0).complete
 		&& pI.$cargo.trigger("load");
 	};
@@ -107,7 +121,7 @@ var parametres = {
 
 	parametres.ready = true;
 
-	commonLAg.reload = true; //on resize...
+	commonLAg.reload = true; //on resize: behaviour of the menu on tactile devices
 
 });
 

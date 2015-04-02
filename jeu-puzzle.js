@@ -24,6 +24,8 @@
 	delai4: 10,
 	delai5: 333,
 
+	clockLargeur: 300, /* .clock dans jeu-puzzle.css */
+
 	regex: [/dragDropped|dragSimili/],
 
 	dropCourt: 24, //(pixels)
@@ -119,6 +121,9 @@
 		commonLAg.Sound.init(parametres.sons);
 
 		game.ratio = game.referWRel / game.referWAbs;
+
+		$(".clock").get(0).getBoundingClientRect().width != parametres.clockLargeur //old devices
+		&& $(".clock").removeClass("extra");
 
 		game.clock = $clock.FlipClock({
 			autoStart: false,
@@ -314,7 +319,8 @@
 	commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 		"use strict";
 
-		$targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
+		$targetGroups //to do: to check on tactile-mouse MSIE
+		&& $targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
 
 		game.$tactileP1 = null;
 		game.$tactileP0 = null;
@@ -460,7 +466,17 @@
 		this.$dom.css({
 			"margin": 0,
 			"height": "200%"
-	});	}
+		});
+		this.wixer();
+	}
+	Piece.prototype.wixer = commonLAg.msieUp11 ?
+		function () { //MSIE: dimensions of svg
+			"use strict";
+			this.$dom.css({
+				"width": this.$dom.css("height")
+		});	}
+		:
+		commonLAg.doNothing;
 
 	Piece.prototype.calculate = function () {
 		"use strict";
@@ -476,7 +492,6 @@
 		&& (x = 0);
 		y = this.$posY.offset().top - harvest.top;
 		w = dimension.width + 6;
-//to do: MSIE ?
 		this.$dom.css({
 			"margin": - y + "px 0 0 -" + x + "px",
 			"height": this.$dom.height()
@@ -551,6 +566,7 @@
 
 		Piece.playable( //to conserve click moving after very short drop
 			! args.replayable
+			|| commonLAg.touch //added later
 			|| Math.sqrt(
 				Math.pow(Math.abs(piece.playLeft - args.replayable.left), 2)
 				+ Math.pow(Math.abs(piece.playTop - args.replayable.top), 2)
@@ -763,6 +779,36 @@
 	instancie.classicalEvents = function () {
 		"use strict";
 
+		var clickToMove = ! commonLAg.touch ? //added later
+			[
+				function (ze) { //MOUSE: click on $piecesGroups
+					"use strict";
+					ze.preventDefault();
+					game.time();
+					var ind = $(this).data("instance");
+					! pieces[ind].$figure.hasClass("justAMoment") //by clicked with short drag: vs Piece.playable
+					&& Piece.playable(game.play == ind ? null : ind);
+				},
+				function (ze) { //MOUSE: click on body
+					"use strict";
+					var ind = game.play,
+						left, h, pY;
+					if (ind == null || pieces[ind].$figure.has($(ze.target)).length)
+						return;
+					left = ze.pageX - (pieces[ind].$figure.width() / 2) - game.windW * .5; //added later
+					h = pieces[ind].$figure.height() / 2;
+					pY = ze.pageY;
+					pY = pY < h + 10 ? h + 10 : pY;
+					Piece.playable(null);
+					pieces[ind].place({
+						left: pieces[ind].repos(game.windW / 2 + left, left),
+						top: (pY - h - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
+						replayable: false
+				});	}
+			]
+			:
+			[commonLAg.doNothing, commonLAg.doNothing]; //TACTILE (nor MSIE): no pseudo drag and drop on click
+
 		$w.on({
 			resize: function () {
 				"use strict";
@@ -776,22 +822,8 @@
 		}	});
 
 		$b.on({
-			click: function (ze) {
-				"use strict";
-				var ind = game.play,
-					left, h, pY;
-				if (ind == null || pieces[ind].$figure.has($(ze.target)).length)
-					return;
-				left = ze.pageX - (pieces[ind].$figure.width() / 2) - game.windW * .5; //added later
-				h = pieces[ind].$figure.height() / 2;
-				pY = ze.pageY;
-				pY = pY < h + 10 ? h + 10 : pY;
-				Piece.playable(null);
-				pieces[ind].place({
-					left: pieces[ind].repos(game.windW / 2 + left, left),
-					top: (pY - h - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
-					replayable: false
-		});	}	});
+			click: clickToMove[1]
+		});
 
 		$levels.on({
 			change: function () {
@@ -801,14 +833,7 @@
 		.eq(1).prop("checked", true);
 
 		$piecesGroups.on({
-			click: function (ze) {
-				"use strict";
-				ze.preventDefault();
-				game.time();
-				var ind = $(this).data("instance");
-				! pieces[ind].$figure.hasClass("justAMoment") //by clicked with short drag: vs Piece.playable
-				&& Piece.playable(game.play == ind ? null : ind);
-			},
+			click: clickToMove[0],
 			mouseover: function () {
 				"use strict";
 				pieces[$(this).data("instance")].getFromGroups()

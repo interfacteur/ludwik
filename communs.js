@@ -6,9 +6,7 @@
 
 
 
-/* to do
-accès par ancre aux jeux N des tailles et cache-cache
-	d'où ouverture possible dans une nouvelle fenêtre à partir des flèches dans menu ? */
+
 
 
 
@@ -20,6 +18,9 @@ var commonLAg = {
 		msie: /trident.*rv[ :]*11\./
 	},
 	nav: navigator.userAgent.toLowerCase(),
+	sourceCache: [
+		"img/jeu-cache/vue","a.jpg","b.jpg" /* see also HTML code and CSS */
+	],
 	doNothing: function () { },
 	returnTrue: function () { //to string logical conditions
 		"use strict";
@@ -36,7 +37,9 @@ $(function () {
 
 	var $w = $(window),
 		$b = $("body"),
-		$head = $("#lifeAlpillesGame");
+		$head = $("#lifeAlpillesGame"),
+		$menus = $(".other, .resources"),
+		delay1 = 1250;
 
 
 
@@ -71,7 +74,7 @@ commonLAg.debug = false;
 	commonLAg.tactile = commonLAg.doNothing;
 	(commonLAg.touch = "ontouchstart" in window ? "ontouchstart"
 		: "onmsgesturechange" in window ? "onmsgesturechange" : commonLAg.debug) //MSIE 10 11
-	&& (commonLAg.tactile = function (clbck, trigger) { //actived at first touch event
+	&& (commonLAg.tactile = function (clbck, trigger) { //clbck() executed one time on first touch event, or on load if trigger
 		"use strict";
 		var callback = clbck;
 		if (commonLAg.tactile.init === true || trigger === true) {
@@ -200,55 +203,69 @@ commonLAg.debug = false;
 
 
 
-//Menu on resizing: without actualization of 'vh' in tactile, MSIE ----------------------------------------------------------------------------
-	commonLAg.touch != false
-	&& $b.addClass("likelyTactile")
-//http://stackoverflow.com/questions/28139752/ios-vh-on-viewport-orientation-change
-//http://stackoverflow.com/questions/20046337/css3-viewport-height-does-not-seem-to-work-on-ipad
-	&& commonLAg.tactile(function () {
+//No support or partial support of 'vh'
+	//http://stackoverflow.com/questions/28139752/ios-vh-on-viewport-orientation-change
+	//http://stackoverflow.com/questions/20046337/css3-viewport-height-does-not-seem-to-work-on-ipad
+	commonLAg.menuResize = function () {
 		"use strict";
-		commonLAg.tactileResize = function () { //menu size when rotate iPad
+		setTimeout(function () {
+			var h = $b.height(),
+				h13 = h * .13,
+				h78 = Math.floor(h13 * .78),
+				h66 = Math.floor(h13 * .66),
+				h04 = Math.floor(h * .04);
+			$(".life-alpilles-games, [class*='LAg-']").css({
+				height: Math.floor(h13) + "px",
+				"line-height": Math.floor(h13) + "px"
+			});
+			$menus.css({
+				height: h78 + "px",
+				"line-height": h78 + "px"
+			});
+			$(".slide-track").css({
+				height: h66 + "px",
+				"line-height": h66 + "px"
+			});
+			$(".lag-order").css({
+				height: h04,
+				"line-height": h04
+			});
+		}, delay1 / 1.5);
+	}
+
+//Pb with displaying menu
+	$head.height() != $(".LAg-resources").height()
+	&& (commonLAg.remenu = true)
+	&& commonLAg.menuResize();
+
+//Menu on resizing: without actualization of 'vh' in tactile, MSIE, and others ----------------------------------------------------------------------------
+	commonLAg.touch != false
+	&& $b.addClass("likelyTactile");
+	(commonLAg.touch != false || commonLAg.remenu)
+	&& commonLAg.tactile(function () { //menu height when resizing (or rotate iPad) on and after the first touch event
+		"use strict";
+		if (commonLAg.reload === true) //jeu-cache: always reload window
+			return;
+		commonLAg.tactileResize = function () { //
 			"use strict";
-			if (commonLAg.reload === true) //jeu-cache
-				return document.location.reload();
 			clearTimeout(commonLAg.tmt);
-			commonLAg.tmt = setTimeout(function () {
-				"use strict";
-				var h = $b.height(),
-					h13 = h * .13,
-					h78 = Math.floor(h13 * .78),
-					h66 = Math.floor(h13 * .66),
-					h04 = Math.floor(h * .04);
-				$(".life-alpilles-games, [class*='LAg-']").css({
-					height: Math.floor(h13) + "px",
-					"line-height": Math.floor(h13) + "px"
-				});
-				$(".other, .resources").css({
-					height: h78 + "px",
-					"line-height": h78 + "px"
-				});
-				$(".slide-track").css({
-					height: h66 + "px",
-					"line-height": h66 + "px"
-				});
-				$(".lag-order").css({
-					height: h04,
-					"line-height": h04
-				});
-			}, 1250);
+			commonLAg.tmt = setTimeout(commonLAg.menuResize, delay1);
 		}
 		$w.on({
 			resize:  commonLAg.tactileResize
-	});	}, commonLAg.msieUp11 || commonLAg.debug)
-	&& (commonLAg.reload = function () { //before first touch event
+	});	}, commonLAg.msieUp11 || commonLAg.remenu || commonLAg.debug)
+	&& (commonLAg.menuLoading = function () { //menu height when resizing (or rotate iPad) before the first touch event
 		"use strict";
-		typeof commonLAg.tactile.init === "undefined"
+		typeof commonLAg.tactile.init === "undefined" //before the first touch event
 		&& document.location.reload()
-		|| $w.off("resize", commonLAg.reload);
+		|| $w.off("resize", commonLAg.menuLoading); //after the first touch event, or if commonLAg.tactile has parameter "trigger"
 	})
 	&& $w.on({
-		resize: commonLAg.reload
+		resize: commonLAg.menuLoading //if resizing before first touch event
 	});
+
+
+
 
 
 
@@ -260,9 +277,29 @@ commonLAg.debug = false;
 			ze.preventDefault();
 			$head.toggleClass("active");
 	}	});
-	$(".other, .resources").css(commonLAg.transition(333, "color"));
+	$menus.css(commonLAg.transition(333, "color"));
 
+
+
+
+
+
+
+//Preload main and background picture for jeu-cache view 1
+	! $b.hasClass("has")
+	&& $w.on({
+		load: function () {
+			"use strict";
+			var images = [
+				$("<img>", { src: commonLAg.sourceCache[0] + 1 + commonLAg.sourceCache[1]}),
+				$("<img>", { src: commonLAg.sourceCache[0] + 1 + commonLAg.sourceCache[2]})
+	];	}	});
 
 
 
 });
+
+
+/* to do
+accès par ancre aux jeux N des tailles et cache-cache
+	d'où ouverture possible dans une nouvelle fenêtre à partir des flèches dans menu ? */
