@@ -25,9 +25,16 @@ var parametres = {
 		LAgTitle = $LAgTitle.html(),
 		game = {
 			locInit: [],
-			init: -1
+			init: -1,
+			hash: null
 			// $iframe: $hasBath.contents() //no ability to get width of elements via contents nor via contentDocument / contentWindow.document
 		};
+
+
+
+
+
+
 
 	(function nt () { //title of the page
 		"use strict";
@@ -36,20 +43,42 @@ var parametres = {
 		$LAgTitle.html(LAgTitle + " (" + pI.currnt + "/" + pI.total + ")");
 	})();
 
-	pI.linkup = function (n) { //to target the index of previous or next view (n is direction: -1 for previous, 1 for next)
+
+
+
+
+
+
+//Manipulation from iframe ----------------------------------------------------------------------------
+	pI.preload = function () { //to preload main picture for previous and next view
+		"use strict";
+		var images = [
+			$("<img>", { src: commonLAg.sourceCache[0] + linkup(-1) + commonLAg.sourceCache[1]}),
+			$("<img>", { src: commonLAg.sourceCache[0] + linkup(1) + commonLAg.sourceCache[1]})
+	];	}
+
+	pI.goInside = function () { //get view from url
+		"use strict";
+		var hash = commonLAg.goInside(pI.total);
+		(	hash
+			&& (pI.currnt = hash)
+			&& $slideNext.trigger("click")	)
+		|| pI.preload();
+	}
+
+
+
+
+
+
+
+	function linkup (n) { //to target the index of previous or next view (n is direction: -1 for previous, 1 for next)
 		"use strict";
 		return n == 1 ?
 			(pI.currnt == pI.total ? 1 : pI.currnt + 1) //next
 			:
 			(pI.currnt == 1 ? pI.total : pI.currnt - 1); //previous
 	}
-
-	pI.preload = function () { //to preload main picture for previous and next view
-		"use strict";
-		var images = [
-			$("<img>", { src: commonLAg.sourceCache[0] + pI.linkup(-1) + commonLAg.sourceCache[1]}),
-			$("<img>", { src: commonLAg.sourceCache[0] + pI.linkup(1) + commonLAg.sourceCache[1]})
-	];	}
 
 	function toSlide (dir) { //to slide to previous or next view
 		"use strict";
@@ -61,7 +90,7 @@ var parametres = {
 
 		pI.$b.removeClass(pI.inclass + pI.currnt)
 		.addClass("transit");
-		pI.currnt = pI.linkup(dir);
+		pI.currnt = linkup(dir);
 		toSlide.inload(game.init, pI.currnt, { //load main picture of the view
 			comp: [0, 1],
 			srce: [0, 1]
@@ -101,6 +130,7 @@ var parametres = {
 				$LAgTitle.html(LAgTitle + " (" + pic + "/" + pI.total + ")");
 				pI.playable();
 				pI.preload(); //preload main picture for previous and next view
+				location.hash = commonLAg.vue + pic;
 		}	}).get(0).complete
 		&& pI.$cargo.trigger("load");
 	};
@@ -121,7 +151,11 @@ var parametres = {
 
 	parametres.ready = true;
 
-	commonLAg.reload = true; //on resize: behaviour of the menu on tactile devices
+	commonLAg.msieUp11 === false
+	&& (commonLAg.reload = true); //on resize: behaviour of the menu on tactile devices
+
+
+
 
 });
 

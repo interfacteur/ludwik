@@ -13,14 +13,15 @@
 "use strict";
 
 var commonLAg = {
+	vue: "vue",
+	sourceCache: [
+		"img/jeu-cache/vue","a.jpg","b.jpg" /* see also HTML code and CSS */
+	],
+	nav: navigator.userAgent.toLowerCase(),
 	re: {
 		iaye: /(iphone|ipod|ipad)/,
 		msie: /trident.*rv[ :]*11\./
 	},
-	nav: navigator.userAgent.toLowerCase(),
-	sourceCache: [
-		"img/jeu-cache/vue","a.jpg","b.jpg" /* see also HTML code and CSS */
-	],
 	doNothing: function () { },
 	returnTrue: function () { //to string logical conditions
 		"use strict";
@@ -40,6 +41,26 @@ $(function () {
 		$head = $("#lifeAlpillesGame"),
 		$menus = $(".other, .resources"),
 		delay1 = 1250;
+
+
+
+
+
+
+
+//Get view from url ----------------------------------------------------------------------------
+	commonLAg.goInside = function (n) {
+		"use strict";
+		var hash = location.hash.split("#" + commonLAg.vue)[1],
+			ret = false;
+		hash
+		&& hash.length === 1
+		&& (hash = Number(hash)) //if 0 should stop
+		&& hash > 1
+		&& hash <= n
+		&& (ret = hash - 1);
+		return ret;
+	}
 
 
 
@@ -212,7 +233,6 @@ commonLAg.debug = false;
 			var h = $b.height(),
 				h13 = h * .13,
 				h78 = Math.floor(h13 * .78),
-				h66 = Math.floor(h13 * .66),
 				h04 = Math.floor(h * .04);
 			$(".life-alpilles-games, [class*='LAg-']").css({
 				height: Math.floor(h13) + "px",
@@ -221,10 +241,6 @@ commonLAg.debug = false;
 			$menus.css({
 				height: h78 + "px",
 				"line-height": h78 + "px"
-			});
-			$(".slide-track").css({
-				height: h66 + "px",
-				"line-height": h66 + "px"
 			});
 			$(".lag-order").css({
 				height: h04,
@@ -239,13 +255,9 @@ commonLAg.debug = false;
 	&& commonLAg.menuResize();
 
 //Menu on resizing: without actualization of 'vh' in tactile, MSIE, and others ----------------------------------------------------------------------------
-	commonLAg.touch != false
-	&& $b.addClass("likelyTactile");
 	(commonLAg.touch != false || commonLAg.remenu)
 	&& commonLAg.tactile(function () { //menu height when resizing (or rotate iPad) on and after the first touch event
 		"use strict";
-		if (commonLAg.reload === true) //jeu-cache: always reload window
-			return;
 		commonLAg.tactileResize = function () { //
 			"use strict";
 			clearTimeout(commonLAg.tmt);
@@ -256,7 +268,8 @@ commonLAg.debug = false;
 	});	}, commonLAg.msieUp11 || commonLAg.remenu || commonLAg.debug)
 	&& (commonLAg.menuLoading = function () { //menu height when resizing (or rotate iPad) before the first touch event
 		"use strict";
-		typeof commonLAg.tactile.init === "undefined" //before the first touch event
+		(typeof commonLAg.tactile.init === "undefined" //before the first touch event
+		|| commonLAg.reload === true) //jeu-cache
 		&& document.location.reload()
 		|| $w.off("resize", commonLAg.menuLoading); //after the first touch event, or if commonLAg.tactile has parameter "trigger"
 	})

@@ -57,6 +57,7 @@ $(function () {
 
 	var abalities = {
 			scrollBar: parametres.scrollBar
+			// hash: null
 		},
 //Generic variables ----------------------------------------------------------------------------
 		$b = $("body"),
@@ -740,6 +741,8 @@ Les setTimeout ? les événements ????
 			$hipster.data("stop",false);
 			$b.removeClass("stop");
 		}, delays[0]);
+
+		return true;
 	}
 
 //Link direct to good order
@@ -829,8 +832,9 @@ Les setTimeout ? les événements ????
 	function toSlide () {
 		"use strict";
 		var orderL = 0;
-		$hipster.organize(function () {
+		return $hipster.organize(function () {
 			"use strict";
+			location.hash = commonLAg.vue + parametres.serie;
 			return code.replace(parametres.re[0], function (match, p1, p2, p3, p4, p5) {
 				"use strict";
 				return [
@@ -843,6 +847,8 @@ Les setTimeout ? les événements ????
 	})	});	}
 	parametres.bis
 	&& $slideNext.trigger("click");
+
+
 
 
 
@@ -867,7 +873,11 @@ Les setTimeout ? les événements ????
 			birds[p].stateDrop = sizes[$sizes.index(birds[p].$dom.parents("li"))];
 			birds[p].stateOver = birds[p].stateDrop;
 	}	}
-	instancie();
+	abalities.hash = commonLAg.goInside(games.length);
+	(	abalities.hash
+		&& (parametres.serie = abalities.hash + 1)
+		&& toSlide()	)
+	|| instancie();
 
 
 /* Debug * /

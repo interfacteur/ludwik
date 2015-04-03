@@ -153,7 +153,7 @@ $(function annm () {
 			of: ze,
 			my: game.posMy,
 			collision: "fit",
-			within: $w
+			within: $mess
 	});	}
 
 	function toInform (active) { //actualize information about "hover" bird
@@ -184,6 +184,7 @@ $(function annm () {
 		var t = ze.target;
 		if ($b.hasClass("transit"))
 			return;
+		game.posMy = "center";
 		toShine(ze);
 		toInform(t.tagName.search(parametres.re[0]) < 0 ? -1 : $(t).attr("id"));
 	}
@@ -192,6 +193,7 @@ $(function annm () {
 		"use strict";
 		if ($b.hasClass("transit"))
 			return;
+		game.posMy = "bottom";
 		toShine(ze);
 		toInform(active);
 	}
@@ -246,15 +248,7 @@ $(function annm () {
 				mousemove: toRevealMouse,
 			});
 
-			$b.on({ //MSIE pseudo-tacile
-				mouseover: function () {
-					"use strict";
-					game.posMy = "center";
-					$b.off();
-			}	})
-
 			commonLAg.touch != false //TOUCH
-			&& (game.posMy = "bottom")
 			&& (commonLAg.stroking = function (ze) {//replace $mess.on()
 				"use strict";
 				ze.preventDefault();
@@ -265,10 +259,6 @@ $(function annm () {
 
 				if (tactTouch === null) //to do: check on a lot of tactile devices (touchanged ? touchtarget ?)
 					return;
-
-				! commonLAg.stroking.init
-				&& $mess.off()
-				&& (commonLAg.stroking.init = true);
 
 			/* mixt of events objects - because position() doesn't work with ze.touches[0] */
 				if (tactTouch !== ze) {
@@ -290,8 +280,8 @@ $(function annm () {
 			/* move light and display "hover" bird information */
 				toRevealTouch(ore, active);
 			})
-			&& ("touchstart touchmove mouseover mousemove".split(" ")).forEach(function (val) {
-				mess.addEventListener(val, commonLAg.stroking, false);
+			&& ("touchstart touchmove".split(" ")).forEach(function (val) {
+				document.addEventListener(val, commonLAg.stroking, false);
 			});
 
 			$w.on({
@@ -300,7 +290,7 @@ $(function annm () {
 
 			wpI.ready = true;
 
-			wpI.preload(); //preload main picture for previous and next set
+			wpI.goInside(); //adapt view from url or preload main picture for previous and next set
 
 	}	}).get(0).complete && $cargo.trigger("load");
 
