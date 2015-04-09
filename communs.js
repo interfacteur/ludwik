@@ -51,14 +51,15 @@ $(function () {
 //Get view from url ----------------------------------------------------------------------------
 	commonLAg.goInside = function (n) {
 		"use strict";
-		var hash = location.hash.split("#" + commonLAg.vue)[1],
+		var hash = location.hash.toLowerCase().split("#" + commonLAg.vue)[1],
 			ret = false;
-		hash
-		&& hash.length === 1
-		&& (hash = Number(hash)) //if 0 should stop
-		&& hash > 1
-		&& hash <= n
-		&& (ret = hash - 1);
+		! hash
+		&& (location.hash = commonLAg.vue + 1)
+		|| (hash.length === 1
+			&& (hash = Number(hash)) //if 0 should stop
+			&& hash > 1
+			&& hash <= n
+			&& (ret = hash - 1)	);
 		return ret;
 	}
 

@@ -96,15 +96,6 @@
 		}
 
 
-// iPad
-// Android
-// MSIE
-// et question du pointer-events
-// pointer-events msie 9 cf. notes in .css
-
-// et si alternative pour filtres
-
-// au click : position() ?
 
 
 
@@ -179,8 +170,6 @@
 		if (! this instanceof Piece)
 			throw new Error("Attention à l'instanciation");
 
-//to do transfigure : prévoir que .transdrag s'arrête avant fin Piece()
-
 		this.instance = ind;
 		this.tmt = [];
 		this.tmt["manage"] = 0;
@@ -192,8 +181,7 @@
 		this.$figure = $figures.eq(ind);
 		this.$figure.data("instance", ind);
 
-	/*	this.$posX = null; //cf. toGrade() */
-	/*	this.$posY = null; //cf. toGrade() */
+		this.$pos = this.$dom.find("path"); //first: with several path
 		this.establish("toGrade"); //for this.calculate()
 
 		this.SVGgroup = this.$dom.find("g")
@@ -418,27 +406,32 @@
 /* Provisional prototype */
 
 	Piece.establish = { }
-	Piece.establish.sort = function (a, b) {
-		"use strict";
-		return a[1] - b[1];
-	}
+	// Piece.establish.sort = function (a, b) {
+	// 	"use strict";
+	// 	return a[1] - b[1];
+	// }
 	Piece.establish.toGrade = function () {
 		"use strict";
-		var $p = this.$dom.find("path"),
-			X = [],
-			Y = [],
-			harvest,
-			x, y;
-		$p.each(function (ind) {
-			"use strict";
-			harvest = $(this).offset();
-			X.push([ind, harvest.left]);
-			Y.push([ind, harvest.top]);
-		});
-		X.sort(Piece.establish.sort);
-		Y.sort(Piece.establish.sort);
-		this.$posX = $p.eq(X[0][0]);
-		this.$posY = $p.eq(Y[0][0]);
+/*
+first: with several path
+
+		this.$posX = this.$posY = this.$dom.find("path");
+*/
+		// var $p = this.$dom.find("path"),
+		// 	X = [],
+		// 	Y = [],
+		// 	harvest,
+		// 	x, y;
+		// $p.each(function (ind) {
+		// 	"use strict";
+		// 	harvest = $(this).offset();
+		// 	X.push([ind, harvest.left]);
+		// 	Y.push([ind, harvest.top]);
+		// });
+		// X.sort(Piece.establish.sort);
+		// Y.sort(Piece.establish.sort);
+		// this.$posX = $p.eq(X[0][0]);
+		// this.$posY = $p.eq(Y[0][0]);
 
 		this.reset();
 		parseInt(this.$figure.width(), 10) === 0 //Google Chrome 34 Mac OS X 10.8.5: and apparently iPad
@@ -480,17 +473,18 @@
 
 	Piece.prototype.calculate = function () {
 		"use strict";
-		var dimension, harvest, x, y, w;
+		var dimension, harvest1, harvest2, x, y, w;
 
 		this.reset();
 
 		dimension = this.SVGgroup.getBoundingClientRect();
-		harvest = this.$figure.offset();
+		harvest1 = this.$figure.offset();
+		harvest2 = this.$pos.offset();
 
-		x = this.$posX.offset().left - harvest.left - 3; //- 3 : padding for usability and filter
+		x = harvest2.left - harvest1.left - 3; //- 3 : padding for usability and filter
 		x < 0
 		&& (x = 0);
-		y = this.$posY.offset().top - harvest.top;
+		y = harvest2.top - harvest1.top;
 		w = dimension.width + 6;
 		this.$dom.css({
 			"margin": - y + "px 0 0 -" + x + "px",
@@ -909,7 +903,7 @@
 				}, game.delays[3]));
 		}	});
 
-		$see.on({
+		$see.on({ //nothing by default
 			click: function (ze, next, follow) {
 				"use strict";
 
@@ -944,7 +938,7 @@
 				}, game.delays[5]));
 		}	});
 
-		$("#see2").on({
+		$("#see2").on({ //nothing by default
 			click: function (ze) {
 				"use strict";
 				$see.trigger("click", [0, true]); //to do: déshybridation
@@ -1007,6 +1001,7 @@
 				cursor: "move",
 				disabled: true,
 				start: Piece.toBrand,
+	/* final definition of toBrandTactile() is asynchronous */
 				drag: Piece.toBrandTactileIntro, //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 				stop: Piece.toFix
 			});
@@ -1032,29 +1027,23 @@
 
 
 /*
-JEU MILIEU
-couleur d'appréciation
-if ($drawer.hasClass("transfigure"))
-	return;
-<g data-transjectif=""
-
-
 TO DO
-<!-- to do: labels, submit button? -->
+<!-- to do: labels, champ de soumission ? -->
 au click trigger le drag plutôt que passer par le curseur ?
+	position() ne semble plus possible après draggable
 laisser le deuxième click désactiver le drop au click ????
 	le deuxième click fonctionne partout sauf sur une autre pièce
 		car c'est alors l'autre pièce qui devient déplaçable au click suivant
 	?? suffisamment intuitif ?
-quid du bouton résultat ? si oui, avec effets ?
+quid du bouton aller au résultat ? si oui, avec effets ?
 
 
 QUESTIONS
 Error: cannot call methods on draggable prior to initialization; attempted to call method 'disable'
 	jquery-....min.js (ligne 2, col. 1808)
+
 pointer-events "Does not work on SVG elements in Safari 5.1 or Android <= 4.1"
 constat ancien : compat Safari oiseau unique tête indropable ?
-taille du chrono : certains webkit ? Android ?
 
 
 SVG
@@ -1062,11 +1051,14 @@ SVG
 <!-- to do : better way fonds ok nok...-->
 	GC fond blanc via les CSS, sans <rect sup ?
 	<!-- enable-background="new 0 0 726 726" -->
-CONFORMITE DU SVG GENERE :
-	<g data-instance="n"
+
+
+CONFORMITE DU SVG GENERE
+<g data-instance="n"
 	n'est pas conforme
 	mais comme il s'agit d'éléments clonables, il est plus difficile de passer par $element.data()
 */
+
 
 
 });

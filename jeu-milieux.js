@@ -9,10 +9,17 @@
 /* Paramètres */
 ;var parametres = {
 
-	messages: {},
+	messages: {
+		dropConfirmation: "OK bravo pour ",
+		dropErreur: "NOK ailleurs ",
+		engoulevent: "engoul Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+		fauvette: "fauvette Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+		gdduc: "gd duc Lorem ipsum dolor sit amet, consectetur adipisicing elit" 
+	},
 
 	largeur: 1372,
 	hauteur: 1200,
+	captionLargeur: 120,
 
 	index: 10, //réglage minimal en z-index d'un élément droppé
 
@@ -25,7 +32,10 @@
 
 	delai0: 750,
 	delai1: 100,
-	delai2: 250
+	delai2: 250,
+	delai3: 4500,
+
+	nbreZones: "zones"
 }
 
 
@@ -49,27 +59,33 @@
 		$walking = $(".walking"),
 		$wlkg = $walking.eq(0),
 		$figures = $(".figure"),
+		$caption = $(".bird-info"),
 		$piecesGroups = $(".figure g"),
+
+		$message, //= $("#env-info"),
 
 		game = {
 			total: $drawer.html().split("</figure>").length - 1,
 			ratio: parametres.largeur / parametres.hauteur,
-			width: $puzzle.width(),
-			height: $puzzle.height(),
+			pos: $puzzle.offset(),
 			delays: [],
-			//displayW: null,
-			//displayH: null
+			// gWidth: null,
+			// gHeight: null,
+			// displayW: null,
+			// displayH: null
 		}
 
 
 	instancie.init = (function ii () {
 		"use strict";
 
+		game.total = $figures.length;
+		$drawer.addClass(parametres.nbreZones + game.total);
+
 		for (var p in parametres)
 			p.indexOf("delai") == 0 && game.delays.push(parametres[p]);
 
 		commonLAg.Sound.init(parametres.sons);
-
 
 /* WEBKIT
 	to call SVG filters from CSS */
@@ -120,47 +136,93 @@
 		this.figure = this.$figure.get(0);
 
 		this.$dom = $pieces.eq(ind);
+		this.infos = this.$dom.attr("id");
+		this.$message = this.toEstablish("intoCaption");
+		// this.pronominal = infos.Pronominal;
+		this.intoCaption();
 
 		this.SVGgroup = this.$dom.find("g")
 		.attr("data-instance", ind)
-		.get(0); //for this.calculate()
+		.get(0); //for this.toCalculate()
 
-		this.$cloneGroup = this.establish("toClone", "g"); //duplicate <g to create drop zone
-		this.$cloneImage = this.establish("toClone", "image"); //duplicate <image to play final
+		this.$cloneGroup = this.toEstablish("toClone", "g")
+		.data("instance", ind); //duplicate <g to create drop zone
+		this.$cloneImage = this.toEstablish("toClone", "image"); //duplicate <image to play final
 	}
 
 
 /* Class methods */
 
-	Piece.reset = function () {
+	Piece.intoCaption = function () { //content of messages (in <figcaption)
 		"use strict";
-		var w, h;
+		pieces.forEach(function (val) {
+			"use strict";
+			val.intoCaption();
+	});	}
+
+	Piece.toErase = function () { //cut displaying of messages
+		"use strict";
+		Piece.intoCaption();
+		$message.text("");
+		$(".error").attr("class", "");
+		$(".over, .bad-drop").removeClass("over bad-drop");
+	}
+
+	Piece.toReset = function () { //main: to display pieces at responsive way
+		"use strict";
+		var landscape = window.matchMedia("(min-aspect-ratio: 1/1)").matches,
+			w, h, W, H;
 		$walking.add($figures).add($pieces).removeAttr("style");
+		Piece.toErase();
 		w = $wlkg.width();
+		W = w / game.ratio;
 		h = $wlkg.height();
+		H = h * game.ratio;
 		$walking.css(
-			w / game.width < h / game.height ?
+			w / game.gWidth < h / game.gHeight ?
 			{
-				"height": Math.round(w / game.ratio),
-				"margin-top": Math.round((game.height - (w / game.ratio) * 3) / 4)
+				"height": Math.round(W),
+				"line-height": Math.round(W) + "px",
+				"margin-top": landscape ?
+					Math.round(($drawer.height() - game.total * W) / (game.total + 1))
+					:
+					Math.round(($drawer.height() - W) / 2)
 			}
 			:
 			{
-				"width": Math.round(h * game.ratio),
-				"margin-left": Math.round((game.width - (h * game.ratio) * 3) / 4)
+				"width": Math.round(H),
+				"line-height": Math.round(h) + "px",
+				"margin-left": landscape ?
+					Math.round(($drawer.width() - H) / 2)
+					:
+					Math.round(($drawer.width() - game.total * H) / (game.total + 1))
 		});
 		game.displayW = $wlkg.width();
 		game.displayH = $wlkg.height();
 	}
 
-	Piece.calculate = function () {
+	Piece.toCalculate = function () {
 		"use strict";
-		game.width = $puzzle.width();
-		game.height = $puzzle.height();
-		Piece.reset();
+		var infoDim = $("#figure image:eq(0)").get(0).getBoundingClientRect(); //cf. svg width() on Google Chrome
+		game.gWidth = infoDim.width;
+		game.gHeight = infoDim.height;
+		$puzzle.css({ //Google Chrome
+			"width": infoDim.width,
+			"height": infoDim.height
+		});
+		game.gPos = {
+			left: infoDim.left,
+			top: infoDim.top
+		};
+		$message.css({
+			"left": infoDim.left,
+			"top": infoDim.top
+		});
+		$game.removeClass("resize");
+		Piece.toReset();
 		pieces.forEach(function (val) {
 			"use strict";
-			val.calculate();
+			val.toCalculate();
 	});	}
 
 	Piece.appreciate = function (cl) {
@@ -178,154 +240,230 @@
 		var $t = $(this),
 			instance = $t.data("instance"),
 			piece = pieces[instance];
+
+		Piece.toErase();
+
 		clearTimeout(piece.tmt);
 		game.drag = instance;
-		return $t.addClass("drag");
+		return $t.addClass("drag dragged")
+		.css({
+			"z-index": ++parametres.index //last dropped on the "top" of pieces
+	});	}
+
+	Piece.toBrandTactileIntro = function (ze) {
+		"use strict";
+		Piece.toBrandTactile(ze);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Piece.toBrandTactileIntro = function (ze) {
-	"use strict";
-	Piece.toBrandTactile(ze);
-}
-Piece.toBrandTactile = commonLAg.doNothing;
-commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover event when dragging?
-	"use strict";
-
-	$targetGroups //to do: to check on tactile-mouse MSIE
-	&& $targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
-
-	game.$tactileP1 = null;
-	game.$tactileP0 = null;
-
-	Piece.toBrandTactile = function (ze) {
+	Piece.toBrandTactile = commonLAg.doNothing;
+	commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 		"use strict";
 
-		if (new Date().getTime() % 12 != 0)
-			return;
+		$targetGroups //to do: to check on tactile-mouse MSIE
+		&& $targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
 
-		game.$tactileP = $(document.elementFromPoint(ze.pageX, ze.pageY)); //element pseudo hover
+		game.$tactileP1 = null;
+		game.$tactileP0 = null;
 
-	//if "hover" element is a piece
-		game.$tactileP.prop("tagName").toLowerCase() == "path"
-		&& game.$tactileP.parents($stage).length
-		&& (game.$tactileP1 = game.$tactileP.parent("g"));
+		Piece.toBrandTactile = function (ze) {
+			"use strict";
 
-	//if same "hover" piece than previous, or if neither "hover" piece nor previous
-		if (game.$tactileP1 == game.$tactileP0)
-			return game.$tactileP1 = null;
+			game.$tactileP = $(document.elementFromPoint(ze.pageX, ze.pageY)); //element pseudo hover
 
-	//if previous piece exists, it is no more "hover"
-		game.$tactileP0 !== null
-		&& game.$tactileP0.trigger("mouseout")
-		&& (game.$tactileP0 = null);
+		//if "hover" element is a piece
+			game.$tactileP.prop("tagName").toLowerCase() == "path"
+			&& game.$tactileP.parents($stage).length
+			&& (game.$tactileP1 = game.$tactileP.parent("g"));
 
-	//if "hover" piece exists
-		game.$tactileP1 != null
-		&& game.$tactileP1.trigger("mouseover")
-		&& (game.$tactileP0 = game.$tactileP1)
-		&& (game.$tactileP1 = null);
-}	});
+		//if same "hover" piece than previous, or if neither "hover" piece nor previous
+			if (game.$tactileP1 == game.$tactileP0)
+				return game.$tactileP1 = null;
 
+		//if previous piece exists, it is no more "hover"
+			game.$tactileP0 !== null
+			&& game.$tactileP0.trigger("mouseout")
+			&& (game.$tactileP0 = null);
 
-
-
-
-
-
-
-
-
-
-
-
-
+		//if "hover" piece exists
+			game.$tactileP1 != null
+			&& game.$tactileP1.trigger("mouseover")
+			&& (game.$tactileP0 = game.$tactileP1)
+			&& (game.$tactileP1 = null);
+	}	});
 
 	Piece.toFix = function (ev, ui) { //drag: stop (coming after toCheck)
 		"use strict";
-		pieces[$(this).data("instance")].place();
+		pieces[$(this).data("instance")].toPlace();
 	}
 
 	Piece.toCheck = function (ev, ui) { //drop: drop (coming before toFix)
 		"use strict";
+		Piece.toBrandTactile(ev); //too much latency on iPad and possibility of shift between dropped zones
 		var indDrop = $stage.data("aera"),
 			indDrag = ui.draggable.data("instance");
 		switch (indDrop) {
 			case -1:
 				break;
 			case indDrag:
-				pieces[indDrag].queue = Piece.prototype.finish;
+				pieces[indDrag].queue = Piece.prototype.toFinish;
 				break;
 			default:
-				pieces[indDrag].queue = Piece.prototype.restart;
+				$stage.data("drag", indDrag);
+				pieces[indDrag].queue = Piece.prototype.toRestart;
 	}	}
+
+	Piece.toZoom = function () {
+		"use strict";
+
+		return;
+		var $hasPorthole = $("#hasPorthole");
+		Piece.toErase();
+
+		$puzzle.on({
+			mousemove: function (ze) {
+				"use strict";
+				$hasPorthole.position({
+					of: ze
+				});
+			}
+		});
+		
+
+return;
+
+$puzzle.on({
+	mouseover: function (ze) {
+		"use strict";
+		$("#hasPorthole").position({
+			of: ze
+		});
+	}
+});
+
+
+
+
+		$game.addClass("zoom");
+
+return;
+
+		$puzzle.wrap("<div class='small'></div>");
+		$(".small").clone()
+		.attr("class", "large")
+		.appendTo($stage);
+		$stage.anythingZoomer()
+
+
+		var param = {
+			smallArea	: "small",
+			clone		: true 
+		};
+
+
+/*
+$("#zoom").anythingZoomer({ 
+  // content areas 
+  smallArea   : 'small',    // class of small content area; the element with this class name must be inside of the wrapper 
+  largeArea   : 'large',    // class of large content area; this class must exist inside of the wrapper. When the clone option is true, it will add this automatically 
+  clone       : false,      // Make a clone of the small content area, use css to modify the style 
+ 
+  // appearance 
+  overlay     : false,      // set to true to apply overlay class "az-overlay"; false to not apply it 
+  speed       : 100,        // fade animation speed (in milliseconds) 
+  edge        : 30,         // How far outside the wrapped edges the mouse can go; previously called "expansionSize" 
+  offsetX     : 0,          // adjust the horizontal position of the large content inside the zoom window as desired 
+  offsetY     : 0,          // adjust the vertical position of the large content inside the zoom window as desired 
+ 
+  // functionality 
+  switchEvent : 'dblclick', // event that allows toggling between small and large elements - default is double click 
+  delay       : 0,          // time to delay before revealing the zoom window 
+ 
+  // edit mode 
+  edit        : false,      // add x,y coordinates into zoom window to make it easier to find coordinates 
+ 
+  // callbacks 
+  initialzied : function(event, zoomer){}, // AnythingZoomer done initializing 
+  zoom        : function(event, zoomer){}, // zoom window visible 
+  unzoom      : function(event, zoomer){}  // zoom window hidden 
+ 
+});
+*/
+
+
+
+
+	}
 
 
 
 
 /* Provisional prototype */
 
-	Piece.establish = { }
-	Piece.establish.toClone = function (tag) {
+	Piece.toEstablish = { }
+	Piece.toEstablish.toClone = function (tag) {
 		"use strict";
 		return this.$dom.find(tag)
 			.clone()
 			.appendTo($puzzle)
 	}
-	Piece.prototype.establish = function (meth, sup) {
+	Piece.toEstablish.intoCaption = function () {
 		"use strict";
-		return Piece.establish[meth].call(this, sup);
+		var infos = window.oiseaux[this.infos];
+		this.$dom.attr("title", infos.Nom);
+		this.$dom.attr("alt", infos.Nom);
+		this.pronominal = infos.Pronominal;
+		return $("<figcaption>", {
+			"class": "caption-info bird-info"
+		}).appendTo(this.$figure);
 	}
+	Piece.prototype.toEstablish = function (meth, sup) {
+		"use strict";
+		return Piece.toEstablish[meth].call(this, sup);
+	}
+
 
 /* Prototype */
 
-	Piece.prototype.calculate = function () {
+	Piece.prototype.toCalculate = function () {
 		"use strict";
 
-		var infoGroup, ratioW, ratioH, ratio, infoSVG;
+		var harvest = this.$cloneGroup.offset(),
+			left = harvest.left - parametres.captionLargeur * 2 / 3,
+			iHeight = this.$message.innerHeight(),
+			top = harvest.top - iHeight - 6,
+			infoGroup, infoSVG, left, top;
+		left = Math.round(left > 0 ? left : 0);
+		top =  Math.round(top > 0 ? top : 0);
 
 		this.$dom.css({
-			"width": game.width,
-			"height": game.height
-		});
-
-		infoGroup = this.SVGgroup.getBoundingClientRect();
-
-		ratioW = game.displayW / infoGroup.width;
-		ratioH = game.displayH / infoGroup.height;
-
-		ratio = ratioH < ratioW ? ratioH : ratioW;
-
-		this.$dom.css({
-			"width": Math.round(game.width * ratio),
-			"height": Math.round(game.height * ratio)
+			"width": game.gWidth,
+			"height": game.gHeight
 		});
 
 		infoSVG = this.$dom.offset();
 		infoGroup = this.SVGgroup.getBoundingClientRect();
 
 		this.$figure.css({
-			"width": Math.round(infoGroup.width),
-			"height": Math.round(infoGroup.height)
+			"width": Math.round(infoGroup.width + 6),
+			"height": Math.round(infoGroup.height + 6)
 		});
 		this.$dom.css({
-			"margin": - Math.round(infoGroup.y - infoSVG.top) + "px 0 0 -" + Math.round(infoGroup.x - infoSVG.left) + "px"
+			"margin": - Math.round(-3 + infoGroup.top - infoSVG.top) + "px 0 0 -" + Math.round(-3 + infoGroup.left - infoSVG.left) + "px"
+		});
+		this.$message.data({
+			"top": top,
+			"height": iHeight
+		})
+		.css({
+			"left": left,
+			"top": top
 		});
 
 		this.$walking.removeClass("resizing");
+	}
+
+	Piece.prototype.intoCaption = function () {
+		"use strict";
+		this.$message.text(this.pronominal);
 	}
 
 	Piece.prototype.manageDrag = function (state) {
@@ -344,41 +482,123 @@ commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover e
 		return this;
 	}
 
-	Piece.prototype.place = function () {
+	Piece.prototype.toPlace = function () {
 		"use strict";
 
 		game.drag = null;
 
-		this.$figure.removeClass("drag")
-		.css({
-			"z-index": ++parametres.index //last dropped on the "top" of pieces
-		});
+		this.$figure.removeClass("drag");
 
 		this.queue(game.delays[0]);
 	}
 
-	Piece.prototype.finish = function () {
+	Piece.prototype.toFinish = function () {
 		"use strict";
-		var $f = this.$figure;
+		var $f = this.$figure,
+			stall;
 		this.queue = commonLAg.doNothing;
+
 		Piece.appreciate("ok");
+
 		$f.css(commonLAg.transition(game.delays[0], "opacity"))
 		.addClass("dragDropped");
-		setTimeout(function () {
-			"use strict";
-			$f.css("z-index", -1);
-		}, game.delays[0]);
+
 		this.$cloneGroup.attr("class", "g");
+
 		this.$cloneImage.css(commonLAg.transition(game.delays[0], "opacity"))
 		.attr("class", "image");
+
+		$message.text(parametres.messages[this.infos])
+		.addClass("over");
+
+		stall = [parseInt(this.$message.data("top"), 10), parseInt(this.$message.data("height"), 10)];
+
+		this.$message.text(parametres.messages.dropConfirmation + this.pronominal)
+		.css({
+			"top": stall[0] + stall[1] - this.$message.innerHeight()
+		})
+		.addClass("over");
+
+		$(".dragDropped").length == game.total
+		&& setTimeout(Piece.toZoom, game.delays[3]);
 	}
 
-	Piece.prototype.restart = function () {
+	Piece.prototype.toRestart = function () {
 		"use strict";
+		var zone = pieces[$stage.data("aera")],
+			stall;
 		this.queue = commonLAg.doNothing;
+
 		Piece.appreciate("nok");
-		this.$figure.removeAttr("style");
+
+		this.$figure.addClass("bad-drop");
+
+		zone.$cloneGroup.attr("class", "error");
+
+		stall = [parseInt(zone.$message.data("top"), 10), parseInt(zone.$message.data("height"), 10)];
+
+		zone.$message.text(parametres.messages.dropErreur + pieces[Number($stage.data("drag"))].pronominal)
+		.css({
+			"top": stall[0] + stall[1] - zone.$message.innerHeight()
+		})
+		.addClass("over bad-drop");
 	}
+
+
+
+
+
+
+
+//Polyfills ----------------------------------------------------------------------------
+	/*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas, David Knight. Dual MIT/BSD license */
+
+	window.matchMedia || (window.matchMedia = function() {
+		"use strict";
+
+		// For browsers that support matchMedium api such as IE 9 and webkit
+		var styleMedia = (window.styleMedia || window.media);
+
+		// For those that don't support matchMedium
+		if (!styleMedia) {
+			var style	   = document.createElement('style'),
+				script	  = document.getElementsByTagName('script')[0],
+				info		= null;
+
+			style.type  = 'text/css';
+			style.id	= 'matchmediajs-test';
+
+			script.parentNode.insertBefore(style, script);
+
+			// 'style.currentStyle' is used by IE <= 8 and 'window.getComputedStyle' for all other browsers
+			info = ('getComputedStyle' in window) && window.getComputedStyle(style, null) || style.currentStyle;
+
+			styleMedia = {
+				matchMedium: function(media) {
+					var text = '@media ' + media + '{ #matchmediajs-test { width: 1px; } }';
+
+					// 'style.styleSheet' is used by IE <= 8 and 'style.textContent' for all other browsers
+					if (style.styleSheet) {
+						style.styleSheet.cssText = text;
+					} else {
+						style.textContent = text;
+					}
+
+					// Test if media query is true or false
+					return info.width === '1px';
+				}
+			};
+		}
+
+		return function(media) {
+			return {
+				matches: styleMedia.matchMedium(media || 'all'),
+				media: media || 'all'
+			};
+		};
+	}());
+
+
 
 
 
@@ -391,11 +611,11 @@ commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover e
 		$w.on({
 			resize: function () {
 				"use strict";
+				$game.addClass("resize");
 				$walking.addClass("resizing");
 				clearTimeout(game.timt);
-				game.timt = setTimeout(Piece.calculate, game.delays[2]);
+				game.timt = setTimeout(Piece.toCalculate, game.delays[2]);
 		}	});
-
 
 		$piecesGroups.on({
 			mouseover: function () {
@@ -438,10 +658,7 @@ commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover e
 				if (game.drag == null || cl == "mig" || cl == "g")
 					return;
 				clearTimeout($t.data("timet"));
-				filigree =
-					game.drag == $t.data("instance") ? pieces[game.drag].$cloneImage
-					: game.drag ==  $t.data("duel") ? pieces[pieces[game.drag].duel[0]].$cloneDuel
-					: false;
+				filigree = game.drag == $t.data("instance") ? pieces[game.drag].$cloneImage : false;
 				filigree
 				&& filigree.attr("class", "mimage")
 				&& $t.attr("class", "mig")
@@ -475,7 +692,7 @@ commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover e
 
 
 //Instancie puzzle ----------------------------------------------------------------------------
-	function instancie (e) { //can not be called a second time without Piece.establish cf. delete Piece.establish
+	function instancie (e) { //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
 		"use strict";
 
 		$pieces.each(function (ind) {
@@ -483,11 +700,15 @@ commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover e
 			pieces.push(new Piece(ind));
 		});
 
-		Piece.calculate();
-		delete Piece.establish;
+		$message = $("<figcaption>", {
+			"id": "envInfo",
+			"class": "caption-info env-info"
+		}).appendTo($stage);
+
+		Piece.toCalculate();
+		delete Piece.toEstablish;
 
 		$targetGroups = $stage.find("g");
-
 
 //Drag and drop events
 		instancie.uiEvents
@@ -501,6 +722,7 @@ commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover e
 				disabled: true,
 				containment: $game,
 				start: Piece.toBrand,
+	/* final definition of toBrandTactile() is asynchronous */
 				drag: Piece.toBrandTactileIntro, //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 				stop: Piece.toFix
 			});
@@ -519,8 +741,28 @@ commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover e
 		$drawer.removeClass("establishing");
 
 		e && instancie.classicalEvents();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		Piece.toZoom();
 	}
-	instancie(true); //can not be called a second time without Piece.establish cf. delete Piece.establish
+	instancie(true); //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
 
 
 
