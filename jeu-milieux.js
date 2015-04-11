@@ -10,11 +10,12 @@
 ;var parametres = {
 
 	messages: {
-		dropConfirmation: "OK bravo pour ",
-		dropErreur: "NOK ailleurs ",
-		engoulevent: "engoul Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-		fauvette: "fauvette Lorem ipsum dolor sit amet, consectetur adipisicing elit",
-		gdduc: "gd duc Lorem ipsum dolor sit amet, consectetur adipisicing elit" 
+		dropConfirmation: "BRAVO",
+		dropErreur: "FAUX",
+		generique: " ne vit pas dans ce milieu.",
+		engoulevent: " vit dans les garrigues et les bois clairsemés.",
+		fauvette: " aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
+		gdduc: " niche dans les milieux rocheux." 
 	},
 
 	largeur: 1372,
@@ -54,6 +55,8 @@
 		$game = $(".natenv"),
 		$stage = $("#figure"),
 		$puzzle = $("#figure svg"),
+		$puzzleStage = $("#stage"),
+		svgRef = $puzzleStage.find("image:eq(0)").get(0),
 		$targetGroups,
 		$drawer = $("#figures"),
 		$walking = $(".walking"),
@@ -67,10 +70,10 @@
 		game = {
 			total: $drawer.html().split("</figure>").length - 1,
 			ratio: parametres.largeur / parametres.hauteur,
-			pos: $puzzle.offset(),
 			delays: [],
 			// gWidth: null,
 			// gHeight: null,
+			// gPos: null,
 			// displayW: null,
 			// displayH: null
 		}
@@ -137,8 +140,9 @@
 
 		this.$dom = $pieces.eq(ind);
 		this.infos = this.$dom.attr("id");
-		this.$message = this.toEstablish("intoCaption");
-		// this.pronominal = infos.Pronominal;
+		this.$message = this.toEstablish("forCaption");
+		// this.nominal = window.oiseaux[this.infos].Nom;
+		// this.pronominal = window.oiseaux[this.infos].Pronominal;
 		this.intoCaption();
 
 		this.SVGgroup = this.$dom.find("g")
@@ -203,10 +207,11 @@
 
 	Piece.toCalculate = function () {
 		"use strict";
-		var infoDim = $("#figure image:eq(0)").get(0).getBoundingClientRect(); //cf. svg width() on Google Chrome
+		var infoDim = svgRef.getBoundingClientRect(); //cf. svg width() on Google Chrome
 		game.gWidth = infoDim.width;
 		game.gHeight = infoDim.height;
-		$puzzle.css({ //Google Chrome
+		commonLAg.webkit
+		&& $puzzle.css({ //Google Chrome
 			"width": infoDim.width,
 			"height": infoDim.height
 		});
@@ -245,6 +250,18 @@
 
 		clearTimeout(piece.tmt);
 		game.drag = instance;
+		piece.$walking.addClass("empty");
+
+		$(".dragDropped .bird-info:not(.over):not(.repositionned)").each(function () { //add later :) responsive for figcaption
+			"use strict";
+			var $t = $(this),
+				tHeight1 = $t.data("height"),
+				tHeight2 = $t.innerHeight(),
+				tTop = parseInt($t.css("top"), 10);
+			$t.css("top", tTop + tHeight1 - tHeight2)
+			.addClass("repositionned");
+		});
+
 		return $t.addClass("drag dragged")
 		.css({
 			"z-index": ++parametres.index //last dropped on the "top" of pieces
@@ -313,85 +330,98 @@
 
 	Piece.toZoom = function () {
 		"use strict";
+		var magnusGlassRadial = parametres.hauteur / 10,
+			$zoom = $("#zoom"),
+			displayRatio, $round, $rounds;
 
-		return;
-		var $hasPorthole = $("#hasPorthole");
+		$w.on({
+			resize: function () {
+				"use strict";
+				displayRatio = parametres.hauteur / game.gHeight;
+		}	})
+		.trigger("resize");
+
 		Piece.toErase();
+		$game.addClass("zoom");
+		$(".bird-info").css("display", "none"); //to do: better ?
+
+		$round = $puzzleStage.clone()
+		.attr("id", "round")
+		.attr("class", "round")
+		.attr("transform", "matrix(2 0 0 2 0 0)")
+		.prependTo($zoom);
+
+		$round.find("g").remove();
+		$rounds = $round.find("image")
 
 		$puzzle.on({
 			mousemove: function (ze) {
 				"use strict";
-				$hasPorthole.position({
-					of: ze
-				});
-			}
-		});
-		
+				var x = Math.round((ze.pageX - game.gPos.left) * displayRatio - magnusGlassRadial),
+					y = Math.round((ze.pageY - game.gPos.top) * displayRatio - magnusGlassRadial);
+				$zoom.attr("transform", "translate(" + x + "," + y + ")");
+// 				$round.attr("style", "left: " + (- 2 * x - magnusGlassRadial) + "; top: " + (- 2 * y - magnusGlassRadial))
+// return;
+// 				$round.attr("x", - 2 * x - magnusGlassRadial);
+// 				$round.attr("y", - 2 * y - magnusGlassRadial);
+// return;
+				$rounds.attr("x", - 2 * x - magnusGlassRadial);
+				$rounds.attr("y", - 2 * y - magnusGlassRadial);
 
-return;
-
-$puzzle.on({
-	mouseover: function (ze) {
-		"use strict";
-		$("#hasPorthole").position({
-			of: ze
-		});
-	}
-});
-
-
-
-
-		$game.addClass("zoom");
-
-return;
-
-		$puzzle.wrap("<div class='small'></div>");
-		$(".small").clone()
-		.attr("class", "large")
-		.appendTo($stage);
-		$stage.anythingZoomer()
-
-
-		var param = {
-			smallArea	: "small",
-			clone		: true 
-		};
-
+	}	});	}
 
 /*
-$("#zoom").anythingZoomer({ 
-  // content areas 
-  smallArea   : 'small',    // class of small content area; the element with this class name must be inside of the wrapper 
-  largeArea   : 'large',    // class of large content area; this class must exist inside of the wrapper. When the clone option is true, it will add this automatically 
-  clone       : false,      // Make a clone of the small content area, use css to modify the style 
- 
-  // appearance 
-  overlay     : false,      // set to true to apply overlay class "az-overlay"; false to not apply it 
-  speed       : 100,        // fade animation speed (in milliseconds) 
-  edge        : 30,         // How far outside the wrapped edges the mouse can go; previously called "expansionSize" 
-  offsetX     : 0,          // adjust the horizontal position of the large content inside the zoom window as desired 
-  offsetY     : 0,          // adjust the vertical position of the large content inside the zoom window as desired 
- 
-  // functionality 
-  switchEvent : 'dblclick', // event that allows toggling between small and large elements - default is double click 
-  delay       : 0,          // time to delay before revealing the zoom window 
- 
-  // edit mode 
-  edit        : false,      // add x,y coordinates into zoom window to make it easier to find coordinates 
- 
-  // callbacks 
-  initialzied : function(event, zoomer){}, // AnythingZoomer done initializing 
-  zoom        : function(event, zoomer){}, // zoom window visible 
-  unzoom      : function(event, zoomer){}  // zoom window hidden 
- 
-});
+
+	var svgLargeurAbs = 400,
+		rayonLoupe = 40,
+		zoom = document.getElementById("zoom"),
+		rond = document.getElementById("rond"),
+		svgRef = document.getElementById("ref"),
+		svgCoord, svgRatio;
+
+	function toMeasure() {
+		"use strict";
+		svgCoord = svgRef.getBoundingClientRect();
+		svgRatio = svgLargeurAbs / svgCoord.width;
+	}
+	$(window).on({
+		resize: toMeasure
+	})
+	.trigger("resize");
+
+	$("svg").on({
+		mousemove: function (ze) {
+			"use strict";
+			var x = (ze.clientX - svgCoord.left) * svgRatio - rayonLoupe,
+				y = (ze.clientY - svgCoord.top) * svgRatio - rayonLoupe;
+
+			zoom.setAttribute("transform", "translate(" + x + "," + y + ")");
+			rond.setAttribute("x", - 2 * x - rayonLoupe);
+			rond.setAttribute("y", - 2 * y - rayonLoupe);
+	}	});
+
+
+
+
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+			viewBox="0 0 1372 1200">
+			<defs>
+				<clipPath id="magnusGlass">
+					<circle cx="120" cy="120" r="120">
+				</clipPath>
+			</defs>
+			<g class="stage" id="stage">
+				<image xlink:href="img/jeu-milieux1/milieu1.jpg" width="100%" height="100%" class="levels" />
+			</g>
+			<g id="zoom" clip-path="url(#magnusGlass)" clip-rule="evenodd" transform="translate(-120,-120)">
+				<circle cx="120" cy="120" r="120" /> 
+			</g>
+		</svg>
+
 */
 
 
 
-
-	}
 
 
 
@@ -403,14 +433,16 @@ $("#zoom").anythingZoomer({
 		"use strict";
 		return this.$dom.find(tag)
 			.clone()
-			.appendTo($puzzle)
+			.appendTo($puzzleStage)
 	}
-	Piece.toEstablish.intoCaption = function () {
+	Piece.toEstablish.forCaption = function () {
 		"use strict";
 		var infos = window.oiseaux[this.infos];
-		this.$dom.attr("title", infos.Nom);
-		this.$dom.attr("alt", infos.Nom);
-		this.pronominal = infos.Pronominal;
+		this.nominal = infos.Nom;
+		this.pronominal = infos.Pronominal.substring(0,1).toUpperCase() + infos.Pronominal.substring(1);
+		this.$walking.attr("data-infos", this.nominal);
+		this.$dom.attr("title", this.nominal);
+		this.$dom.attr("alt", this.nominal);
 		return $("<figcaption>", {
 			"class": "caption-info bird-info"
 		}).appendTo(this.$figure);
@@ -430,7 +462,7 @@ $("#zoom").anythingZoomer({
 			left = harvest.left - parametres.captionLargeur * 2 / 3,
 			iHeight = this.$message.innerHeight(),
 			top = harvest.top - iHeight - 6,
-			infoGroup, infoSVG, left, top;
+			infoGroup, infoSVG;
 		left = Math.round(left > 0 ? left : 0);
 		top =  Math.round(top > 0 ? top : 0);
 
@@ -449,10 +481,7 @@ $("#zoom").anythingZoomer({
 		this.$dom.css({
 			"margin": - Math.round(-3 + infoGroup.top - infoSVG.top) + "px 0 0 -" + Math.round(-3 + infoGroup.left - infoSVG.left) + "px"
 		});
-		this.$message.data({
-			"top": top,
-			"height": iHeight
-		})
+		this.$message.data("height", iHeight)
 		.css({
 			"left": left,
 			"top": top
@@ -463,7 +492,7 @@ $("#zoom").anythingZoomer({
 
 	Piece.prototype.intoCaption = function () {
 		"use strict";
-		this.$message.text(this.pronominal);
+		this.$message.text(this.nominal);
 	}
 
 	Piece.prototype.manageDrag = function (state) {
@@ -494,8 +523,7 @@ $("#zoom").anythingZoomer({
 
 	Piece.prototype.toFinish = function () {
 		"use strict";
-		var $f = this.$figure,
-			stall;
+		var $f = this.$figure;
 		this.queue = commonLAg.doNothing;
 
 		Piece.appreciate("ok");
@@ -508,15 +536,10 @@ $("#zoom").anythingZoomer({
 		this.$cloneImage.css(commonLAg.transition(game.delays[0], "opacity"))
 		.attr("class", "image");
 
-		$message.text(parametres.messages[this.infos])
+		$message.text(this.pronominal + parametres.messages[this.infos])
 		.addClass("over");
 
-		stall = [parseInt(this.$message.data("top"), 10), parseInt(this.$message.data("height"), 10)];
-
-		this.$message.text(parametres.messages.dropConfirmation + this.pronominal)
-		.css({
-			"top": stall[0] + stall[1] - this.$message.innerHeight()
-		})
+		this.$message.text(parametres.messages.dropConfirmation)
 		.addClass("over");
 
 		$(".dragDropped").length == game.total
@@ -525,8 +548,8 @@ $("#zoom").anythingZoomer({
 
 	Piece.prototype.toRestart = function () {
 		"use strict";
-		var zone = pieces[$stage.data("aera")],
-			stall;
+		var zone = pieces[$stage.data("aera")];
+
 		this.queue = commonLAg.doNothing;
 
 		Piece.appreciate("nok");
@@ -535,12 +558,10 @@ $("#zoom").anythingZoomer({
 
 		zone.$cloneGroup.attr("class", "error");
 
-		stall = [parseInt(zone.$message.data("top"), 10), parseInt(zone.$message.data("height"), 10)];
+		$message.text(pieces[Number($stage.data("drag"))].pronominal + parametres.messages.generique)
+		.addClass("over");
 
-		zone.$message.text(parametres.messages.dropErreur + pieces[Number($stage.data("drag"))].pronominal)
-		.css({
-			"top": stall[0] + stall[1] - zone.$message.innerHeight()
-		})
+		zone.$message.text(parametres.messages.dropErreur)
 		.addClass("over bad-drop");
 	}
 
@@ -611,6 +632,8 @@ $("#zoom").anythingZoomer({
 		$w.on({
 			resize: function () {
 				"use strict";
+				commonLAg.webkit
+				&& $puzzle.removeAttr("style");
 				$game.addClass("resize");
 				$walking.addClass("resizing");
 				clearTimeout(game.timt);
@@ -741,26 +764,6 @@ $("#zoom").anythingZoomer({
 		$drawer.removeClass("establishing");
 
 		e && instancie.classicalEvents();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		Piece.toZoom();
 	}
 	instancie(true); //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
 
