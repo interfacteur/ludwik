@@ -12,10 +12,12 @@
 	messages: {
 		dropConfirmation: "BRAVO",
 		dropErreur: "FAUX",
-		generique: " ne vit pas dans ce milieu.",
+		generique: " ne niche pas dans ce milieu.",
 		engoulevent: " vit dans les garrigues et les bois clairsemés.",
 		fauvette: " aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
-		gdduc: " niche dans les milieux rocheux." 
+		gdduc: " niche dans les milieux rocheux.",
+		alpinist: "Il est important d'aménager les pratiques de loisirs en fonction des besoin de la nature.\
+			Les couloirs d'escalade doivent être créées loin des sites de nidification des rapaces par exemple."
 	},
 
 	largeur: 1372,
@@ -73,6 +75,7 @@
 			delays: [],
 			// gWidth: null,
 			// gHeight: null,
+			// displayRatio: null,
 			// gPos: null,
 			// displayW: null,
 			// displayH: null
@@ -210,18 +213,15 @@
 		var infoDim = svgRef.getBoundingClientRect(); //cf. svg width() on Google Chrome
 		game.gWidth = infoDim.width;
 		game.gHeight = infoDim.height;
-		commonLAg.webkit
-		&& $puzzle.css({ //Google Chrome
+		game.displayRatio = parametres.hauteur / game.gHeight;
+		$puzzle.css({ //Google Chrome and also Firefox 30
 			"width": infoDim.width,
 			"height": infoDim.height
 		});
-		game.gPos = {
-			left: infoDim.left,
-			top: infoDim.top
-		};
+		game.gPos = $puzzle.offset();
 		$message.css({
-			"left": infoDim.left,
-			"top": infoDim.top
+			"left": game.gPos.left,
+			"top": game.gPos.top
 		});
 		$game.removeClass("resize");
 		Piece.toReset();
@@ -332,93 +332,59 @@
 		"use strict";
 		var magnusGlassRadial = parametres.hauteur / 10,
 			$zoom = $("#zoom"),
-			displayRatio, $round, $rounds;
-
-		$w.on({
-			resize: function () {
-				"use strict";
-				displayRatio = parametres.hauteur / game.gHeight;
-		}	})
-		.trigger("resize");
+			$threats = $("#threats circle"),
+			$bolges;
 
 		Piece.toErase();
+		commonLAg.msieUp11
+		&& $zoom.attr("transform", "translate(1132, 0)");
 		$game.addClass("zoom");
-		$(".bird-info").css("display", "none"); //to do: better ?
 
-		$round = $puzzleStage.clone()
-		.attr("id", "round")
-		.attr("class", "round")
-		.attr("transform", "matrix(2 0 0 2 0 0)")
-		.prependTo($zoom);
+		$bolges = $puzzleStage.clone()
+		.attr({
+			"id": "bolge",
+			"class": "bolge",
+			"transform": "matrix(2 0 0 2 0 0)"
+		})
+		.find("g")
+		.remove()
+		.end()
+		.prependTo($zoom)
+		.find("image")
+		.attr("style", "");
 
-		$round.find("g").remove();
-		$rounds = $round.find("image")
-
+		$puzzle.movable = 
+			commonLAg.msieUp11 ? commonLAg.doNothing //but ok with my prototype of magnify glass
+			: function (x, y) {
+				"use strict";
+				$zoom.attr("transform", "translate("
+					+ Math.round(x - magnusGlassRadial)
+					+ ","
+					+ Math.round(y - magnusGlassRadial)
+					+ ")");
+			}
 		$puzzle.on({
 			mousemove: function (ze) {
 				"use strict";
-				var x = Math.round((ze.pageX - game.gPos.left) * displayRatio - magnusGlassRadial),
-					y = Math.round((ze.pageY - game.gPos.top) * displayRatio - magnusGlassRadial);
-				$zoom.attr("transform", "translate(" + x + "," + y + ")");
-// 				$round.attr("style", "left: " + (- 2 * x - magnusGlassRadial) + "; top: " + (- 2 * y - magnusGlassRadial))
-// return;
-// 				$round.attr("x", - 2 * x - magnusGlassRadial);
-// 				$round.attr("y", - 2 * y - magnusGlassRadial);
-// return;
-				$rounds.attr("x", - 2 * x - magnusGlassRadial);
-				$rounds.attr("y", - 2 * y - magnusGlassRadial);
+				var x = (ze.pageX - game.gPos.left) * game.displayRatio,
+					y = (ze.pageY - game.gPos.top) * game.displayRatio;
+				$puzzle.movable(x, y);
+				$bolges.attr({
+					"x": Math.round(- x + magnusGlassRadial / game.displayRatio),
+					"y": Math.round(- y + magnusGlassRadial / game.displayRatio)
+		});	}	});
 
+		$threats.on({
+			mousemove: function (ze) {
+				"use strict";
+				$message.html(parametres.messages[$(this).attr("id")])
+				.addClass("over para-drop");
+			},
+			mouseout: function (ze) {
+				"use strict";
+				$message.html("")
+				.removeClass("over para-drop");
 	}	});	}
-
-/*
-
-	var svgLargeurAbs = 400,
-		rayonLoupe = 40,
-		zoom = document.getElementById("zoom"),
-		rond = document.getElementById("rond"),
-		svgRef = document.getElementById("ref"),
-		svgCoord, svgRatio;
-
-	function toMeasure() {
-		"use strict";
-		svgCoord = svgRef.getBoundingClientRect();
-		svgRatio = svgLargeurAbs / svgCoord.width;
-	}
-	$(window).on({
-		resize: toMeasure
-	})
-	.trigger("resize");
-
-	$("svg").on({
-		mousemove: function (ze) {
-			"use strict";
-			var x = (ze.clientX - svgCoord.left) * svgRatio - rayonLoupe,
-				y = (ze.clientY - svgCoord.top) * svgRatio - rayonLoupe;
-
-			zoom.setAttribute("transform", "translate(" + x + "," + y + ")");
-			rond.setAttribute("x", - 2 * x - rayonLoupe);
-			rond.setAttribute("y", - 2 * y - rayonLoupe);
-	}	});
-
-
-
-
-		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-			viewBox="0 0 1372 1200">
-			<defs>
-				<clipPath id="magnusGlass">
-					<circle cx="120" cy="120" r="120">
-				</clipPath>
-			</defs>
-			<g class="stage" id="stage">
-				<image xlink:href="img/jeu-milieux1/milieu1.jpg" width="100%" height="100%" class="levels" />
-			</g>
-			<g id="zoom" clip-path="url(#magnusGlass)" clip-rule="evenodd" transform="translate(-120,-120)">
-				<circle cx="120" cy="120" r="120" /> 
-			</g>
-		</svg>
-
-*/
 
 
 
@@ -632,8 +598,7 @@
 		$w.on({
 			resize: function () {
 				"use strict";
-				commonLAg.webkit
-				&& $puzzle.removeAttr("style");
+				$puzzle.removeAttr("style");
 				$game.addClass("resize");
 				$walking.addClass("resizing");
 				clearTimeout(game.timt);
