@@ -16,9 +16,16 @@
 		engoulevent: " vit dans les garrigues et les bois clairsemés.",
 		fauvette: " aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
 		gdduc: " niche dans les milieux rocheux.",
-		alpinist: "Il est important d'aménager les pratiques de loisirs en fonction des besoin de la nature.\
-			Les couloirs d'escalade doivent être créées loin des sites de nidification des rapaces par exemple."
+		alpinist: "Il est important d'aménager les pratiques de loisirs en fonction des besoins de la nature.\
+			Les couloirs d'escalade doivent être créés loin des sites de nidification des rapaces par exemple.",
+		
+
+		pseudo1: "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+		pseudo2: "Velit earum enim, natus repellendus. Porro quis tempore a tenetur rem nam ipsum aperiam"
+
 	},
+
+	collection: window.oiseaux, //cf. jeu-fiches.oiseaux.js
 
 	largeur: 1372,
 	hauteur: 1200,
@@ -40,7 +47,7 @@
 
 	nbreZones: "zones"
 }
-
+delete window.oiseaux;
 
 
 
@@ -49,6 +56,11 @@
 	
 	var $w = $(window),
 		$b = $("body"),
+
+		$zoom = $("#zoom"),
+		$threats = $(".threat"),
+		$thrts = $("#okThreats"),
+		$bolges,
 
 		pieces = [],
 
@@ -70,9 +82,11 @@
 		$message, //= $("#env-info"),
 
 		game = {
+			threats: $threats.length,
 			total: $drawer.html().split("</figure>").length - 1,
 			ratio: parametres.largeur / parametres.hauteur,
 			delays: [],
+			magnusGlassRadial: parametres.hauteur / 10
 			// gWidth: null,
 			// gHeight: null,
 			// displayRatio: null,
@@ -144,8 +158,8 @@
 		this.$dom = $pieces.eq(ind);
 		this.infos = this.$dom.attr("id");
 		this.$message = this.toEstablish("forCaption");
-		// this.nominal = window.oiseaux[this.infos].Nom;
-		// this.pronominal = window.oiseaux[this.infos].Pronominal;
+		// this.nominal = parametres.collection[this.infos].Nom;
+		// this.pronominal = parametres.collection[this.infos].Pronominal;
 		this.intoCaption();
 
 		this.SVGgroup = this.$dom.find("g")
@@ -159,6 +173,36 @@
 
 
 /* Class methods */
+
+	Piece.toZoom = function () { //later: zoom in game 1 and drag and drop in game 2 (starting was the opposite)
+		"use strict";
+
+		$game.addClass("zoom");
+
+		$("#totalThreats").text(game.threats);
+
+		commonLAg.msieUp11
+		&& $zoom.attr("transform", "translate(1132, 0)");
+
+		$bolges = $puzzleStage.clone()
+		.attr({
+			"id": "bolge",
+			"class": "bolge",
+			"transform": "matrix(2 0 0 2 0 0)"
+		})
+		.prependTo($zoom)
+		.find("image");
+
+		$puzzle.movable = 
+			commonLAg.msieUp11 ? commonLAg.doNothing //but ok with my prototype of magnify glass
+			: function (x, y) {
+				"use strict";
+				$zoom.attr("transform", "translate("
+					+ Math.round(x - game.magnusGlassRadial)
+					+ ","
+					+ Math.round(y - game.magnusGlassRadial)
+					+ ")");
+	}	}
 
 	Piece.intoCaption = function () { //content of messages (in <figcaption)
 		"use strict";
@@ -180,6 +224,7 @@
 		var landscape = window.matchMedia("(min-aspect-ratio: 1/1)").matches,
 			w, h, W, H;
 		$walking.add($figures).add($pieces).removeAttr("style");
+		$(".empty:not(:has(.dragDropped))").removeClass("empty");
 		Piece.toErase();
 		w = $wlkg.width();
 		W = w / game.ratio;
@@ -328,64 +373,6 @@
 				pieces[indDrag].queue = Piece.prototype.toRestart;
 	}	}
 
-	Piece.toZoom = function () {
-		"use strict";
-		var magnusGlassRadial = parametres.hauteur / 10,
-			$zoom = $("#zoom"),
-			$threats = $("#threats circle"),
-			$bolges;
-
-		Piece.toErase();
-		commonLAg.msieUp11
-		&& $zoom.attr("transform", "translate(1132, 0)");
-		$game.addClass("zoom");
-
-		$bolges = $puzzleStage.clone()
-		.attr({
-			"id": "bolge",
-			"class": "bolge",
-			"transform": "matrix(2 0 0 2 0 0)"
-		})
-		.find("g")
-		.remove()
-		.end()
-		.prependTo($zoom)
-		.find("image")
-		.attr("style", "");
-
-		$puzzle.movable = 
-			commonLAg.msieUp11 ? commonLAg.doNothing //but ok with my prototype of magnify glass
-			: function (x, y) {
-				"use strict";
-				$zoom.attr("transform", "translate("
-					+ Math.round(x - magnusGlassRadial)
-					+ ","
-					+ Math.round(y - magnusGlassRadial)
-					+ ")");
-			}
-		$puzzle.on({
-			mousemove: function (ze) {
-				"use strict";
-				var x = (ze.pageX - game.gPos.left) * game.displayRatio,
-					y = (ze.pageY - game.gPos.top) * game.displayRatio;
-				$puzzle.movable(x, y);
-				$bolges.attr({
-					"x": Math.round(- x + magnusGlassRadial / game.displayRatio),
-					"y": Math.round(- y + magnusGlassRadial / game.displayRatio)
-		});	}	});
-
-		$threats.on({
-			mousemove: function (ze) {
-				"use strict";
-				$message.html(parametres.messages[$(this).attr("id")])
-				.addClass("over para-drop");
-			},
-			mouseout: function (ze) {
-				"use strict";
-				$message.html("")
-				.removeClass("over para-drop");
-	}	});	}
-
 
 
 
@@ -403,7 +390,7 @@
 	}
 	Piece.toEstablish.forCaption = function () {
 		"use strict";
-		var infos = window.oiseaux[this.infos];
+		var infos = parametres.collection[this.infos];
 		this.nominal = infos.Nom;
 		this.pronominal = infos.Pronominal.substring(0,1).toUpperCase() + infos.Pronominal.substring(1);
 		this.$walking.attr("data-infos", this.nominal);
@@ -507,9 +494,6 @@
 
 		this.$message.text(parametres.messages.dropConfirmation)
 		.addClass("over");
-
-		$(".dragDropped").length == game.total
-		&& setTimeout(Piece.toZoom, game.delays[3]);
 	}
 
 	Piece.prototype.toRestart = function () {
@@ -591,8 +575,8 @@
 
 
 
-//Classical events ----------------------------------------------------------------------------
-	instancie.classicalEvents = function () {
+//Events ----------------------------------------------------------------------------
+	instancie.classicalEvents = function () { //classical events for the interface
 		"use strict";
 
 		$w.on({
@@ -604,6 +588,69 @@
 				clearTimeout(game.timt);
 				game.timt = setTimeout(Piece.toCalculate, game.delays[2]);
 		}	});
+
+		$puzzle.on({
+			mousemove: function (ze) {
+				"use strict";
+				var x = (ze.pageX - game.gPos.left) * game.displayRatio,
+					y = (ze.pageY - game.gPos.top) * game.displayRatio;
+				$puzzle.movable(x, y);
+				$bolges.attr({
+					"x": Math.round(- x + game.magnusGlassRadial / game.displayRatio),
+					"y": Math.round(- y + game.magnusGlassRadial / game.displayRatio)
+		});	}	});
+
+		$threats.on({
+			mousemove: function (ze) {
+				"use strict";
+				var $t = $(this),
+					total = Number($thrts.html());
+
+				! $t.data("already")
+				&& $t.data("already", true)
+				&& $thrts.html(++total)
+				&& (total == game.threats)
+				&& $puzzle.off()
+				&& $threats.off()
+				&& setTimeout(instancie.toPieceUIEvents, game.delays[3]);
+
+				$message.html(parametres.messages[$(this).attr("id")])
+				.addClass("over para-drop");
+			},
+			mouseout: function (ze) {
+				"use strict";
+				$message.html("")
+				.removeClass("over para-drop");
+	}	});	}
+
+	instancie.toPieceUIEvents = function () { //drag and drop events
+		"use strict";
+
+		$game.removeClass("zoom");
+		Piece.toErase();
+
+		$figures.draggable({
+			addClasses: false,
+			cursor: "move",
+			disabled: true,
+			containment: $game,
+			start: Piece.toBrand,
+/* final definition of toBrandTactile() is asynchronous */
+			drag: Piece.toBrandTactileIntro, //jQuery UI Touch Punch neutralizing mouseover event when dragging?
+			stop: Piece.toFix
+		});
+
+		$stage.droppable({
+			addClass: false,
+			tolerance: "pointer",
+			drop: Piece.toCheck
+		});
+
+		instancie.toPieceClassicalEvents();
+	};
+
+	instancie.toPieceClassicalEvents = function () { //classical events for drag and drop elements
+		"use strict";
 
 		$piecesGroups.on({
 			mouseover: function () {
@@ -671,7 +718,11 @@
 					$t.attr("class", "");
 					$t.data("filigree", false);
 				}, game.delays[1]));
-	}	});	}
+		}	});
+
+		$game.addClass("dad");
+	}
+
 
 
 
@@ -680,57 +731,30 @@
 
 
 //Instancie puzzle ----------------------------------------------------------------------------
-	function instancie (e) { //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
+	function instancie () { //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
 		"use strict";
-
-		$pieces.each(function (ind) {
-			"use strict";
-			pieces.push(new Piece(ind));
-		});
 
 		$message = $("<figcaption>", {
 			"id": "envInfo",
 			"class": "caption-info env-info"
 		}).appendTo($stage);
 
+		Piece.toZoom();
+
+		$pieces.each(function (ind) {
+			"use strict";
+			pieces.push(new Piece(ind));
+		});
 		Piece.toCalculate();
 		delete Piece.toEstablish;
-
-		$targetGroups = $stage.find("g");
-
-//Drag and drop events
-		instancie.uiEvents
-		&& instancie.uiEvents()
-		|| (instancie.uiEvents = (function uie () {
-			"use strict";
-
-			$figures.draggable({
-				addClasses: false,
-				cursor: "move",
-				disabled: true,
-				containment: $game,
-				start: Piece.toBrand,
-	/* final definition of toBrandTactile() is asynchronous */
-				drag: Piece.toBrandTactileIntro, //jQuery UI Touch Punch neutralizing mouseover event when dragging?
-				stop: Piece.toFix
-			});
-
-			$stage.droppable({
-				addClass: false,
-				tolerance: "pointer",
-				drop: Piece.toCheck
-			});
-
-			return uie;
-		}) ());
-
+		$targetGroups = $puzzleStage.find("g");
 		$stage.data("aera", -1);
 
 		$drawer.removeClass("establishing");
 
-		e && instancie.classicalEvents();
+		instancie.classicalEvents();
 	}
-	instancie(true); //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
+	instancie();
 
 
 

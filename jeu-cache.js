@@ -41,6 +41,7 @@ var parametres = {
 		if (pI.ready !== true)
 			return setTimeout(nt, parametres.delai1);
 		$LAgTitle.html(LAgTitle + " (" + pI.currnt + "/" + pI.total + ")");
+		toSlide.hlink();
 	})();
 
 
@@ -131,12 +132,20 @@ var parametres = {
 				pI.playable();
 				pI.preload(); //preload main picture for previous and next view
 				location.hash = commonLAg.vue + pic;
+				toSlide.hlink();
 		}	}).get(0).complete
 		&& pI.$cargo.trigger("load");
 	};
+	toSlide.hlink = function () { //added later
+		"use strict";
+		$slidePrev.attr("href", "#" + commonLAg.vue + linkup(-1));
+		$slideNext.attr("href", "#" + commonLAg.vue + linkup(1));
+	}
 	$slidePrev.on({ //link to previous view
 		click: function (ze, next) {
 			"use strict";
+			if (ze.ctrlKey || ze.shiftKey || ze.metaKey || ze.which == 2)
+				return;
 			ze.preventDefault();
 			if (pI.ready !== true)
 				return;
@@ -145,6 +154,8 @@ var parametres = {
 	$slideNext.on({ //link to next view
 		click: function (ze) {
 			"use strict";
+			if (ze.ctrlKey || ze.shiftKey || ze.metaKey || ze.which == 2)
+				return;
 			ze.preventDefault();
 			$slidePrev.trigger("click", [true]);
 	}	});

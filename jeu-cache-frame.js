@@ -16,13 +16,15 @@
 
 	accessons: "audio/chants/",
 
+	collection: window.oiseaux, //cf. jeu-fiches.oiseaux.js
+
 	pictureClear: 3,
 
 	t: ["* ", "<br>(", ")"],
 
 	re: [/path/i]
 }
-
+delete window.oiseaux;
 
 
 //COMING AFTER jeu-cache.js
@@ -166,9 +168,9 @@ $(function annm () {
 			&& commonLAg.sounds[active].turnon()
 			&& $caption.html(
 				parametres.t[0]
-				+ oiseaux[active].Nom
+				+ parametres.collection[active].Nom
 				+ parametres.t[1]
-				+ oiseaux[active].Groupe
+				+ parametres.collection[active].Groupe
 				+ parametres.t[2]
 			)
 			.addClass("active")	)

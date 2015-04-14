@@ -44,7 +44,7 @@
 	re: [/(src=")([^"]+)(" data-fiche=")([^"]+)(")/gi]
 		// var $li = code.replace(/\r|\n|\t/g,"").match(/<li.*?>.+?<\/li>/)[0];
 }
-delete window.oiseaux; //to do: check "ramasse-miettes"
+delete window.oiseaux;
 
 
 
@@ -808,30 +808,38 @@ Les setTimeout ? les événements ????
 					].join("");
 	})	});	}	});
 
-//Link to play with other birds
-	$slidePrev.on({
-		click: function (ze) {
-			ze.preventDefault();
-			"use strict";
-			parametres.serie > 1
-			&& --parametres.serie
-			|| (parametres.serie = games.length);
-			toSlide();
-	}	});
-	$slideNext.on({
-		click: function (ze) {
-			"use strict";
-			ze.preventDefault();
-			parametres.serie = parametres.serie != parametres.bis ?
-				(parametres.serie < games.length ? ++parametres.serie : 1)
+//Link to play with other birds - works when openning in a new tab or window
+	hlink.treat = function (serie) { //added later
+		"use strict";
+		this.data("to-serie", serie)
+		.attr("href", "#" + commonLAg.vue + serie);
+	}
+	function hlink () {
+		"use strict";
+		hlink.treat.call($slidePrev, parametres.serie > 1 ? parametres.serie - 1 : games.length);
+		hlink.treat.call(
+			$slideNext,
+			parametres.serie != parametres.bis ?
+				(parametres.serie < games.length ? parametres.serie + 1 : 1)
 				:
-				parametres.serie;
-			parametres.bis = false;
+				parametres.serie
+		);
+		parametres.bis = false;
+	}
+	hlink();
+	$(".slide-track").on({
+		click: function (ze) {
+			"use strict";
+			if (ze.ctrlKey || ze.shiftKey || ze.metaKey || ze.which == 2)
+				return;
+			ze.preventDefault();
+			parametres.serie = $(this).data("to-serie");
 			toSlide();
 	}	});
 	function toSlide () {
 		"use strict";
 		var orderL = 0;
+		hlink();
 		return $hipster.organize(function () {
 			"use strict";
 			location.hash = commonLAg.vue + parametres.serie;
