@@ -283,6 +283,7 @@ $(function annm () {
 				toRevealTouch(ore, active);
 			})
 			&& ("touchstart touchmove".split(" ")).forEach(function (val) {
+				"use strict";
 				document.addEventListener(val, commonLAg.stroking, false);
 			});
 

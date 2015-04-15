@@ -986,6 +986,7 @@ first: with several path
 		Piece.calculate();
 		Piece.armor();
 		delete Piece.establish;
+		delete Piece.prototype.establish;
 
 		$targetGroups = $stage.find("g");
 

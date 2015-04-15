@@ -21,8 +21,11 @@
 		
 
 		pseudo1: "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-		pseudo2: "Velit earum enim, natus repellendus. Porro quis tempore a tenetur rem nam ipsum aperiam"
+		pseudo2: "Velit earum enim, natus repellendus. Porro quis tempore a tenetur rem nam ipsum aperiam",
 
+		threat0: "Tu peux maintenant déplacer les oiseaux",
+		threat1: "Menaces identifiées\xA0: ",
+		threat2: "\xA0/\xA0"
 	},
 
 	collection: window.oiseaux, //cf. jeu-fiches.oiseaux.js
@@ -44,8 +47,11 @@
 	delai1: 100,
 	delai2: 250,
 	delai3: 4500,
+	delai4: 3000,
 
-	nbreZones: "zones"
+	nbreZones: "zones",
+
+	re: [/circle/i] /* voir côté HTML les balises dans #threats */
 }
 delete window.oiseaux;
 
@@ -59,7 +65,7 @@ delete window.oiseaux;
 
 		$zoom = $("#zoom"),
 		$threats = $(".threat"),
-		$thrts = $("#okThreats"),
+		threats = document.querySelector(".threat"),
 		$bolges,
 
 		pieces = [],
@@ -82,11 +88,16 @@ delete window.oiseaux;
 		$message, //= $("#env-info"),
 
 		game = {
+			booster: 1,
 			threats: $threats.length,
+			threatsId: "",
+			// $thrts: null,
+			// message: null,
 			total: $drawer.html().split("</figure>").length - 1,
 			ratio: parametres.largeur / parametres.hauteur,
 			delays: [],
 			magnusGlassRadial: parametres.hauteur / 10
+			// touchPoint: null,
 			// gWidth: null,
 			// gHeight: null,
 			// displayRatio: null,
@@ -106,6 +117,11 @@ delete window.oiseaux;
 			p.indexOf("delai") == 0 && game.delays.push(parametres[p]);
 
 		commonLAg.Sound.init(parametres.sons);
+
+		$threats.each(function () {
+			"use strict";
+			game.threatsId += $(this).attr("id");
+		});
 
 /* WEBKIT
 	to call SVG filters from CSS */
@@ -177,9 +193,7 @@ delete window.oiseaux;
 	Piece.toZoom = function () { //later: zoom in game 1 and drag and drop in game 2 (starting was the opposite)
 		"use strict";
 
-		$game.addClass("zoom");
-
-		$("#totalThreats").text(game.threats);
+		$game.addClass("zoom zoom-first");
 
 		commonLAg.msieUp11
 		&& $zoom.attr("transform", "translate(1132, 0)");
@@ -200,7 +214,7 @@ delete window.oiseaux;
 				$zoom.attr("transform", "translate("
 					+ Math.round(x - game.magnusGlassRadial)
 					+ ","
-					+ Math.round(y - game.magnusGlassRadial)
+					+ Math.round(y - game.magnusGlassRadial * game.booster)
 					+ ")");
 	}	}
 
@@ -211,10 +225,12 @@ delete window.oiseaux;
 			val.intoCaption();
 	});	}
 
+	Piece.retroCaption = commonLAg.doNothing; //third modification of storyboard
+
 	Piece.toErase = function () { //cut displaying of messages
 		"use strict";
 		Piece.intoCaption();
-		$message.text("");
+		Piece.retroCaption();
 		$(".error").attr("class", "");
 		$(".over, .bad-drop").removeClass("over bad-drop");
 	}
@@ -282,7 +298,6 @@ delete window.oiseaux;
 	}
 
 
-
 /* Class methods for jQuery UI events manager */
 
 	Piece.toBrand = function (ev, ui) { //drag: start
@@ -320,7 +335,7 @@ delete window.oiseaux;
 	commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 		"use strict";
 
-		$targetGroups //to do: to check on tactile-mouse MSIE
+		$targetGroups //to do: to check on tactile-mouse MSIE ?????
 		&& $targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
 
 		game.$tactileP1 = null;
@@ -379,9 +394,40 @@ delete window.oiseaux;
 
 
 
-/* Provisional prototype */
+/* Provisional class methods and prototype */
 
 	Piece.toEstablish = { }
+	Piece.toEstablish.intoMessage = function () {
+		"use strict";
+		return $("<figcaption>", {
+			"id": "envInfo",
+			"class": "caption-info env-info para-drop",
+			"html":
+				$("<p>", {
+					"class": "threatInit",
+					"text": parametres.messages.threat0
+				})
+				.add(game.message =
+					$("<p>", {
+						"id": "intoMessage"
+				})	)
+				.add(
+					$("<p>", {
+						"class": "output",
+						"text": "",
+						"html":
+							$(document.createTextNode(parametres.messages.threat1))
+							.add($("<output>", {
+								"name": "okThreats",
+								"id": "okThreats",
+								"for": game.threatsId,
+								"text": 0
+							}))
+							.add($(document.createTextNode(parametres.messages.threat2)))
+							.add($("<span>", {
+								"id": "totalThreats",
+								"text": game.threats
+	}))	})	)	})	}
 	Piece.toEstablish.toClone = function (tag) {
 		"use strict";
 		return this.$dom.find(tag)
@@ -590,44 +636,76 @@ delete window.oiseaux;
 		}	});
 
 		$puzzle.on({
-			mousemove: function (ze) {
+			mousemove: function (ze, ev) {
 				"use strict";
-				var x = (ze.pageX - game.gPos.left) * game.displayRatio,
-					y = (ze.pageY - game.gPos.top) * game.displayRatio;
+				var x, y;
+				ze = ev || ze;
+				ze.preventDefault();
+				x = (ze.pageX - game.gPos.left) * game.displayRatio;
+				y = (ze.pageY - game.gPos.top) * game.displayRatio;
 				$puzzle.movable(x, y);
 				$bolges.attr({
 					"x": Math.round(- x + game.magnusGlassRadial / game.displayRatio),
-					"y": Math.round(- y + game.magnusGlassRadial / game.displayRatio)
-		});	}	});
+					"y": Math.round(- y + game.magnusGlassRadial * game.booster / game.displayRatio)
+		});	}	})
 
 		$threats.on({
-			mousemove: function (ze) {
+			mousemove: function () {
 				"use strict";
 				var $t = $(this),
-					total = Number($thrts.html());
+					total = Number(game.$thrts.html());
 
 				! $t.data("already")
 				&& $t.data("already", true)
-				&& $thrts.html(++total)
+				&& game.$thrts.html(++total)
 				&& (total == game.threats)
-				&& $puzzle.off()
-				&& $threats.off()
-				&& setTimeout(instancie.toPieceUIEvents, game.delays[3]);
+				&& instancie.toPieceUIEvents();
 
-				$message.html(parametres.messages[$(this).attr("id")])
-				.addClass("over para-drop");
+				game.message.text(parametres.messages[$(this).attr("id")]);
 			},
-			mouseout: function (ze) {
+			mouseout: function () {
 				"use strict";
-				$message.html("")
-				.removeClass("over para-drop");
-	}	});	}
+				game.message.text("");
+		}	});
+
+	/*	//to do on Android ? ?????
+		var posEvent = commonLAg.touch === false ?
+			function (ze) {
+				"use strict";
+				return ze;
+			}
+			: function (ze) {
+				"use strict";
+				return (typeof ze.pageX == "number" && (ze.pageX != 0 || ze.pageY != 0)) ?
+					ze
+					:
+					((typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX != 0 || ze.touches[0].pageY != 0)) ?
+						ze.touches[0]
+						:
+						null)
+			} */
+
+		commonLAg.touch
+		&& ($puzzle.stroking = function (ze) {
+			"use strict";
+			ze.preventDefault();
+
+			game.booster = 2; /* MSIE 1000 years later */
+
+			$(this).trigger("mousemove", [ze]);
+			game.touchPoint = document.elementFromPoint(ze.pageX, ze.pageY - game.magnusGlassRadial / 2);
+			game.touchPoint.tagName.search(parametres.re[0]) > - 1
+			&& $("#" + game.touchPoint.id).trigger("mousemove", ze)
+			|| game.message.text("");
+		})
+		&& $puzzle.get(0) //http://stackoverflow.com/questions/16110124/can-you-get-svg-on-mobile-browser-accept-mouse-touch-events-i-cant
+		.addEventListener("touchmove", $puzzle.stroking, false);
+	}
 
 	instancie.toPieceUIEvents = function () { //drag and drop events
 		"use strict";
 
-		$game.removeClass("zoom");
-		Piece.toErase();
+		$game.removeClass("zoom-first");
 
 		$figures.draggable({
 			addClasses: false,
@@ -647,7 +725,32 @@ delete window.oiseaux;
 		});
 
 		instancie.toPieceClassicalEvents();
-	};
+
+		$drawer.on({
+			mousedown: function () {
+				"use strict";
+
+				$drawer.off();
+
+				$puzzle.off();
+				$threats.off();
+				commonLAg.touch
+				&& $puzzle.get(0).removeEventListener("touchmove", $puzzle.stroking);
+
+				delete game.message;
+				delete game.$thrts;
+
+				$game.removeClass("zoom");
+				Piece.retroCaption = function () {
+					"use strict";
+					$message.text("");
+				}
+				Piece.toErase();
+			},
+			touchstart: function () {
+				"use strict";
+				$(this).trigger("mousedown");
+	}	});	};
 
 	instancie.toPieceClassicalEvents = function () { //classical events for drag and drop elements
 		"use strict";
@@ -734,10 +837,9 @@ delete window.oiseaux;
 	function instancie () { //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
 		"use strict";
 
-		$message = $("<figcaption>", {
-			"id": "envInfo",
-			"class": "caption-info env-info"
-		}).appendTo($stage);
+		$message = Piece.toEstablish.intoMessage()
+		.appendTo($stage);
+		game.$thrts = $("#okThreats");
 
 		Piece.toZoom();
 
@@ -747,6 +849,7 @@ delete window.oiseaux;
 		});
 		Piece.toCalculate();
 		delete Piece.toEstablish;
+		delete Piece.prototype.toEstablish;
 		$targetGroups = $puzzleStage.find("g");
 		$stage.data("aera", -1);
 
