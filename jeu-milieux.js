@@ -13,15 +13,31 @@
 		dropConfirmation: "BRAVO",
 		dropErreur: "FAUX",
 		generique: " ne niche pas dans ce milieu.",
+
 		engoulevent: " vit dans les garrigues et les bois clairsemés.",
 		fauvette: " aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
 		gdduc: " niche dans les milieux rocheux.",
-		alpinist: "Il est important d'aménager les pratiques de loisirs en fonction des besoins de la nature.\
-			Les couloirs d'escalade doivent être créés loin des sites de nidification des rapaces par exemple.",
-		
 
-		pseudo1: "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
-		pseudo2: "Velit earum enim, natus repellendus. Porro quis tempore a tenetur rem nam ipsum aperiam",
+		grimpeur: "Il est important d'aménager les pratiques de loisirs en fonction des besoins de la nature.\
+			Les couloirs d'escalade doivent être créés loin des sites de nidification des rapaces par exemple.",
+		pylone: "Le pylône électrique\xA0:en raison des risques d'électrocution et de collision pour les grands rapaces,\
+			les câbles électriques devraient être soit enterrés, soit sécurisés, dans les zones où ces oiseaux nichent ou chassent.",
+		faucheuse: "L'intensification de l'agriculture (agrandissement des parcelles, disparition des haies et des friches,\
+			passage accru d'engins mécaniques, engrais et pesticides) induit généralement une pression sur les espèces.\
+			Par exemple, la fauche mécanique peut être dangereuse pour l'outarde qui s'installe et pond dans les prairies.\
+			Les périodes de fauche sont alors réglementées\xA0: elles sont ainsi interdites pendant la nidification de début mai à début août.\
+			Le pâturage s'avère être une bonne alternative.",
+		maison: "Il est tentant de vouloir s'installer dans ce beau paysage, cependant la construction de maisons et de routes\
+			réduit peu à peu l'habitat des oiseaux.",
+		benneEquarissage: "L'équarrissage systématique du bétail mort par l'homme entraîne la perte de nourriture pour les rapaces nécrophages,\
+			comme le Vautour percnoptère. Des dérogations sont accordées pour créer des \"placettes de nourrissage\",\
+			où les cadavres sont à la disposition des \"équarrisseurs naturels\" que sont les vautours.",
+		futPesticides: "L'usage de pesticides dans l'agriculture doit être limité car de nombreux oiseaux perdent leurs ressources en nourriture\
+			en raison de l'empoisonnement de leurs proies.",
+		embroussaillement: "La prolifération de certaines végétations se fait parfois au détriment des oiseaux. Il est important de préserver\
+			la diversité des milieux\xA0: garrigues, prairies, forêts\u2026 sans que l'un n'empiète sur l'autre.",
+		coupeArbreIsole: "L'intervention humaine dans la nature doit tenir compte des besoins écologiques des différentes espèces présentes.\
+			Un arbre creux, une ruine, peuvent être le refuge de nombreuses espèces, comme le Petit-duc scops.",
 
 		threat0: "Tu peux maintenant déplacer les oiseaux",
 		threat1: "Menaces identifiées\xA0: ",
@@ -92,7 +108,7 @@ delete window.oiseaux;
 			threats: $threats.length,
 			threatsId: "",
 			// $thrts: null,
-			// message: null,
+			// $message: null,
 			total: $drawer.html().split("</figure>").length - 1,
 			ratio: parametres.largeur / parametres.hauteur,
 			delays: [],
@@ -407,7 +423,7 @@ delete window.oiseaux;
 					"class": "threatInit",
 					"text": parametres.messages.threat0
 				})
-				.add(game.message =
+				.add(game.$message =
 					$("<p>", {
 						"id": "intoMessage"
 				})	)
@@ -661,11 +677,14 @@ delete window.oiseaux;
 				&& (total == game.threats)
 				&& instancie.toPieceUIEvents();
 
-				game.message.text(parametres.messages[$(this).attr("id")]);
+				game.$message.text(parametres.messages[$(this).attr("id")]);
+				game.$message.offset().top + game.$message.innerHeight() > $b.height()
+				&& $message.addClass("big");
 			},
 			mouseout: function () {
 				"use strict";
-				game.message.text("");
+				game.$message.text("");
+				$message.removeClass("big");
 		}	});
 
 	/*	//to do on Android ? ?????
@@ -696,7 +715,8 @@ delete window.oiseaux;
 			game.touchPoint = document.elementFromPoint(ze.pageX, ze.pageY - game.magnusGlassRadial / 2);
 			game.touchPoint.tagName.search(parametres.re[0]) > - 1
 			&& $("#" + game.touchPoint.id).trigger("mousemove", ze)
-			|| game.message.text("");
+			|| game.$message.text("");
+			$message.removeClass("big");
 		})
 		&& $puzzle.get(0) //http://stackoverflow.com/questions/16110124/can-you-get-svg-on-mobile-browser-accept-mouse-touch-events-i-cant
 		.addEventListener("touchmove", $puzzle.stroking, false);
@@ -737,7 +757,7 @@ delete window.oiseaux;
 				commonLAg.touch
 				&& $puzzle.get(0).removeEventListener("touchmove", $puzzle.stroking);
 
-				delete game.message;
+				delete game.$message;
 				delete game.$thrts;
 
 				$game.removeClass("zoom");

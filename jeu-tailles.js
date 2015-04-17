@@ -122,11 +122,14 @@ Les setTimeout ? les événements ????
 			&& games[sizes].push(p)
 			|| (games[sizes] = [p]);
 	}	}
+
+// BUT ALSO CONSERVE THE SAME ORDER BETWEEN PARTIES
+// so why not alphabetical order ?
+	false &&
 	games.forEach(function (val, ind) { //not in alphabetical order
 		val.sort(function (a, b) {
 			return .5 - Math.random();
 	});	});
-
 
 
 
@@ -178,11 +181,11 @@ Les setTimeout ? les événements ????
 		sizes = [];
 
 		for (var p in parametres.infos) {
-			panel += parametres.infos[p].param.taille;
+			panel += parametres.infos[p].param.imgRatio;
 			sizes.push([parametres.infos[p].param.taille,p]); //transcient value of sizes
 		}
 
-		sizes.sort(function (a,b) { //(another use of sizes)
+		sizes.sort(function (a, b) { //(another use of sizes)
 			"use strict";
 			return a[0] - b[0];
 		})
@@ -345,7 +348,7 @@ Les setTimeout ? les événements ????
 			(	i == parametres.total
 				&& wids.push(hipsterWidthS - wid))
 			||
-			(	wids.push(Math.floor(parametres.scale * birds["b" + i].fiche.param.taille / ratio))
+			(	wids.push(Math.floor(parametres.scale * birds["b" + i].fiche.param.imgRatio / ratio))
 				&& (wid += wids[i - 1]));
 		}
 
@@ -847,7 +850,7 @@ Les setTimeout ? les événements ????
 				"use strict";
 				return [
 					p1,
-					parametres.collection[games[parametres.serie - 1][orderL]].param.source,
+					parametres.collection[games[parametres.serie - 1][orderL]].param.imgSource,
 					p3,
 					games[parametres.serie - 1][orderL++],
 					p5
