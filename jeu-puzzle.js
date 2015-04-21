@@ -852,7 +852,7 @@ first: with several path
 
 		$targetGroups.on({
 			click: Piece.toCheckClick,
-			mouseover: function (ze) {
+			mouseover: function () { //tactile: cf. toBrandTactile()
 				"use strict";
 
 				var $t = $(this),
@@ -903,7 +903,7 @@ first: with several path
 				}, game.delays[3]));
 		}	});
 
-		$see.on({ //nothing by default
+		$see.on({ //nothing by default, HTML element is desactived
 			click: function (ze, next, follow) {
 				"use strict";
 
@@ -938,7 +938,7 @@ first: with several path
 				}, game.delays[5]));
 		}	});
 
-		$("#see2").on({ //nothing by default
+		$("#see2").on({ //nothing by default, HTML element is desactived
 			click: function (ze) {
 				"use strict";
 				$see.trigger("click", [0, true]); //to do: déshybridation

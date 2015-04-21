@@ -59,7 +59,17 @@ var parametres = {
 	];	}
 
 	pI.goInside = function () { //get view from url
+/* if correct location.hash in url:
+	first, get view from hash
+else, if data-current > 1 in jeu-cache-frame.html:
+	after, get view from data-current
+else:
+	endly, get the first view */
 		"use strict";
+		(location.hash.indexOf("#" + commonLAg.vue) == -1)
+		&& (pI.currnt > 1)
+		&& (pI.currnt <= pI.total)
+		&& (location.hash = "#" + commonLAg.vue + pI.currnt);
 		var hash = commonLAg.goInside(pI.total);
 		(	hash
 			&& (pI.currnt = hash)

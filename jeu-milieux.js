@@ -5,7 +5,6 @@
 */
 
 
-
 /* Paramètres */
 ;var parametres = {
 
@@ -14,13 +13,23 @@
 		dropErreur: "FAUX",
 		generique: " ne niche pas dans ce milieu.",
 
-		engoulevent: " vit dans les garrigues et les bois clairsemés.",
-		fauvette: " aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
-		gdduc: " niche dans les milieux rocheux.",
+		aigle: "guette ses proies depuis un point haut, nichant dans les reliefs rocheux.",
+		alouette: "aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
+		bruant: "aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
+		circaete: "niche au sommet des arbres (souvent des pins), d'où il part pour chasser les reptiles dans les zones ouvertes (garrigues, pelouses, etc.).",
+		engoulevent: "vit dans les garrigues et les bois clairsemés.",
+		faucon: "a comme lieux favoris pour nicher\xA0: les anciennes bergeries, les ruines, les toits de maisons (cavités dans ces bâtiments ou nichoirs aménagés).",
+		fauvette: "aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
+		gdduc: "niche dans les milieux rocheux.",
+		outarde: "mâle occupe les plaines cultivées à la végétation rase, pour rester visible et parader. La femelle s'installe dans les prairies aux herbes hautes.",
+		pipit: "aime les mosaïques de différents milieux\xA0: prairies, pelouses, garrigues, vignes.",
+		ptduc: "niche dans des arbres creux et des bâtiments avec des cavités en ruines.",
+		rollier: "s'installe dans des cavités naturelles ou d'anciens nids de pics creusés dans les arbres, par exemple les peupliers blancs.",
+		vautour: "niche dans les falaises.",
 
 		grimpeur: "Il est important d'aménager les pratiques de loisirs en fonction des besoins de la nature.\
 			Les couloirs d'escalade doivent être créés loin des sites de nidification des rapaces par exemple.",
-		pylone: "Le pylône électrique\xA0:en raison des risques d'électrocution et de collision pour les grands rapaces,\
+		pylone: "Le pylône électrique\xA0: en raison des risques d'électrocution et de collision pour les grands rapaces,\
 			les câbles électriques devraient être soit enterrés, soit sécurisés, dans les zones où ces oiseaux nichent ou chassent.",
 		faucheuse: "L'intensification de l'agriculture (agrandissement des parcelles, disparition des haies et des friches,\
 			passage accru d'engins mécaniques, engrais et pesticides) induit généralement une pression sur les espèces.\
@@ -62,21 +71,21 @@
 	delai0: 750,
 	delai1: 100,
 	delai2: 250,
-	delai3: 4500,
+	delai3: 3900,
 	delai4: 3000,
 
 	nbreZones: "zones",
 
-	re: [/circle/i] /* voir côté HTML les balises dans #threats */
+	re: [/circle|ellipse/i] /* voir côté HTML les balises dans #threats */
 }
 delete window.oiseaux;
-
 
 
 ;$(function () {
 	"use strict";
 	
 	var $w = $(window),
+		$d = $(document),
 		$b = $("body"),
 
 		$zoom = $("#zoom"),
@@ -98,8 +107,8 @@ delete window.oiseaux;
 		$walking = $(".walking"),
 		$wlkg = $walking.eq(0),
 		$figures = $(".figure"),
-		$caption = $(".bird-info"),
 		$piecesGroups = $(".figure g"),
+		$caption, // = $(".bird-info"),
 
 		$message, //= $("#env-info"),
 
@@ -112,14 +121,16 @@ delete window.oiseaux;
 			total: $drawer.html().split("</figure>").length - 1,
 			ratio: parametres.largeur / parametres.hauteur,
 			delays: [],
-			magnusGlassRadial: parametres.hauteur / 10
+			magnusGlassRadial: parametres.hauteur / 10,
+			completion: 0
 			// touchPoint: null,
 			// gWidth: null,
 			// gHeight: null,
 			// displayRatio: null,
 			// gPos: null,
 			// displayW: null,
-			// displayH: null
+			// displayH: null,
+			// review: null
 		}
 
 
@@ -214,7 +225,7 @@ delete window.oiseaux;
 		commonLAg.msieUp11
 		&& $zoom.attr("transform", "translate(1132, 0)");
 
-		$bolges = $puzzleStage.clone()
+		$bolges = $puzzleStage.clone() //done initially for several pictures: natural environment and birds
 		.attr({
 			"id": "bolge",
 			"class": "bolge",
@@ -307,7 +318,7 @@ delete window.oiseaux;
 			val.toCalculate();
 	});	}
 
-	Piece.appreciate = function (cl) {
+	Piece.toAppreciate = function (cl) {
 		"use strict";
 		commonLAg.sounds[cl].turnon();
 		return true;
@@ -404,9 +415,49 @@ delete window.oiseaux;
 				pieces[indDrag].queue = Piece.prototype.toRestart;
 	}	}
 
+	Piece.toRecapitulate = function () { //added later
+		"use strict";
 
+		$stage.data("aera", -1);
 
+		$game.removeClass("dad");
 
+		$stage.droppable("disable");
+
+		$piecesGroups.off();
+		$targetGroups.off()
+		.attr("class", "");
+
+		setTimeout(function () {
+			"use strict";
+
+			var $setpoint = $(".lag-order:eq(1)");
+			$setpoint.text(" ");
+			game.review = $setpoint.data("review");
+
+			Piece.toErase = function () {
+				"use strict";
+				$message[$message.offset().top + $message.innerHeight() > $b.height() ?
+					"addClass" : "removeClass"]("big");
+			}
+			$message.addClass("over")
+			.text(game.review);
+
+			$(".bird-info.over:not(repositionned)").each(function () {
+				"use strict";
+				var $t = $(this);
+				pieces[Number($t.parents(".figure").data("instance"))].intoCaption();
+				$t.removeClass("over")
+				.css("top", parseInt($t.css("top"), 10) + $t.data("height") - $t.innerHeight());
+			});
+			$caption.addClass("last-view");
+
+			instancie.classicalEvents3review();
+
+			$game.addClass("review");
+
+		}, game.delays[3]);
+	}
 
 
 
@@ -478,8 +529,9 @@ delete window.oiseaux;
 			iHeight = this.$message.innerHeight(),
 			top = harvest.top - iHeight - 6,
 			infoGroup, infoSVG;
-		left = Math.round(left > 0 ? left : 0);
-		top =  Math.round(top > 0 ? top : 0);
+
+		left = Math.round(left > 0 ? left : 0) - $d.scrollLeft();
+		top =  Math.round(top > 0 ? top : 0) - $d.scrollTop();
 
 		this.$dom.css({
 			"width": game.gWidth,
@@ -541,7 +593,7 @@ delete window.oiseaux;
 		var $f = this.$figure;
 		this.queue = commonLAg.doNothing;
 
-		Piece.appreciate("ok");
+		Piece.toAppreciate("ok");
 
 		$f.css(commonLAg.transition(game.delays[0], "opacity"))
 		.addClass("dragDropped");
@@ -551,11 +603,14 @@ delete window.oiseaux;
 		this.$cloneImage.css(commonLAg.transition(game.delays[0], "opacity"))
 		.attr("class", "image");
 
-		$message.text(this.pronominal + parametres.messages[this.infos])
+		$message.text(this.pronominal + " " + parametres.messages[this.infos])
 		.addClass("over");
 
 		this.$message.text(parametres.messages.dropConfirmation)
 		.addClass("over");
+
+		++game.completion === game.total
+		&& Piece.toRecapitulate();
 	}
 
 	Piece.prototype.toRestart = function () {
@@ -564,7 +619,7 @@ delete window.oiseaux;
 
 		this.queue = commonLAg.doNothing;
 
-		Piece.appreciate("nok");
+		Piece.toAppreciate("nok");
 
 		this.$figure.addClass("bad-drop");
 
@@ -583,62 +638,8 @@ delete window.oiseaux;
 
 
 
-//Polyfills ----------------------------------------------------------------------------
-	/*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas, David Knight. Dual MIT/BSD license */
-
-	window.matchMedia || (window.matchMedia = function() {
-		"use strict";
-
-		// For browsers that support matchMedium api such as IE 9 and webkit
-		var styleMedia = (window.styleMedia || window.media);
-
-		// For those that don't support matchMedium
-		if (!styleMedia) {
-			var style	   = document.createElement('style'),
-				script	  = document.getElementsByTagName('script')[0],
-				info		= null;
-
-			style.type  = 'text/css';
-			style.id	= 'matchmediajs-test';
-
-			script.parentNode.insertBefore(style, script);
-
-			// 'style.currentStyle' is used by IE <= 8 and 'window.getComputedStyle' for all other browsers
-			info = ('getComputedStyle' in window) && window.getComputedStyle(style, null) || style.currentStyle;
-
-			styleMedia = {
-				matchMedium: function(media) {
-					var text = '@media ' + media + '{ #matchmediajs-test { width: 1px; } }';
-
-					// 'style.styleSheet' is used by IE <= 8 and 'style.textContent' for all other browsers
-					if (style.styleSheet) {
-						style.styleSheet.cssText = text;
-					} else {
-						style.textContent = text;
-					}
-
-					// Test if media query is true or false
-					return info.width === '1px';
-				}
-			};
-		}
-
-		return function(media) {
-			return {
-				matches: styleMedia.matchMedium(media || 'all'),
-				media: media || 'all'
-			};
-		};
-	}());
-
-
-
-
-
-
-
 //Events ----------------------------------------------------------------------------
-	instancie.classicalEvents = function () { //classical events for the interface
+	instancie.classicalEvents1zoom = function () { //classical events for the interface
 		"use strict";
 
 		$w.on({
@@ -649,6 +650,9 @@ delete window.oiseaux;
 				$walking.addClass("resizing");
 				clearTimeout(game.timt);
 				game.timt = setTimeout(Piece.toCalculate, game.delays[2]);
+			},
+			scroll: function () {
+				$w.trigger("resize")
 		}	});
 
 		$puzzle.on({
@@ -675,10 +679,10 @@ delete window.oiseaux;
 				&& $t.data("already", true)
 				&& game.$thrts.html(++total)
 				&& (total == game.threats)
-				&& instancie.toPieceUIEvents();
+				&& instancie.uiEvents();
 
 				game.$message.text(parametres.messages[$(this).attr("id")]);
-				game.$message.offset().top + game.$message.innerHeight() > $b.height()
+				game.$message.offset().top + $message.innerHeight() > $b.height()
 				&& $message.addClass("big");
 			},
 			mouseout: function () {
@@ -714,7 +718,7 @@ delete window.oiseaux;
 			$(this).trigger("mousemove", [ze]);
 			game.touchPoint = document.elementFromPoint(ze.pageX, ze.pageY - game.magnusGlassRadial / 2);
 			game.touchPoint.tagName.search(parametres.re[0]) > - 1
-			&& $("#" + game.touchPoint.id).trigger("mousemove", ze)
+			&& $(game.touchPoint).trigger("mousemove", ze)
 			|| game.$message.text("");
 			$message.removeClass("big");
 		})
@@ -722,7 +726,7 @@ delete window.oiseaux;
 		.addEventListener("touchmove", $puzzle.stroking, false);
 	}
 
-	instancie.toPieceUIEvents = function () { //drag and drop events
+	instancie.uiEvents = function () { //drag and drop events
 		"use strict";
 
 		$game.removeClass("zoom-first");
@@ -744,36 +748,15 @@ delete window.oiseaux;
 			drop: Piece.toCheck
 		});
 
-		instancie.toPieceClassicalEvents();
+		instancie.classicalEvents2dnd();
+	};
 
-		$drawer.on({
-			mousedown: function () {
-				"use strict";
-
-				$drawer.off();
-
-				$puzzle.off();
-				$threats.off();
-				commonLAg.touch
-				&& $puzzle.get(0).removeEventListener("touchmove", $puzzle.stroking);
-
-				delete game.$message;
-				delete game.$thrts;
-
-				$game.removeClass("zoom");
-				Piece.retroCaption = function () {
-					"use strict";
-					$message.text("");
-				}
-				Piece.toErase();
-			},
-			touchstart: function () {
-				"use strict";
-				$(this).trigger("mousedown");
-	}	});	};
-
-	instancie.toPieceClassicalEvents = function () { //classical events for drag and drop elements
+	instancie.classicalEvents2dnd = function () { //classical events for drag and drop elements
 		"use strict";
+
+		delete Piece.toZoom;
+		delete instancie.classicalEvents1zoom;
+		delete instancie.uiEvents;
 
 		$piecesGroups.on({
 			mouseover: function () {
@@ -799,7 +782,7 @@ delete window.oiseaux;
 		}	});
 
 		$targetGroups.on({
-			mouseover: function (ze) {
+			mouseover: function () { //tactile: cf. toBrandTactile()
 				"use strict";
 
 				var $t = $(this),
@@ -844,8 +827,99 @@ delete window.oiseaux;
 		}	});
 
 		$game.addClass("dad");
-	}
 
+		$drawer.on({
+			mousedown: function () {
+				"use strict";
+
+				$drawer.off();
+
+				$puzzle.off();
+				$threats.off();
+				commonLAg.touch
+				&& $puzzle.get(0).removeEventListener("touchmove", $puzzle.stroking);
+
+				delete game.$message;
+				delete game.$thrts;
+
+				$game.removeClass("zoom");
+				Piece.retroCaption = function () {
+					"use strict";
+					$message.text("");
+				}
+				Piece.toErase();
+			},
+			touchstart: function () {
+				"use strict";
+				$(this).trigger("mousedown");
+	}	});	}
+
+	instancie.classicalEvents3review = function () { //classical events for last review
+		"use strict";
+
+		delete instancie.classicalEvents2dnd;
+		delete Piece.intoCaption;
+		delete Piece.retroCaption;
+		delete Piece.toAppreciate;
+		delete Piece.toBrand;
+		delete Piece.toBrandTactileIntro;
+		delete Piece.toBrandTactile;
+		delete Piece.toFix;
+		delete Piece.toCheck;
+
+		Piece.toInform = function (which, message) {
+			"use strict";
+			$stage.data("aera", which);
+			$caption.addClass("last-view");
+			$message.text(message);
+			Piece.toErase();
+		}
+
+		$targetGroups.on({
+			mousemove: function () {
+				"use strict";
+				var instance = $(this).data("instance"),
+					piece = pieces[instance];
+				if ($stage.data("aera") == instance)
+					return;
+				Piece.toInform(instance, piece.pronominal + " " + parametres.messages[piece.infos]);
+				piece.$message.removeClass("last-view");
+		}	});
+
+		$threats.on({
+			mousemove: function () {
+				"use strict";
+				var id = $(this).attr("id");
+				if ($stage.data("aera") == id)
+					return;
+				Piece.toInform(id, parametres.messages[id]);
+		}	});
+
+		commonLAg.touch //TO DO: test on iPad (and Android)
+		&& ($puzzle.stroking = function (ze) {
+			"use strict";
+			ze.preventDefault();
+
+			game.touchPoint = document.elementFromPoint(ze.pageX, ze.pageY);
+
+			(	game.touchPoint.hasAttribute("data-instance")
+			|| game.touchPoint.tagName.search(parametres.re[0]) > - 1	)
+			&& $(game.touchPoint).trigger("mousemove", ze);
+		})
+		&& $puzzle.get(0) //http://stackoverflow.com/questions/16110124/can-you-get-svg-on-mobile-browser-accept-mouse-touch-events-i-cant
+		.addEventListener("touchmove", $puzzle.stroking, false);
+
+		$drawer.on({
+			mouseover: function () {
+				"use strict";
+				$stage.data("aera", -1);
+				$caption.addClass("last-view");
+				$message.text(game.review);
+			},
+			touchstart: function () {
+				"use strict";
+				$drawer.trigger("mouseover");
+	}	});	}
 
 
 
@@ -856,6 +930,8 @@ delete window.oiseaux;
 //Instancie puzzle ----------------------------------------------------------------------------
 	function instancie () { //can not be called a second time without Piece.toEstablish cf. delete Piece.toEstablish
 		"use strict";
+
+		delete instancie.init;
 
 		$message = Piece.toEstablish.intoMessage()
 		.appendTo($stage);
@@ -871,18 +947,16 @@ delete window.oiseaux;
 		delete Piece.toEstablish;
 		delete Piece.prototype.toEstablish;
 		$targetGroups = $puzzleStage.find("g");
+		$caption = $(".bird-info");
 		$stage.data("aera", -1);
 
 		$drawer.removeClass("establishing");
 
-		instancie.classicalEvents();
+		instancie.classicalEvents1zoom();
 	}
 	instancie();
 
-
-
-
-/*
+/* to do ?
 CONFORMITE DU SVG GENERE
 <g data-instance="n"
 	n'est pas conforme

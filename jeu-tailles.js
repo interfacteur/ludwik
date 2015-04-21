@@ -71,10 +71,10 @@ $(function () {
 		LAgTitle = $LAgTitle.html(),
 		delays = [],
 		games = [],
-		wids = [],
 		//to actualize at 'play again' and at 'play with other birds':
 		$birds = $(".birds"),
 		$sizes = $(".sizesB"),
+		wids, // = [],
 		hipsterWidthX, hipsterWidthS,
 		hipsterHeightX, hipsterHeightS,
 		birds, sizes,
@@ -127,10 +127,15 @@ Les setTimeout ? les événements ????
 // so why not alphabetical order ?
 	false &&
 	games.forEach(function (val, ind) { //not in alphabetical order
+		"use strict";
 		val.sort(function (a, b) {
+			"use strict";
 			return .5 - Math.random();
 	});	});
-
+	games[2].sort(function (a, b) { //because alphabetical order is size order
+		"use strict";
+		return b > a;
+	});
 
 
 
@@ -334,6 +339,8 @@ Les setTimeout ? les événements ????
 			return;
 
 		var wid = 0;
+
+		wids = [];
 
 		Size.manage("disable");
 		$b.addClass("bravo");
