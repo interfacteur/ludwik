@@ -1,4 +1,3 @@
-//...
 /*
 	pour Ludwik : Parc naturel des Alpilles, jeu du cache cache
 	Gaëtan Langhade - Interfacteur
@@ -6,7 +5,9 @@
 */
 
 
-;var parametres = {
+;"use strict";
+
+var parametres = {
 
 	delai1: 1000,
 	delai2: 240,
@@ -259,7 +260,7 @@ $(function annm () {
 					: typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX != 0 || ze.touches[0].pageY != 0) ? ze.touches[0] : null,//Google Chrome on Android
 					active;
 
-				if (tactTouch === null) //to do: check on a lot of tactile devices (touchanged ? touchtarget ?)
+				if (tactTouch === null)
 					return;
 
 			/* mixt of events objects - because position() doesn't work with ze.touches[0] */
@@ -300,20 +301,3 @@ $(function annm () {
 
 });
 
-
-
-/* 150330
-to do
-
-sans iframe ?
-	en partant de l'iframe en question et en introduisant une zone supérieure relative...
-	semble impossible à cause de background-attachment: fixed
-	mais bg position fixed calculé sur body ?
-
-
-IE 9
-
-détection et alternative ?
-
-*/
-//...

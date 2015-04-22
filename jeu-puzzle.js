@@ -6,6 +6,8 @@
 
 
 
+;"use strict";
+
 /* Paramètres */
 ;var parametres = {
 
@@ -75,7 +77,6 @@
 		$clock = $("#clock"),
 
 		$levels = $("[name='lev']"),
-		$see = $("#see1"),
 
 		game = {
 			// timt: null,
@@ -307,7 +308,7 @@
 	commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 		"use strict";
 
-		$targetGroups //to do: to check on tactile-mouse MSIE
+		$targetGroups
 		&& $targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
 
 		game.$tactileP1 = null;
@@ -406,33 +407,8 @@
 /* Provisional prototype */
 
 	Piece.establish = { }
-	// Piece.establish.sort = function (a, b) {
-	// 	"use strict";
-	// 	return a[1] - b[1];
-	// }
 	Piece.establish.toGrade = function () {
 		"use strict";
-/*
-first: with several path
-
-		this.$posX = this.$posY = this.$dom.find("path");
-*/
-		// var $p = this.$dom.find("path"),
-		// 	X = [],
-		// 	Y = [],
-		// 	harvest,
-		// 	x, y;
-		// $p.each(function (ind) {
-		// 	"use strict";
-		// 	harvest = $(this).offset();
-		// 	X.push([ind, harvest.left]);
-		// 	Y.push([ind, harvest.top]);
-		// });
-		// X.sort(Piece.establish.sort);
-		// Y.sort(Piece.establish.sort);
-		// this.$posX = $p.eq(X[0][0]);
-		// this.$posY = $p.eq(Y[0][0]);
-
 		this.reset();
 		parseInt(this.$figure.width(), 10) === 0 //Google Chrome 34 Mac OS X 10.8.5: and apparently iPad
 		&& this.$dom.css("width", this.$dom.css("height"));
@@ -858,9 +834,6 @@ first: with several path
 				var $t = $(this),
 					cl,
 					filigree;
-				// if ($t.data("over")) //to do: pb of <path no contigous ?
-				// 	return;
-				// $t.data("over", true);
 
 				if ($t.data("full"))
 					return $stage.data("aera", [-1, undefined]);
@@ -901,47 +874,6 @@ first: with several path
 					$t.attr("class", "");
 					$t.data("filigree", false);
 				}, game.delays[3]));
-		}	});
-
-		$see.on({ //nothing by default, HTML element is desactived
-			click: function (ze, next, follow) {
-				"use strict";
-
-				var ind = typeof next != "undefined" ? next : 0,
-					$f, //to do: randomize ?
-					$g,
-					$gTarget;
-
-				ze.preventDefault();
-
-				if (ind < game.total && parametres.regex[0].test($(".figure:eq(" + ind + ")").attr("class")))
-					return $see.trigger("click", [++ind, follow]);
-
-				$f = $(".figure:eq(" + ind + ")");
-				$g = $f.find("g");
-				$g.trigger("click");
-				$gTarget = $("#figure [data-instance='" + $g.data("instance") + "']");//or pieces[$g.data("instance")].$cloneGroup ?
-				$gTarget.attr("class") == "g"
-				&& ($gTarget = $("#figure [data-instance='" + $gTarget.data("duel") + "']"))
-				&& $f.addClass("dragSimili").
-				css({
-					"left": $gTarget.offset().left + ($f.width() / 2) - game.windW * .5,
-					"top": ($gTarget.offset().top + ($f.height() / 2) - (game.windH * parametres.hauteur)) / (game.windH * parametres.hauteurInf) * 100 + "%",
-				});
-				$gTarget.trigger("click");
-
-				follow
-				&& game.total > ind
-				&& (game.toEnd = setTimeout(function () {
-					"use strict";
-					$see.trigger("click", [++ind, true]);
-				}, game.delays[5]));
-		}	});
-
-		$("#see2").on({ //nothing by default, HTML element is desactived
-			click: function (ze) {
-				"use strict";
-				$see.trigger("click", [0, true]); //to do: déshybridation
 	}	});	}
 
 
@@ -1023,43 +955,6 @@ first: with several path
 		e && instancie.classicalEvents();
 	}
 	instancie(true); //can not be called a second time without Piece.establish cf. delete Piece.establish
-
-
-
-
-/*
-TO DO
-<!-- to do: labels, champ de soumission ? -->
-au click trigger le drag plutôt que passer par le curseur ?
-	position() ne semble plus possible après draggable
-laisser le deuxième click désactiver le drop au click ????
-	le deuxième click fonctionne partout sauf sur une autre pièce
-		car c'est alors l'autre pièce qui devient déplaçable au click suivant
-	?? suffisamment intuitif ?
-quid du bouton aller au résultat ? si oui, avec effets ?
-
-
-QUESTIONS
-Error: cannot call methods on draggable prior to initialization; attempted to call method 'disable'
-	jquery-....min.js (ligne 2, col. 1808)
-
-pointer-events "Does not work on SVG elements in Safari 5.1 or Android <= 4.1"
-constat ancien : compat Safari oiseau unique tête indropable ?
-
-
-SVG
-"empreinte" partie supérieure (et inféfieure) du svg "stage"
-<!-- to do : better way fonds ok nok...-->
-	GC fond blanc via les CSS, sans <rect sup ?
-	<!-- enable-background="new 0 0 726 726" -->
-
-
-CONFORMITE DU SVG GENERE
-<g data-instance="n"
-	n'est pas conforme
-	mais comme il s'agit d'éléments clonables, il est plus difficile de passer par $element.data()
-*/
-
 
 
 });

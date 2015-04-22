@@ -5,6 +5,9 @@
 */
 
 
+
+;"use strict";
+
 /* Paramètres */
 ;var parametres = {
 
@@ -57,7 +60,7 @@
 
 	largeur: 1372,
 	hauteur: 1200,
-	captionLargeur: 120,
+	// captionLargeur: 120, cf. game.magnusGlassRadial
 
 	index: 10, //réglage minimal en z-index d'un élément droppé
 
@@ -362,7 +365,7 @@ delete window.oiseaux;
 	commonLAg.tactile(function () { //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 		"use strict";
 
-		$targetGroups //to do: to check on tactile-mouse MSIE ?????
+		$targetGroups
 		&& $targetGroups.off("mousemove"); /* pb when reddraging a piece after hybrid drop on iPad */
 
 		game.$tactileP1 = null;
@@ -525,13 +528,16 @@ delete window.oiseaux;
 		"use strict";
 
 		var harvest = this.$cloneGroup.offset(),
-			left = harvest.left - parametres.captionLargeur * 2 / 3,
+			// left = harvest.left - parametres.captionLargeur * 2 / 3,
+			left = harvest.left - game.magnusGlassRadial * 2 / 3,
 			iHeight = this.$message.innerHeight(),
 			top = harvest.top - iHeight - 6,
+			dsl = $d.scrollLeft(),
+			dst = $d.scrollTop(),
 			infoGroup, infoSVG;
 
-		left = Math.round(left > 0 ? left : 0) - $d.scrollLeft();
-		top =  Math.round(top > 0 ? top : 0) - $d.scrollTop();
+		left = Math.round(left > 0 ? left : 0) - dsl;
+		top =  Math.round(top > 0 ? top : 0) - dst;
 
 		this.$dom.css({
 			"width": game.gWidth,
@@ -546,7 +552,7 @@ delete window.oiseaux;
 			"height": Math.round(infoGroup.height + 6)
 		});
 		this.$dom.css({
-			"margin": - Math.round(-3 + infoGroup.top - infoSVG.top) + "px 0 0 -" + Math.round(-3 + infoGroup.left - infoSVG.left) + "px"
+			"margin": - Math.round(-3 + infoGroup.top - infoSVG.top + dst) + "px 0 0 -" + Math.round(-3 + infoGroup.left - infoSVG.left + dsl) + "px"
 		});
 		this.$message.data("height", iHeight)
 		.css({
@@ -895,7 +901,7 @@ delete window.oiseaux;
 				Piece.toInform(id, parametres.messages[id]);
 		}	});
 
-		commonLAg.touch //TO DO: test on iPad (and Android)
+		commonLAg.touch
 		&& ($puzzle.stroking = function (ze) {
 			"use strict";
 			ze.preventDefault();
@@ -956,11 +962,5 @@ delete window.oiseaux;
 	}
 	instancie();
 
-/* to do ?
-CONFORMITE DU SVG GENERE
-<g data-instance="n"
-	n'est pas conforme
-	mais comme il s'agit d'éléments clonables, il est plus difficile de passer par $element.data()
-*/
 
 });

@@ -5,11 +5,14 @@
 */
 
 
+
+;"use strict";
+
 /* Paramètres */
 ;var parametres = {
 
 	total: 4,
-	total: null, //configuré par le nombre d'images d'oiseaux //to do: CSS entre 2 et n oiseaux
+	total: null, //configuré par le nombre d'images d'oiseaux
 
 	serie: 1, //set initial
 	jeu: "Série ",
@@ -80,31 +83,6 @@ $(function () {
 		birds, sizes,
 		panel, ratio;
 
-
-
-/*
-bonus à distribution aléatoire montré par L. 150318
-	c'est la deuxième fois qu'il le voit
-
-to do
-entre 2 et n pièces ?
-détection du support de
-	section via Modernizr
-	audio via Modernizr
-	forEach
-	Object.keys
-=> d'où page alternative
-
-nommer les fonctions de callback ?
-exemple toScale
-	notamment Bird.prototype.ligature.tie = function
-		non car celle-ci ne sert quasiement qu'à la définition du callback ?
-Size.prototype.result ?
-	attention au  niveau d'imbrication
-
-Les setTimeout ? les événements ????
-
-*/
 
 
 	commonLAg.Sound.init(parametres.sons);
@@ -258,7 +236,7 @@ Les setTimeout ? les événements ????
 
 		birdDrag.$dom[(evStart ? "add" : "remove") + "Class"]("birds-dragging");
 
-		(	evStart //to do: to check: jQuery UI does it on Firefox but not on webkit ?
+		(	evStart
 			&& birdDrag.stateDrop.$figcaption.attr("data-caption", "") /* added later */
 			&& birdDrag.$dom.css({
 				"width": birdDrag.$dom.width(),
@@ -294,7 +272,7 @@ Les setTimeout ? les événements ????
 		.animate({
 			"width": dimW,
 			"height": dimW
-		}, delays[0], "easeInCubic", cllbck); //to do: define ligature here ?
+		}, delays[0], "easeInCubic", cllbck);
 	}
 
 //final win organization
@@ -309,8 +287,6 @@ Les setTimeout ? les événements ????
 	});	}
 
 	Bird.prototype.ligature.tie = function () {
-//	Bird.tie = function () { //overload prototype 'ligature' for the last instance
-		//to do: method of constuctor, like Bird.tie ? method of method of prototype ?
 		"use strict";
 
 		if ($hipster.data("stop"))
@@ -785,7 +761,7 @@ Les setTimeout ? les événements ????
 				for (var i = 1; i <= orderL; ++i)
 					orderFrom.push(i);
 
-				while (orderL > 0) { //to do: optimize algo
+				while (orderL > 0) {
 
 	/* cf. stocking in last: http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array */
 
@@ -880,10 +856,6 @@ Les setTimeout ? les événements ????
 			birds["b" + end] = new Bird(ind, end);
 		});
 		birds["b" + parametres.total].ligature = Bird.prototype.ligature.tie;
-		//to do: method of constuctor, like Bird.tie ? method of method of prototype ?
-		 /* = function () { //overload prototype 'ligature' for the last instance
-			Bird.tie.call(this);
-		} */
 		$sizes.each(function (ind) {
 			sizes.push(new Size(ind));
 		});
@@ -904,4 +876,5 @@ Les setTimeout ? les événements ????
 /* */
 
 });
+
 

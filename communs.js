@@ -7,10 +7,7 @@
 
 
 
-
-
-
-"use strict";
+;"use strict";
 
 var commonLAg = {
 	vue: "vue",
@@ -39,7 +36,7 @@ $(function () {
 	var $w = $(window),
 		$b = $("body"),
 		$head = $("#lifeAlpillesGame"),
-		$menus = $(".other, .resources"),
+		$menus = $(".other"),
 		delay1 = 1250;
 
 
@@ -251,7 +248,7 @@ commonLAg.debug = false;
 	}
 
 //Pb with displaying menu
-	$head.height() != $(".LAg-resources").height()
+	$head.height() != $(".LAg-other:eq(0)").height()
 	&& (commonLAg.remenu = true)
 	&& commonLAg.menuResize();
 
@@ -312,8 +309,3 @@ commonLAg.debug = false;
 
 
 });
-
-
-/* to do
-accès par ancre aux jeux N des tailles et cache-cache
-	d'où ouverture possible dans une nouvelle fenêtre à partir des flèches dans menu ? */

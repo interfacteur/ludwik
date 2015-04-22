@@ -4,6 +4,9 @@
 	février-mars 2015
 */
 
+
+;"use strict";
+
 var parametres = {
 	delai1: 150,
 	iframe: {}
@@ -174,8 +177,6 @@ else:
 
 	commonLAg.msieUp11 === false
 	&& (commonLAg.reload = true); //on resize: behaviour of the menu on tactile devices
-
-
 
 
 });
