@@ -37,6 +37,7 @@ $(function () {
 		$b = $("body"),
 		$head = $("#lifeAlpillesGame"),
 		$menus = $(".other"),
+		$bilingual = $("#bilingual a"),
 		delay1 = 1250;
 
 
@@ -45,7 +46,7 @@ $(function () {
 
 
 
-//Get view from url ----------------------------------------------------------------------------
+//Get view from url, and bilingual hash ----------------------------------------------------------------------------
 	commonLAg.goInside = function (n) {
 		"use strict";
 		var hash = location.hash.toLowerCase().split("#" + commonLAg.vue)[1],
@@ -59,6 +60,14 @@ $(function () {
 			&& (ret = hash - 1)	);
 		return ret;
 	}
+	$bilingual.on({
+		click: function () {
+			"use strict";
+			var hash = location.hash,
+				href = $(this).attr("href");
+			hash
+			&& $(this).attr("href", href + hash);
+	}	});
 
 
 

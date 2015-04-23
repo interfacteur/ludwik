@@ -94,7 +94,7 @@ delete window.oiseaux;
 		$zoom = $("#zoom"),
 		$threats = $(".threat"),
 		threats = document.querySelector(".threat"),
-		$bolges,
+		$bolge = $("#bolge"),
 
 		pieces = [],
 
@@ -104,6 +104,7 @@ delete window.oiseaux;
 		$stage = $("#figure"),
 		$puzzle = $("#figure svg"),
 		$puzzleStage = $("#stage"),
+
 		svgRef = $puzzleStage.find("image:eq(0)").get(0),
 		$targetGroups,
 		$drawer = $("#figures"),
@@ -227,15 +228,6 @@ delete window.oiseaux;
 
 		commonLAg.msieUp11
 		&& $zoom.attr("transform", "translate(1132, 0)");
-
-		$bolges = $puzzleStage.clone() //done initially for several pictures: natural environment and birds
-		.attr({
-			"id": "bolge",
-			"class": "bolge",
-			"transform": "matrix(2 0 0 2 0 0)"
-		})
-		.prependTo($zoom)
-		.find("image");
 
 		$puzzle.movable = 
 			commonLAg.msieUp11 ? commonLAg.doNothing //but ok with my prototype of magnify glass
@@ -435,8 +427,7 @@ delete window.oiseaux;
 			"use strict";
 
 			var $setpoint = $(".lag-order:eq(1)");
-			$setpoint.text(" ");
-			game.review = $setpoint.data("review");
+			$setpoint.text($setpoint.data("review"));
 
 			Piece.toErase = function () {
 				"use strict";
@@ -444,7 +435,7 @@ delete window.oiseaux;
 					"addClass" : "removeClass"]("big");
 			}
 			$message.addClass("over")
-			.text(game.review);
+			.text("");
 
 			$(".bird-info.over:not(repositionned)").each(function () {
 				"use strict";
@@ -474,30 +465,26 @@ delete window.oiseaux;
 			"class": "caption-info env-info para-drop",
 			"html":
 				$("<p>", {
-					"class": "threatInit",
-					"text": parametres.messages.threat0
-				})
+					"class": "output",
+					"text": "",
+					"html":
+						$(document.createTextNode(parametres.messages.threat1))
+						.add($("<output>", {
+							"name": "okThreats",
+							"id": "okThreats",
+							"for": game.threatsId,
+							"text": 0
+						}))
+						.add($(document.createTextNode(parametres.messages.threat2)))
+						.add($("<span>", {
+							"id": "totalThreats",
+							"text": game.threats
+				}))	})	
 				.add(game.$message =
 					$("<p>", {
-						"id": "intoMessage"
-				})	)
-				.add(
-					$("<p>", {
-						"class": "output",
-						"text": "",
-						"html":
-							$(document.createTextNode(parametres.messages.threat1))
-							.add($("<output>", {
-								"name": "okThreats",
-								"id": "okThreats",
-								"for": game.threatsId,
-								"text": 0
-							}))
-							.add($(document.createTextNode(parametres.messages.threat2)))
-							.add($("<span>", {
-								"id": "totalThreats",
-								"text": game.threats
-	}))	})	)	})	}
+						"id": "intoMessage",
+						"class": "into-message"
+	})	)	})	}
 	Piece.toEstablish.toClone = function (tag) {
 		"use strict";
 		return this.$dom.find(tag)
@@ -670,7 +657,7 @@ delete window.oiseaux;
 				x = (ze.pageX - game.gPos.left) * game.displayRatio;
 				y = (ze.pageY - game.gPos.top) * game.displayRatio;
 				$puzzle.movable(x, y);
-				$bolges.attr({
+				$bolge.attr({
 					"x": Math.round(- x + game.magnusGlassRadial / game.displayRatio),
 					"y": Math.round(- y + game.magnusGlassRadial * game.booster / game.displayRatio)
 		});	}	})
@@ -920,7 +907,7 @@ delete window.oiseaux;
 				"use strict";
 				$stage.data("aera", -1);
 				$caption.addClass("last-view");
-				$message.text(game.review);
+				$message.text("");
 			},
 			touchstart: function () {
 				"use strict";

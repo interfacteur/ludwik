@@ -19,7 +19,7 @@ var parametres = {
 
 	collection: window.oiseaux, //cf. jeu-fiches.oiseaux.js
 
-	pictureClear: 3,
+	pictureClears: [3,4],
 
 	t: ["* ", "<br>(", ")"],
 
@@ -132,10 +132,12 @@ $(function annm () {
 
 	function readable () { //too clear view: modify style of text
 		"use strict";
-		wpI.currnt == parametres.pictureClear
-		&& $b.addClass("picture-clear")
-		|| $b.removeClass("picture-clear");
-	}
+		$b.removeClass("picture-clear");
+		parametres.pictureClears.forEach(function (val) {
+			"use strict";
+			wpI.currnt == val
+			&& $b.addClass("picture-clear");
+	});	}
 
 	function toSway () { //position of light on picture when resizing - on tactile device, resizing reloads the page
 		"use strict";
