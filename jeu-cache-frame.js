@@ -63,7 +63,6 @@ $(function annm () {
 		$caption = $("#hasCaption"),
 		$figurembed = $("#hasFigurembed"),
 		$porthole = $("#hasPorthole"),
-		$path = $("path"),
 		sounds = {},
 		game = {
 			posMy: "center",

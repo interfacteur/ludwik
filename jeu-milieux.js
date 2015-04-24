@@ -51,7 +51,6 @@
 		coupeArbreIsole: "L'intervention humaine dans la nature doit tenir compte des besoins écologiques des différentes espèces présentes.\
 			Un arbre creux, une ruine, peuvent être le refuge de nombreuses espèces, comme le Petit-duc scops.",
 
-		threat0: "Tu peux maintenant déplacer les oiseaux",
 		threat1: "Menaces identifiées\xA0: ",
 		threat2: "\xA0/\xA0"
 	},
@@ -76,6 +75,7 @@
 	delai2: 250,
 	delai3: 3900,
 	delai4: 3000,
+	delai5: 1000,
 
 	nbreZones: "zones",
 
@@ -153,6 +153,9 @@ delete window.oiseaux;
 			"use strict";
 			game.threatsId += $(this).attr("id");
 		});
+
+		$(".lag-order").css(commonLAg.transition(game.delays[5], ["background-color", "box-shadow"])); //game.delays[5]: cf. Piece.toTransit()
+
 
 /* WEBKIT
 	to call SVG filters from CSS */
@@ -426,9 +429,6 @@ delete window.oiseaux;
 		setTimeout(function () {
 			"use strict";
 
-			var $setpoint = $(".lag-order:eq(1)");
-			$setpoint.text($setpoint.data("review"));
-
 			Piece.toErase = function () {
 				"use strict";
 				$message[$message.offset().top + $message.innerHeight() > $b.height() ?
@@ -446,14 +446,20 @@ delete window.oiseaux;
 			});
 			$caption.addClass("last-view");
 
-			instancie.classicalEvents3review();
-
-			$game.addClass("review");
+			Piece.toTransit(instancie.classicalEvents3review);
 
 		}, game.delays[3]);
 	}
 
-
+	Piece.toTransit = function (clbck) { //added later
+		"use strict";
+		$game.addClass("phases-transit");
+		setTimeout(function () {
+			"use strict";
+			clbck();
+			$game.removeClass("phases-transit");
+		}, game.delays[5]); //game.delays[5]: cf. $(".lag-order").css(commonLAg.transition()
+	}
 
 /* Provisional class methods and prototype */
 
@@ -672,7 +678,7 @@ delete window.oiseaux;
 				&& $t.data("already", true)
 				&& game.$thrts.html(++total)
 				&& (total == game.threats)
-				&& instancie.uiEvents();
+				&& Piece.toTransit(instancie.uiEvents);
 
 				game.$message.text(parametres.messages[$(this).attr("id")]);
 				game.$message.offset().top + $message.innerHeight() > $b.height()
@@ -850,6 +856,9 @@ delete window.oiseaux;
 	instancie.classicalEvents3review = function () { //classical events for last review
 		"use strict";
 
+		var $setpoint = $(".lag-order:eq(1)");
+		$setpoint.text($setpoint.data("review"));
+
 		delete instancie.classicalEvents2dnd;
 		delete Piece.intoCaption;
 		delete Piece.retroCaption;
@@ -912,7 +921,10 @@ delete window.oiseaux;
 			touchstart: function () {
 				"use strict";
 				$drawer.trigger("mouseover");
-	}	});	}
+		}	});
+
+		$game.addClass("review");
+	}
 
 
 
@@ -948,6 +960,5 @@ delete window.oiseaux;
 		instancie.classicalEvents1zoom();
 	}
 	instancie();
-
 
 });

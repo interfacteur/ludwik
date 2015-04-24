@@ -217,12 +217,26 @@ commonLAg.debug = false;
 //CSS transitions ----------------------------------------------------------------------------
 	commonLAg.transition = function (delai, prop) {
 		"use strict";
-		var pr = prop ? prop + " " : "";
+		var pr = "";
+		switch (typeof prop) {
+			case "string":
+				pr = prop + " " + delai + "ms";
+				break;
+			case "object": //array
+				prop.forEach(function (val) {
+					"use strict";
+					pr += val + " " + delai + "ms, "
+				});
+				pr = pr.substring(0, pr.length - 2);
+				break;
+			default:
+				pr = delai + "ms";
+		}
 		return {
-			"-webkit-transition": pr + delai + "ms",
-			"-moz-transition": pr + delai + "ms",
-			"-o-transition": pr + delai + "ms",
-			"transition": pr + delai + "ms"
+			"-webkit-transition": pr,
+			"-moz-transition": pr,
+			"-o-transition": pr,
+			"transition": pr
 	}	};
 
 

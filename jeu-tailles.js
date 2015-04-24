@@ -15,9 +15,6 @@
 	total: null, //configuré par le nombre d'images d'oiseaux
 
 	serie: 1, //set initial
-	jeu: "Série ",
-	jeu: "Série suivante \u003E",
-
 
 	collection: window.oiseaux, //cf. jeu-fiches.oiseaux.js
 	infos: {},
