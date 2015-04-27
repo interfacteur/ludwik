@@ -66,6 +66,7 @@
 	filtres: "css/filtres/filtres.svg",
 
 	sons: {
+		thr: "audio/confirmation/wrong", //menaces
 		ok: "audio/confirmation/correct", //drop valide
 		nok: "audio/confirmation/error" //drop invalide
 	},
@@ -657,9 +658,9 @@ delete window.oiseaux;
 		$puzzle.on({
 			mousemove: function (ze, ev) {
 				"use strict";
+				ze.preventDefault();
 				var x, y;
 				ze = ev || ze;
-				ze.preventDefault();
 				x = (ze.pageX - game.gPos.left) * game.displayRatio;
 				y = (ze.pageY - game.gPos.top) * game.displayRatio;
 				$puzzle.movable(x, y);
@@ -672,7 +673,13 @@ delete window.oiseaux;
 			mousemove: function () {
 				"use strict";
 				var $t = $(this),
+					id = $t.attr("id"),
 					total = Number(game.$thrts.html());
+
+				clearTimeout($t.tmt);
+				if ($stage.data("aera") === id)
+					return;
+				$stage.data("aera", id);
 
 				! $t.data("already")
 				&& $t.data("already", true)
@@ -680,14 +687,28 @@ delete window.oiseaux;
 				&& (total == game.threats)
 				&& Piece.toTransit(instancie.uiEvents);
 
+				commonLAg.sounds["thr"].turnoff()
+				.turnon();
+
 				game.$message.text(parametres.messages[$(this).attr("id")]);
 				game.$message.offset().top + $message.innerHeight() > $b.height()
 				&& $message.addClass("big");
 			},
 			mouseout: function () {
 				"use strict";
-				game.$message.text("");
-				$message.removeClass("big");
+				var id = $(this).attr("id");
+				$(this).tmt = setTimeout(function () {
+					"use strict";
+
+					if ($stage.data("aera") !== id)
+						return;
+					$stage.data("aera", -1);
+
+					game.$message.text("");
+					$message.removeClass("big");
+
+					commonLAg.sounds["thr"].turnoff();
+				}, game.delays[2]);
 		}	});
 
 	/*	//to do on Android ? ?????
@@ -698,6 +719,11 @@ delete window.oiseaux;
 			}
 			: function (ze) {
 				"use strict";
+
+					// tactTouch = typeof ze.pageX == "number" && (ze.pageX > 0 || ze.pageY > 0) ? ze
+					// : typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX > 0 || ze.touches[0].pageY > 0) ? ze.touches[0]
+					// : typeof ze.changedTouches[0].pageX == "number" && (ze.changedTouches[0].pageX > 0 || ze.changedTouches[0].pageY > 0) ? ze.changedTouches[0] : null,
+
 				return (typeof ze.pageX == "number" && (ze.pageX != 0 || ze.pageY != 0)) ?
 					ze
 					:

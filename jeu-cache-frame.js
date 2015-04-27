@@ -257,8 +257,9 @@ $(function annm () {
 				"use strict";
 				ze.preventDefault();
 				var ore = ze,
-					tactTouch = typeof ze.pageX == "number" && (ze.pageX != 0 || ze.pageY != 0) ? ze
-					: typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX != 0 || ze.touches[0].pageY != 0) ? ze.touches[0] : null,//Google Chrome on Android
+					tactTouch = typeof ze.pageX == "number" && (ze.pageX > 0 || ze.pageY > 0) ? ze
+					: typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX > 0 || ze.touches[0].pageY > 0) ? ze.touches[0]
+					: typeof ze.changedTouches[0].pageX == "number" && (ze.changedTouches[0].pageX > 0 || ze.changedTouches[0].pageY > 0) ? ze.changedTouches[0] : null,
 					active;
 
 				if (tactTouch === null)
