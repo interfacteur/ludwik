@@ -148,9 +148,11 @@ commonLAg.debug = false;
 			this.srce = srce + commonLAg.Sound.audioCompat;
 			this.audio = new Audio(this.srce);
 			this.readable = ! commonLAg.iaye ? false : true; //loaded when playing: http://www.ibm.com/developerworks/library/wa-ioshtml5/
-			this.stall = commonLAg.doNothing;
+			//this.stall = commonLAg.doNothing; //cf. http://stackoverflow.com/questions/12183011/javascript-redefine-and-override-existing-function-body
 			this.readdom();
 		})
+		&& (commonLAg.Sound.prototype.stall = commonLAg.doNothing) //cf. http://stackoverflow.com/questions/12183011/javascript-redefine-and-override-existing-function-body
+		&& (commonLAg.Sound.init = -1)
 		&& (commonLAg.Sound.prototype.readdom = function () {
 			"use strict";
 			$(this.audio).data("obj", this)
@@ -161,17 +163,20 @@ commonLAg.debug = false;
 				},
 				play: function () {
 					"use strict";
-					var t = this,
-						tob = $(t).data("obj");
-					$(t).off("play");
+					$(this).off("play");
+					if (commonLAg.Sound.init === true)
+						return;
 					setTimeout(function () {
 						"use strict";
-						(tob.readable === true)
-						&& (tob.stall = function (n) {
+						if (commonLAg.Sound.init === true)
+							return;
+						commonLAg.Sound.init = true;
+						commonLAg.Sound.prototype.stall = function (n) {
 							"use strict";
-							t.currentTime = n;
-						});
-					}, 750); //to do: how to adjust this duration?
+							this.readable === true
+							&& (this.audio.currentTime = n);
+						};
+					}, 50); //to do: how to adjust this duration?
 				},
 				error: function () {
 					"use strict";
