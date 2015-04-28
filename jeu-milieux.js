@@ -85,6 +85,11 @@
 delete window.oiseaux;
 
 
+
+
+
+
+
 ;$(function () {
 	"use strict";
 	
@@ -233,7 +238,7 @@ delete window.oiseaux;
 		commonLAg.msieUp11
 		&& $zoom.attr("transform", "translate(1132, 0)");
 
-		$puzzle.movable = 
+		$zoom.movable = 
 			commonLAg.msieUp11 ? commonLAg.doNothing //but ok with my prototype of magnify glass
 			: function (x, y) {
 				"use strict";
@@ -370,6 +375,8 @@ delete window.oiseaux;
 		Piece.toBrandTactile = function (ze) {
 			"use strict";
 
+			$stage.data("aera", -1);
+
 			game.$tactileP = $(document.elementFromPoint(ze.pageX, ze.pageY)); //element pseudo hover
 
 		//if "hover" element is a piece
@@ -417,13 +424,13 @@ delete window.oiseaux;
 	Piece.toRecapitulate = function () { //added later
 		"use strict";
 
-		$stage.data("aera", -1);
+		$stage.data("aera", -1)
+		.droppable("disable");
 
 		$game.removeClass("dad");
 
-		$stage.droppable("disable");
-
 		$piecesGroups.off();
+
 		$targetGroups.off()
 		.attr("class", "");
 
@@ -447,7 +454,7 @@ delete window.oiseaux;
 			});
 			$caption.addClass("last-view");
 
-			Piece.toTransit(instancie.classicalEvents3review);
+			Piece.toTransit(instancie.events3review);
 
 		}, game.delays[3]);
 	}
@@ -639,7 +646,7 @@ delete window.oiseaux;
 
 
 //Events ----------------------------------------------------------------------------
-	instancie.classicalEvents1zoom = function () { //classical events for the interface
+	instancie.events1zoom = function () { //classical events for the interface
 		"use strict";
 
 		$w.on({
@@ -663,7 +670,7 @@ delete window.oiseaux;
 				ze = ev || ze;
 				x = (ze.pageX - game.gPos.left) * game.displayRatio;
 				y = (ze.pageY - game.gPos.top) * game.displayRatio;
-				$puzzle.movable(x, y);
+				$zoom.movable(x, y);
 				$bolge.attr({
 					"x": Math.round(- x + game.magnusGlassRadial / game.displayRatio),
 					"y": Math.round(- y + game.magnusGlassRadial * game.booster / game.displayRatio)
@@ -685,7 +692,7 @@ delete window.oiseaux;
 				&& $t.data("already", true)
 				&& game.$thrts.html(++total)
 				&& (total == game.threats)
-				&& Piece.toTransit(instancie.uiEvents);
+				&& Piece.toTransit(instancie.events2dnd);
 
 				commonLAg.sounds["thr"].turnoff()
 				.turnon();
@@ -702,7 +709,7 @@ delete window.oiseaux;
 
 					if ($stage.data("aera") !== id)
 						return;
-					$stage.data("aera", -1);
+					$stage.data("aera", -2);
 
 					game.$message.text("");
 					$message.removeClass("big");
@@ -711,50 +718,48 @@ delete window.oiseaux;
 				}, game.delays[2]);
 		}	});
 
-	/*	//to do on Android ? ?????
-		var posEvent = commonLAg.touch === false ?
-			function (ze) {
-				"use strict";
-				return ze;
-			}
-			: function (ze) {
-				"use strict";
-
-					// tactTouch = typeof ze.pageX == "number" && (ze.pageX > 0 || ze.pageY > 0) ? ze
-					// : typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX > 0 || ze.touches[0].pageY > 0) ? ze.touches[0]
-					// : typeof ze.changedTouches[0].pageX == "number" && (ze.changedTouches[0].pageX > 0 || ze.changedTouches[0].pageY > 0) ? ze.changedTouches[0] : null,
-
-				return (typeof ze.pageX == "number" && (ze.pageX != 0 || ze.pageY != 0)) ?
-					ze
-					:
-					((typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX != 0 || ze.touches[0].pageY != 0)) ?
-						ze.touches[0]
-						:
-						null)
-			} */
-
 		commonLAg.touch
 		&& ($puzzle.stroking = function (ze) {
 			"use strict";
 			ze.preventDefault();
+			var ore = ze,
+				tactTouch = typeof ze.pageX == "number" && (ze.pageX > 0 || ze.pageY > 0) ? ze
+				: typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX > 0 || ze.touches[0].pageY > 0) ? ze.touches[0]
+				: typeof ze.changedTouches[0].pageX == "number" && (ze.changedTouches[0].pageX > 0 || ze.changedTouches[0].pageY > 0) ? ze.changedTouches[0] : null;
+
+			if (tactTouch === null)
+				return;
+
+			if (tactTouch !== ze) {
+				ore = {};
+				for (var p in ze)
+					ore[p] = ze[p];
+				ore.pageX = tactTouch.pageX;
+				ore.pageY = tactTouch.pageY;
+			}
 
 			game.booster = 2; /* MSIE 1000 years later */
 
-			$(this).trigger("mousemove", [ze]);
-			game.touchPoint = document.elementFromPoint(ze.pageX, ze.pageY - game.magnusGlassRadial / 2);
+			$puzzle.trigger("mousemove", [ore]);
+
+			game.touchPoint = document.elementFromPoint(ore.pageX, ore.pageY - game.magnusGlassRadial / 2);
 			game.touchPoint.tagName.search(parametres.re[0]) > - 1
-			&& $(game.touchPoint).trigger("mousemove", ze)
-			|| game.$message.text("");
-			$message.removeClass("big");
+			&& $(game.touchPoint).trigger("mousemove", [ore])
+			|| $stage.data("aera") != -2
+			&& $("#" + $stage.data("aera")).trigger("mouseout");
 		})
 		&& $puzzle.get(0) //http://stackoverflow.com/questions/16110124/can-you-get-svg-on-mobile-browser-accept-mouse-touch-events-i-cant
 		.addEventListener("touchmove", $puzzle.stroking, false);
 	}
 
-	instancie.uiEvents = function () { //drag and drop events
+	instancie.events2dnd = function () { //drag and drop events and classical events for drag and drop elements
 		"use strict";
 
-		$game.removeClass("zoom-first");
+		delete Piece.toZoom;
+		delete instancie.events1zoom;
+
+		$game.removeClass("zoom-first")
+		.addClass("dad");
 
 		$figures.draggable({
 			addClasses: false,
@@ -766,22 +771,6 @@ delete window.oiseaux;
 			drag: Piece.toBrandTactileIntro, //jQuery UI Touch Punch neutralizing mouseover event when dragging?
 			stop: Piece.toFix
 		});
-
-		$stage.droppable({
-			addClass: false,
-			tolerance: "pointer",
-			drop: Piece.toCheck
-		});
-
-		instancie.classicalEvents2dnd();
-	};
-
-	instancie.classicalEvents2dnd = function () { //classical events for drag and drop elements
-		"use strict";
-
-		delete Piece.toZoom;
-		delete instancie.classicalEvents1zoom;
-		delete instancie.uiEvents;
 
 		$piecesGroups.on({
 			mouseover: function () {
@@ -806,55 +795,8 @@ delete window.oiseaux;
 				$(this).trigger("mouseout");
 		}	});
 
-		$targetGroups.on({
-			mouseover: function () { //tactile: cf. toBrandTactile()
-				"use strict";
-
-				var $t = $(this),
-					cl,
-					filigree;
-
-				if ($t.data("full"))
-					return $stage.data("aera", -1);
-
-				$stage.data("aera", $t.data("instance"));
-
-				//filigree :
-				cl = $t.attr("class");
-				if (game.drag == null || cl == "mig" || cl == "g")
-					return;
-				clearTimeout($t.data("timet"));
-				filigree = game.drag == $t.data("instance") ? pieces[game.drag].$cloneImage : false;
-				filigree
-				&& filigree.attr("class", "mimage")
-				&& $t.attr("class", "mig")
-				&& $t.data("filigree", filigree);
-			},
-			mousemove: function () {
-				"use strict";
-				$(this).trigger("mouseover", true);
-			},
-			mouseout: function () {
-				"use strict";
-				var $t = $(this);
-				$stage.data("aera", -1);
-
-				//filigree :
-				$t.data("filigree")
-				&& $t.data("timet", setTimeout(function () {
-					"use strict";1
-					if (! $t.data("filigree") || $t.data("filigree").attr("class") == "image")
-						return;
-					$t.data("filigree").attr("class", "");
-					$t.attr("class", "");
-					$t.data("filigree", false);
-				}, game.delays[1]));
-		}	});
-
-		$game.addClass("dad");
-
 		$drawer.on({
-			mousedown: function () {
+			mousemove: function () {
 				"use strict";
 
 				$drawer.off();
@@ -867,7 +809,60 @@ delete window.oiseaux;
 				delete game.$message;
 				delete game.$thrts;
 
+				$stage.data("aera", -1)
+				.droppable({
+					addClass: false,
+					tolerance: "pointer",
+					drop: Piece.toCheck
+				});
+
+				$targetGroups.on({
+					mouseover: function () { //tactile: cf. toBrandTactile()
+						"use strict";
+
+						var $t = $(this),
+							cl,
+							filigree;
+
+						if ($t.data("full"))
+							return $stage.data("aera", -1);
+
+						$stage.data("aera", $t.data("instance"));
+
+						//filigree :
+						cl = $t.attr("class");
+						if (game.drag == null || cl == "mig" || cl == "g")
+							return;
+						clearTimeout($t.data("timet"));
+						filigree = game.drag == $t.data("instance") ? pieces[game.drag].$cloneImage : false;
+						filigree
+						&& filigree.attr("class", "mimage")
+						&& $t.attr("class", "mig")
+						&& $t.data("filigree", filigree);
+					},
+					mousemove: function () {
+						"use strict";
+						$(this).trigger("mouseover");
+					},
+					mouseout: function () {
+						"use strict";
+						var $t = $(this);
+						$stage.data("aera", -1);
+
+						//filigree :
+						$t.data("filigree")
+						&& $t.data("timet", setTimeout(function () {
+							"use strict";1
+							if (! $t.data("filigree") || $t.data("filigree").attr("class") == "image")
+								return;
+							$t.data("filigree").attr("class", "");
+							$t.attr("class", "");
+							$t.data("filigree", false);
+						}, game.delays[1]));
+				}	});
+
 				$game.removeClass("zoom");
+
 				Piece.retroCaption = function () {
 					"use strict";
 					$message.text("");
@@ -876,16 +871,16 @@ delete window.oiseaux;
 			},
 			touchstart: function () {
 				"use strict";
-				$(this).trigger("mousedown");
+				$drawer.trigger("mousedown");
 	}	});	}
 
-	instancie.classicalEvents3review = function () { //classical events for last review
+	instancie.events3review = function () { //classical events for last review
 		"use strict";
 
 		var $setpoint = $(".lag-order:eq(1)");
 		$setpoint.text($setpoint.data("review"));
 
-		delete instancie.classicalEvents2dnd;
+		delete instancie.events2dnd;
 		delete Piece.intoCaption;
 		delete Piece.retroCaption;
 		delete Piece.toAppreciate;
@@ -904,15 +899,19 @@ delete window.oiseaux;
 		}
 
 		$targetGroups.on({
-			mousemove: function () {
-				"use strict";
-				var instance = $(this).data("instance"),
-					piece = pieces[instance];
-				if ($stage.data("aera") == instance)
-					return;
-				Piece.toInform(instance, piece.pronominal + " " + parametres.messages[piece.infos]);
-				piece.$message.removeClass("last-view");
-		}	});
+			mousemove: whyTargetGroupsMousemoveImpossibleToTriggerOnAndroidInFactWithoutDebugConsoleAndProbablyIPad
+		});
+
+		function whyTargetGroupsMousemoveImpossibleToTriggerOnAndroidInFactWithoutDebugConsoleAndProbablyIPad () {
+			"use strict";
+			var instance = $(this).data("instance"),
+				piece = pieces[instance];
+			if ($stage.data("aera") == instance)
+				return;
+			Piece.toInform(instance, piece.pronominal + " " + parametres.messages[piece.infos]);
+			piece.$message.removeClass("last-view");
+			return true;
+		}
 
 		$threats.on({
 			mousemove: function () {
@@ -928,12 +927,21 @@ delete window.oiseaux;
 			"use strict";
 			ze.preventDefault();
 
-			game.touchPoint = document.elementFromPoint(ze.pageX, ze.pageY);
+			var tactTouch = typeof ze.pageX == "number" && (ze.pageX > 0 || ze.pageY > 0) ? ze
+				: typeof ze.touches[0].pageX == "number" && (ze.touches[0].pageX > 0 || ze.touches[0].pageY > 0) ? ze.touches[0]
+				: typeof ze.changedTouches[0].pageX == "number" && (ze.changedTouches[0].pageX > 0 || ze.changedTouches[0].pageY > 0) ? ze.changedTouches[0] : null;
 
-			(	game.touchPoint.hasAttribute("data-instance")
-			|| game.touchPoint.tagName.search(parametres.re[0]) > - 1	)
-			&& $(game.touchPoint).trigger("mousemove", ze);
-		})
+			if (tactTouch === null)
+				return;
+
+			game.touchPoint = document.elementFromPoint(tactTouch.pageX, tactTouch.pageY);
+
+			game.touchPoint.tagName.toLowerCase() == "path" //birds
+			&& $(game.touchPoint).parents($stage).length
+			&& whyTargetGroupsMousemoveImpossibleToTriggerOnAndroidInFactWithoutDebugConsoleAndProbablyIPad.call($(game.touchPoint).parent("g"))
+			|| game.touchPoint.tagName.search(parametres.re[0]) > - 1 //threats
+			&& $(game.touchPoint).trigger("mousemove");
+			})
 		&& $puzzle.get(0) //http://stackoverflow.com/questions/16110124/can-you-get-svg-on-mobile-browser-accept-mouse-touch-events-i-cant
 		.addEventListener("touchmove", $puzzle.stroking, false);
 
@@ -979,11 +987,11 @@ delete window.oiseaux;
 		delete Piece.prototype.toEstablish;
 		$targetGroups = $puzzleStage.find("g");
 		$caption = $(".bird-info");
-		$stage.data("aera", -1);
+		$stage.data("aera", -2);
 
 		$drawer.removeClass("establishing");
 
-		instancie.classicalEvents1zoom();
+		instancie.events1zoom();
 	}
 	instancie();
 

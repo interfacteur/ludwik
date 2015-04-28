@@ -856,7 +856,7 @@
 			},
 			mousemove: function () {
 				"use strict";
-				$(this).trigger("mouseover", true);
+				$(this).trigger("mouseover");
 			},
 			mouseout: function () {
 				"use strict";
