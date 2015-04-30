@@ -307,8 +307,8 @@ delete window.oiseaux;
 		game.gHeight = infoDim.height;
 		game.displayRatio = parametres.hauteur / game.gHeight;
 		$puzzle.css({ //Google Chrome and also Firefox 30
-			"width": infoDim.width,
-			"height": infoDim.height
+			"width": Math.round(infoDim.width),
+			"height": Math.round(infoDim.height)
 		});
 		game.gPos = $puzzle.offset();
 		$message.css({
@@ -673,7 +673,7 @@ delete window.oiseaux;
 				$zoom.movable(x, y);
 				$bolge.attr({
 					"x": Math.round(- x + game.magnusGlassRadial / game.displayRatio),
-					"y": Math.round(- y + game.magnusGlassRadial * game.booster / game.displayRatio)
+					"y": Math.round(- y + game.magnusGlassRadial * game.booster * 1.5 / game.displayRatio)
 		});	}	})
 
 		$threats.on({
@@ -742,7 +742,7 @@ delete window.oiseaux;
 
 			$puzzle.trigger("mousemove", [ore]);
 
-			game.touchPoint = document.elementFromPoint(ore.pageX, ore.pageY - game.magnusGlassRadial / 2);
+			game.touchPoint = document.elementFromPoint(ore.pageX, ore.pageY - game.magnusGlassRadial * 1.5 / game.displayRatio);
 			game.touchPoint.tagName.search(parametres.re[0]) > - 1
 			&& $(game.touchPoint).trigger("mousemove", [ore])
 			|| $stage.data("aera") != -2

@@ -36,12 +36,15 @@ var parametres = {
 				def: $b.css("background-attachment")
 		}	};
 
-		commonLAg.msie == 9
-		|| (	$b.css("background-attachment", "fixed") //http://stackoverflow.com/questions/14115080/detect-support-for-background-attachment-fixed
-				 && (game.fallback.test = $b.css("background-attachment"))
-				 && $b.css("background-attachment", game.fallback.def)
-				 && game.fallback.test != "fixed"	)
-		&& (location.href = parametres.fallback);
+/*		commonLAg.msie == 9
+		|| (true && true)
+		&& (location.href = parametres.fallback); //doesn't work on MSIE 9 - virtual */
+		if (	commonLAg.msie == 9
+				|| (	$b.css("background-attachment", "fixed") //http://stackoverflow.com/questions/14115080/detect-support-for-background-attachment-fixed
+						&& (game.fallback.test = $b.css("background-attachment"))
+						&& $b.css("background-attachment", game.fallback.def)
+						&& game.fallback.test != "fixed"	)	)
+			location.href = parametres.fallback;
 		delete game.fallback;
 
 

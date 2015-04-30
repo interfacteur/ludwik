@@ -308,6 +308,13 @@ commonLAg.debug = false;
 		resize: commonLAg.menuLoading //if resizing before first touch event
 	});
 
+//No .slide-track on Puzzle on iPad
+	$(".puzzle").length
+	&& setTimeout(function () {
+		"use strict";
+		$head.css("overflow", "visible");
+	}, 1000);
+
 
 
 
