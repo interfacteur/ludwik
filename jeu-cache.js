@@ -9,7 +9,8 @@
 
 var parametres = {
 	delai1: 150,
-	iframe: {}
+	iframe: {},
+	fallback : "jeu-cache-fallback.html"
 }
 
 
@@ -19,19 +20,29 @@ var parametres = {
 ;$(function () {
 	"use strict";
 
-	var pI = parametres.iframe,
-		$w = $(window),
+	var $b = $("body"),
+		pI = parametres.iframe,
 		$slidePrev = $("#slidePrev"),
 		$slideNext = $("#slideNext"),
-		$hasBath = $("#hasBath"),
+		// $hasBath = $("#hasBath"),
 		$LAgTitle = $("#LAgTitle"),
 		LAgTitle = $LAgTitle.html(),
 		game = {
 			locInit: [],
 			init: -1,
-			hash: null
+			hash: null,
 			// $iframe: $hasBath.contents() //no ability to get width of elements via contents nor via contentDocument / contentWindow.document
-		};
+			fallback: {
+				def: $b.css("background-attachment")
+		}	};
+
+		commonLAg.msie == 9
+		|| (	$b.css("background-attachment", "fixed") //http://stackoverflow.com/questions/14115080/detect-support-for-background-attachment-fixed
+				 && (game.fallback.test = $b.css("background-attachment"))
+				 && $b.css("background-attachment", game.fallback.def)
+				 && game.fallback.test != "fixed"	)
+		&& (location.href = parametres.fallback);
+		delete game.fallback;
 
 
 

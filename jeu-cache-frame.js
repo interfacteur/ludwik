@@ -10,8 +10,6 @@
 var parametres = {
 
 	delai1: 1000,
-	delai2: 240,
-	delai3: 290, /* parametres.delai2 + 50 */
 
 	parent: "jeu-cache.html",
 
@@ -45,8 +43,7 @@ $(function annm () {
 */
 
 
-	var wp = window.parent,
-		commonLAg = wp.commonLAg;
+	var wp = window.parent;
 
 	if (wp === window)
 		return document.location.href = parametres.parent;
@@ -54,7 +51,8 @@ $(function annm () {
 	if (typeof wp.parametres == "undefined" || wp.parametres.ready !== true)
 		return setTimeout(annm, 500);
 
-	var wpI = wp.parametres.iframe,
+	var commonLAg = wp.commonLAg,
+		wpI = wp.parametres.iframe,
 		$w = $(window),
 		$b = $("body"),
 		$cargo = $("#hasCargo"),
@@ -68,7 +66,6 @@ $(function annm () {
 			posMy: "center",
 			init: false,
 			currnt: [],
-			// tmt: null,
 			// w: $cargo.width(),
 			// h: $cargo.height(),
 			// mi: $porthole.width() / 2,
@@ -213,6 +210,8 @@ $(function annm () {
 	$cargo.on({
 		load: function () {
 			"use strict";
+			$cargo.off("load"); //cf. jeu-cache.js
+
 			if (game.init === true)
 				return;
 
@@ -221,8 +220,6 @@ $(function annm () {
 
 			game.init = true;
 			game.currnt[wpI.currnt] = true;
-
-			$cargo.off("load"); //cf. jeu-cache.js
 
 			commonLAg.msie == 9
 			&& $b.addClass("msie9");

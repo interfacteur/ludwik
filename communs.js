@@ -152,7 +152,7 @@ commonLAg.debug = false;
 			this.readdom();
 		})
 		&& (commonLAg.Sound.prototype.stall = commonLAg.doNothing) //cf. http://stackoverflow.com/questions/12183011/javascript-redefine-and-override-existing-function-body
-		&& (commonLAg.Sound.init = -1)
+		&& (commonLAg.Sound.first = -1)
 		&& (commonLAg.Sound.prototype.readdom = function () {
 			"use strict";
 			$(this.audio).data("obj", this)
@@ -164,13 +164,13 @@ commonLAg.debug = false;
 				play: function () {
 					"use strict";
 					$(this).off("play");
-					if (commonLAg.Sound.init === true)
+					if (commonLAg.Sound.first === true)
 						return;
 					setTimeout(function () {
 						"use strict";
-						if (commonLAg.Sound.init === true)
+						if (commonLAg.Sound.first === true)
 							return;
-						commonLAg.Sound.init = true;
+						commonLAg.Sound.first = true;
 						commonLAg.Sound.prototype.stall = function (n) {
 							"use strict";
 							this.readable === true
@@ -184,15 +184,20 @@ commonLAg.debug = false;
 		}	});	})
 		&& (commonLAg.Sound.prototype.turnon = function () {
 			"use strict";
+			this.audio.play();
+			if (this.key === commonLAg.Sound.active)
+				return;
 			this.readable === true
+			&& (commonLAg.Sound.active = this.key)
 			&& this.audio.play();
 			return this;
 		})
 		&& (commonLAg.Sound.prototype.turnoff = function () {
 			"use strict";
-			if (this.readable === true) {
+			if (commonLAg.Sound.active !== false && this.readable === true) {
 				! this.audio.paused
 				&& this.audio.pause();
+				commonLAg.Sound.active = false;
 				this.stall(0);
 			}
 			return this;
@@ -213,7 +218,7 @@ commonLAg.debug = false;
 			commonLAg.sounds[p] = new commonLAg.Sound(sd[p], p);
 	}
 
-
+	commonLAg.Sound.active = false;
 
 
 

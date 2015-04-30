@@ -3,6 +3,7 @@ Ludwik
 
 
 * commun.js : environnement ergonomique et technique des trois jeux
+* jeu-cache-fallback.js : fallback du jeu de cache-cache : 'background-attachment: fixed' non supporté, et MSIE 9
 * jeu-cache-frame.js : annexe du jeu de cache-cache
 * jeu-cache.js : jeu de cache-cache
 * jeu-milieux.js : jeu des milieux
