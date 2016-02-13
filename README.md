@@ -3,6 +3,8 @@ Ludwik
 
 Démo des jeux en ligne : http://www.langhade.net/ludwik/jeux/jeu-tailles.html
 
+Accès à toutes les versions : http://www.langhade.net/ludwik/
+
 Notes de présentation : http://interfacteur.blogspot.fr/2015/06/jeux-d-oiseaux-1-presentation.html
 
 * commun.js : environnement ergonomique et technique des trois jeux
