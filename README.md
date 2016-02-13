@@ -1,6 +1,15 @@
 Ludwik
 ========
 
+4 jeux web, responsives, pour interfaces bureau et mobiles, développées chez Ludwik pour Life des Alpilles
+
+* Jeu des tailles, type classement
+* Jeu de cache-cache, type exploration
+* Puzzle, type placement
+* Jeu des milieux, type exploration-placement
+
+
+
 Démo des jeux en ligne : http://www.langhade.net/ludwik/jeux/jeu-tailles.html
 
 Accès à toutes les versions : http://www.langhade.net/ludwik/
