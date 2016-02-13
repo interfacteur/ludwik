@@ -10,7 +10,7 @@ address.address	{
 	padding: .33em .66em .33em .33em;
 	position: absolute;
 	text-align: right;
-	width: 18em;
+	width: 17em;
 	z-index: 10000;
 }
 address.address a	{
