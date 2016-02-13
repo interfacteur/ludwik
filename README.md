@@ -16,6 +16,7 @@ Accès à toutes les versions : http://www.langhade.net/ludwik/
 
 Notes de présentation : http://interfacteur.blogspot.fr/2015/06/jeux-d-oiseaux-1-presentation.html
 
+Fichiers :
 * commun.js : environnement ergonomique et technique des trois jeux
 * jeu-cache-fallback.js : fallback du jeu de cache-cache : 'background-attachment: fixed' non supporté, et MSIE 9
 * jeu-cache-frame.js : annexe du jeu de cache-cache
@@ -25,4 +26,4 @@ Notes de présentation : http://interfacteur.blogspot.fr/2015/06/jeux-d-oiseaux-
 * jeu-tailles.js : jeu des tailles
 
 
-Pages : l'ensemble des développements, comprenant une version bilingue et une version modèle
+Pages : l'ensemble du développement, comprenant une version bilingue et une version modèle
