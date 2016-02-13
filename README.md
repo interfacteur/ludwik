@@ -14,3 +14,4 @@ Notes de présentation : http://interfacteur.blogspot.fr/2015/06/jeux-d-oiseaux-
 * jeu-tailles.js : jeu des tailles
 
 
+Pages : l'ensemble des développements, comprenant une version bilingue et une version modèle
