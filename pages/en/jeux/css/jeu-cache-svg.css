@@ -1,0 +1,26 @@
+/*
+	par Ludwik : Parc naturel des Alpilles, jeu du puzzle
+	Gaëtan Langhade - Interfacteur
+	février-mars 2015
+*/
+
+
+
+
+/*.path-init path	{*/
+.init g	{
+	display: none;
+}
+.has-lading1 .path-map1,
+.has-lading2 .path-map2,
+.has-lading3 .path-map3,
+.has-lading4 .path-map4	{
+	display: inherit;
+}
+path	{
+	fill: transparent;
+	stroke: transparent;
+	stroke-width: 11%;
+	stroke-linejoin: bevel;
+	stroke-linecap: butt;
+}

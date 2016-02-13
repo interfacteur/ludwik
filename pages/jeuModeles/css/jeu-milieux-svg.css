@@ -1,0 +1,170 @@
+/*
+	Ludwik et Gaëtan Langhade - Interfacteur
+	février-avril 2015
+*/
+
+
+
+
+/* CURSOR */
+.dad .stage g	{
+	cursor: crosshair;
+}
+.review .stage g,
+.review #figure .threat	{
+	cursor: help;
+}
+.dad .stage g.g	{
+	cursor: default;
+}
+.dad .figure g	{
+	cursor: move;
+}
+#figure .threat	{
+	cursor: no-drop;
+	cursor: not-allowed;
+}
+
+
+/* POINTER EVENTS */
+	/*Does not work on SVG elements in Safari 5.1 or Android <= 4.1.*/
+#figure .stage image,
+#figure .stage g.g,
+.dad .figure,
+.dad .figure image,
+.dad .figure.drag g,
+.dad .figure.dragDropped,
+.review .figure.dragDropped,
+.dad .figure.dragDropped g,
+.stageZoom,
+.review .figure.dragDropped .bird-info	{
+	pointer-events: none;
+}
+.figure.dragDropped .bird-info,
+.dad .figure g,
+.review .stage g	{
+	pointer-events: all;
+}
+
+
+
+
+
+#figure svg	{
+	border-radius: 0 5% 5% 5%;
+	display: inline-block;
+	max-width: 100%;
+	max-height: 100%;
+	vertical-align: middle;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0)	{
+	#figure svg:not([style])	{
+		opacity: .44;
+	}
+}
+
+
+
+
+
+#figure .stage image.levels	{
+	display: inherit;
+	opacity: 1;
+}
+#figure .stage image,
+.zoom #figure .stage .niches	{
+	display: none; /* GC Mac, iPad */
+}
+#figure .stage image,
+#figure .stage g	{
+	opacity: 0;
+}
+#figure .stage image.mimage	{
+	display: inherit; /* GC Mac, iPad */
+	opacity: .4;
+}
+#figure .stage image.image	{
+	display: inherit; /* GC Mac, iPad */
+	opacity: 1;
+}
+#figure .stage g.error	{
+	opacity: 1;
+	fill: rgba(255,0,0,.5);
+}
+
+
+.figure.bad-drop svg	{
+	-webkit-filter: invert(100%) sepia(100%);
+	filter: invert(100%) sepia(100%);
+	opacity: .75;
+}
+.msie .figure.bad-drop svg	{
+	filter: none;
+}
+
+
+/* PUZZLE PIECES */
+#figure .stage g,
+.figure g	{
+	fill: transparent;
+}
+.drag g	{
+	fill: #6B5F1D;
+	filter: url(filtres/filtres.svg#shadow); /* cf. webkit solution */
+}
+@media screen and (-webkit-min-device-pixel-ratio:0)	{
+	.drag g	{
+		-webkit-filter: url(#shadow); /* webkit solution: SVG file append to document via js */
+		filter: url(#shadow);
+	}
+}
+
+
+
+/* ZOOM */
+.stageZoom,
+.stageThreats	{
+	display: none;
+}
+.zoom .stageZoom,
+.zoom .stageThreats,
+.review .stageThreats	{
+	display: inherit;
+}
+
+.stageZoom circle	{
+	fill: none;
+	stroke: #592919;
+	stroke-width: 6;
+}
+.stageZoom[transform="translate(566,480)"] circle	{
+	fill: #EFE3D7;
+}
+
+body:not(.msie) .init-zoom,
+.msie #figure svg:hover .init-zoom,
+.msie .dad #figure svg .init-zoom	{ /* MSIE 1000 years later */
+	display: none;
+}
+body .stageZoom[transform="translate(566,480)"] .init-zoom	{
+	display: inherit;
+} /* [transform^="translate(1132"][transform$="0)"] .init-zoom */
+
+
+.threat	{
+	fill: rgba(255,255,255,0);
+/*	stroke: black;
+	stroke-width: 3px; */
+}
+.msie .threat	{
+	position: relative;
+	z-index: 10002;
+}
+/* .natenv:not(.review) .threat:hover	{
+	stroke: rgba(255,0,0,.85);
+	stroke-width: 3px;
+} */
+
+
+
+

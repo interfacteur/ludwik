@@ -1,0 +1,122 @@
+/*
+	Ludwik et Gaëtan Langhade - Interfacteur
+	février-avril 2015
+*/
+
+
+
+
+
+/* CURSOR */
+#figure g	{
+	cursor: crosshair;
+}
+.figure g,
+#figure g.g	{
+	cursor: move;
+}
+.bravo #figure g	{
+	cursor: default;
+}
+
+
+
+
+/* POINTER EVENTS */
+	/*Does not work on SVG elements in Safari 5.1 or Android <= 4.1.*/
+#figure image,
+.figure.dragOriginal g,
+.figure.dragClone g,
+.figure.dragDropped g	{
+	pointer-events: none;
+}
+.figure g	{
+	pointer-events: all;
+}
+
+
+
+/* PUZZLE STAGE */
+.levels,
+.bravo #figure.lev1 .level1,
+.bravo #figure.lev2 .level2,
+.bravo #figure.lev3 .level3	{
+	display: none;
+}
+#figure.lev1 .level1,
+#figure.lev2 .level2,
+#figure.lev3 .level3,
+.bravo #figure .level0	{
+	display: inherit;
+	opacity: 1;
+}
+.svgSt	{
+	 fill: none;
+	 /*stroke-width: 2;*/
+	 /*stroke: #592919;*/
+}
+.svgBg	{
+	fill: #EFE3D7;
+	stroke-width: 0;
+	stroke: none;
+}
+.svgBgOk	{
+	fill: #9E9C1A;
+}
+.svgBgAlmost	{
+	fill: #EE7F00;
+}
+.svgBgNok	{
+	fill: #B5006F;
+}
+#figure image	{
+	display: none; /* GC Mac, iPad */
+}
+#figure image,
+#figure g,
+.svgBgOk,
+.svgBgNok,
+.svgBgAlmost	{
+	opacity: 0;
+}
+#figure image.mimage	{
+	display: inherit; /* GC Mac, iPad */
+	opacity: .4;
+}
+.ok .svgBgOk,
+.nok .svgBgNok,
+.almost .svgBgAlmost	{
+	opacity: .6;
+}
+#figure image.image	{
+	display: inherit; /* GC Mac, iPad */
+	opacity: 1;
+}
+text	{
+	fill: #592919;
+	font-size: 1.75em;
+	font-weight: bold;
+	opacity: .5;
+}
+text + text	{
+	text-anchor: end;
+}
+
+
+/* PUZZLE PIECES */
+.figure g	{
+	fill: #6B5F1D;
+}
+.dragClone g,
+.dragClick g	{
+	filter: url(filtres/filtres.svg#shadow); /* cf. webkit solution */
+}
+@media screen and (-webkit-min-device-pixel-ratio:0)	{
+	.dragClone g,
+	.dragClick g	{
+		-webkit-filter: url(#shadow); /* webkit solution: SVG file append to document via js */
+		filter: url(#shadow);
+	}
+}
+
+

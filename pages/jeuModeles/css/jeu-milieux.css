@@ -1,0 +1,327 @@
+/*
+	Ludwik et Gaëtan Langhade - Interfacteur
+	février-avril 2015
+*/
+
+
+.natenv	{
+	height: 100%;
+	min-height: 320px;
+	min-width: 400px;
+	overflow: hidden;
+	position: relative;
+}
+
+
+
+.zoom-first .lg-order,
+body .lg-order + .lg-order	{
+	display: inherit;
+}
+.lg-order,
+.zoom-first .lg-order + .lg-order	{
+	display: none;
+}
+
+.zoom-first.phases-transit .lg-order + .lg-order	{ /* added later */
+	display: inherit;
+	left: -4444px;
+	position: absolute;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0)	{
+	.lg-order	{
+		box-shadow: none;
+	}	
+}
+
+
+
+#figure,
+#figures	{
+	text-align: center;
+}
+
+
+#figure	{
+	overflow: hidden;
+}
+
+
+
+
+#figures	{
+	position: relative;
+}
+.walking	{
+	position: relative;
+}
+.zoom-first .walking	{
+	opacity: .4;
+}
+.walking::after	{ /* added later */
+	color: #592919;
+	content: attr(data-infos);
+	font-size: .66em;
+	font-style: italic;
+	left: 0;
+	line-height: 1;
+	text-align: center;
+	pointer-events: none;
+	position: absolute;
+	width: 100%;
+	white-space: nowrap;
+}
+.walking.empty::after	{
+	content: none;
+}
+
+
+
+.figure	{
+	display: inline-block;
+	max-height: 100%;
+	max-width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+.figure.dragged	{
+	overflow: visible;
+}
+.figure.dragDropped svg	{
+	opacity: 0;
+	left: -4444px;
+	position: absolute;
+	z-index: -1;
+}
+
+#figures .figure,
+#figures svg	{
+	line-height: 1;
+}
+
+
+
+
+.establishing,
+.resizing	{
+	overflow: hidden;
+}
+.establishing .figure,
+.resizing .figure,
+.resize #figure g.error,
+.resize .bird-info,
+.resize .env-info,
+.resize .walking::after	{
+	opacity: 0;
+}
+
+
+
+
+.caption-info	{
+	border: 1px solid #000;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	display: none;
+	line-height: 1.6;
+	padding: .5em;
+	pointer-events: none;
+}
+.caption-info.over,
+.zoom #figure .env-info	{
+	display: block;
+}
+.caption-info.bad-drop	{
+	border: 1px solid #F00;
+	color: #F00;
+}
+.env-info	{
+	background-color: rgba(255,255,255,.9);
+	border: 1px solid #6B5F1D;
+	color: #6B5F1D;
+	margin: .25em 0 0 .33em;
+	position: absolute;
+	text-align: left;
+	width: 16em;
+	z-index: 10001;
+}
+.env-info.big	{
+	background-color: rgba(255,255,255,.75);
+	color: #000;
+	left: 0!important;
+	width: 100%;
+}
+.zoom .env-info,
+.env-info:empty	{
+	border: 0;
+	padding: 0;
+}
+
+.into-message	{
+	border: 1px solid #6B5F1D;
+	border-radius: 1em;
+	padding: .5em;
+}
+.into-message:empty	{
+	border: 0;
+}
+.output	{
+	color: #592919;
+}
+.output	{
+	font-weight: bold;
+}
+
+.bird-info	{
+	background-color: #FFF;
+	color: #000;
+	position: fixed;
+	text-align: center;
+	white-space: nowrap;
+	width: 8em;
+	z-index: 10000;
+}
+.figure.dragDropped .bird-info:not(.over)	{
+	background-color: #592919;
+	border-radius: 0;
+	color: #FFF;
+	display: block;
+	font-size: .66em;
+	font-style: italic;
+	padding: 0;
+	white-space: nowrap;
+	width: auto;
+}
+.figure.dragDropped .bird-info.last-view	{
+	/*opacity: .5;*/
+	opacity: 0;
+}
+.zoom #figures .caption-info	{
+	display: none;
+}
+
+
+
+
+
+
+@media screen and (min-aspect-ratio: 1/1)	{
+	#figure	{
+		float: left;
+		height: -webkit-calc(100% - 5.6em);
+		height: -moz-calc(100% - 5.6em);
+		height: calc(100% - 5.6em);
+		line-height: -webjut-calc(100vh -5.6em);
+		line-height: -moz-calc(100vh -5.6em);
+		line-height: calc(100vh -5.6em);
+		text-align: right;
+	}
+	#figures	{
+		float: right;
+		height: -webkit-calc(100% - 5.6em);
+		height: -moz-calc(100% - 5.6em);
+		height: calc(100% - 5.6em);
+	}
+	.figure	{
+		vertical-align: middle;
+	}
+	.zones2 .walking	{
+		height: 50%;
+		line-height: 41.5vh;
+	}
+	.zones3 .walking	{
+		height: 33%;
+		line-height: 27.6vh;
+	}
+	.zones4 .walking	{
+		height: 25%;
+		line-height: 20.7vh;
+	}
+}
+@media screen and (min-aspect-ratio: 1/1) and (max-width: 1299px)	{
+	#figure	{
+		width: 80%;
+	}
+	#figures	{
+		width: 20%;
+	}
+	.zones2 .walking::after	{
+		bottom: 20%;
+	}
+	.zones3 .walking::after	{
+		bottom: 20%;
+	}
+	.zones4 .walking::after	{
+		bottom: 14%;
+	}
+}
+@media screen and (min-aspect-ratio: 1/1) and (min-width: 1300px)	{
+	#figure	{
+		width: 65%;
+	}
+	#figures	{
+		width: 35%;
+	}
+	.zones2 .walking::after	{
+		bottom: 30%;
+	}
+	.zones3 .walking::after	{
+		bottom: 25%;
+	}
+	.zones4 .walking::after	{
+		bottom: 14%;
+	}
+}
+@media screen and (max-aspect-ratio: 1/1)	{
+	#figure	{
+		height: -webkit-calc(89.5% - 5.6em);
+		height: -moz-calc(89.5% - 5.6em);
+		height: calc(89.5% - 5.6em);
+		line-height: -webkit-calc(89.5% - 5.6em);
+		line-height: -moz-calc(89.5% - 5.6em);
+		line-height: calc(89.5% - 5.6em);
+	}
+	#figures	{
+		height: 10.5%;
+	}
+	.figure	{
+		vertical-align: top;
+	}
+	.walking	{
+		float: left;
+		height: 100%;
+	}
+	.zones2 .walking	{
+		width: 50%;
+	}
+	.zones3 .walking	{
+		width: 33%;
+	}
+	.zones4 .walking	{
+		width: 25%;
+	}
+	.walking::after	{
+		bottom: 0;
+	}
+}
+
+
+
+
+
+
+
+
+.dev .figure	{
+	background-color: rgba(255,0,0,.3);
+	box-shadow: 0 0 .5em yellow inset;
+}
+}
+.dev #figure	{
+	box-shadow: 0 0 1em black inset;
+}
+.dev .walking	{
+	box-shadow: 0 0 1em black inset;
+}
+

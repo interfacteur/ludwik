@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles : jeu du cache-cache</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-cache.css">
+
+<link rel="stylesheet" type="text/css" href="_address/address.css">
+
+</head>
+
+<body class="has">
+
+<?php
+$_GET["page"] = "cache";
+include("_address/address.php");
+?>
+
+<section class="hideandseek">
+
+	<header class="life-alpilles-games fixing" id="lifeAlpillesGame">
+		<a href="http://life-alpilles.com" class="LAg-logo"><img src="img/interface/logoLifeAlpilles.png" alt="Life des Alpilles - logo"></a>
+
+		<p class="bilingual" id="bilingual">
+			<span class="left"><img src="img/interface/version-fr.png" height="12" width="18" alt="Version française affichée"></span>
+			<a class="right" href="../en/jeux/jeu-cache.html"><img src="img/interface/version-en.png" height="12" width="18" alt="English version" lang="en"></a>
+		</p>
+
+		<h1 class="LAg-title" id="LAgTitle">Jeu du cache-cache</h1>
+
+		<ol class="LAg-menu">
+			<li class="game-ranking LAg-other"><a href="jeu-tailles.html" class="other">Tailles</a></li>
+			<li class="game-has LAg-other">
+				<a href="#" title="Précédent 'jeu du cache-cache'" class="slide-track track-prev" id="slidePrev">Précédent 'jeu du cache-cache'</a>
+				<span class="other" title="'Cache-cache' est le jeu affiché">Cache-cache</span>
+				<a href="#" title="'Jeu du cache-cache' suivant" class="slide-track track-next" id="slideNext">'Jeu du cache-cache' suivant</a>
+			<li class="game-puzzle LAg-other"><a href="jeu-puzzle1.html" class="other">Puzzles</a></li>
+			<li class="game-natenv LAg-other"><a href="jeu-milieux1.html" class="other">Milieux</a></li>
+		</ol>
+
+		<button class="icon-menu" id="iconLAgMenu"></button>
+	</header> <!-- life-alpilles-games -->
+
+	<p class="lag-order">
+		Cherche dans cette vue les oiseaux pour écouter leur chant.
+	</p> <!-- lag-order -->
+
+	<hr id="webkit">
+
+	<iframe src="jeu-cache-frame.html" frameborder="0" name="hasBath" id="hasBath" class="has-bath"></iframe>
+
+</section> <!-- hideandseek -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-cache.js"></script>
+
+</body>
+</html>

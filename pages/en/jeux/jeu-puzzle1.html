@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles: puzzle game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="module-flipclok/flipclock.css">
+<link rel="stylesheet" href="css/jeu-puzzle.css">
+<link rel="stylesheet" href="css/jeu-puzzle-svg.css">
+
+<link rel="stylesheet" type="text/css" href="../../jeux/_address/address.css">
+
+</head>
+
+<body>
+
+<?php
+$lang = "en";
+$_GET["page"] = "puzzle";
+include("../../jeux/_address/address.php");
+?>
+
+<section class="puzzle">
+
+	<header class="life-alpilles-games fixing" id="lifeAlpillesGame">
+		<a href="http://life-alpilles.com" class="LAg-logo"><img src="img/interface/logoLifeAlpilles.png" alt="Life des Alpilles - logo"></a>
+
+		<p class="bilingual" id="bilingual">
+			<a class="left" href="../../jeux/jeu-puzzle1.html"><img src="img/interface/version-fr.png" height="12" width="18" alt="Version française" lang="fr"></a>
+			<span class="right"><img src="img/interface/version-en.png" height="12" width="18" alt="English version displayed"></span>
+		</p>
+
+		<h1 class="LAg-title">Puzzle game (1/4)</h1>
+
+		<ol class="LAg-menu">
+			<li class="game-ranking LAg-other"><a href="jeu-tailles.html" class="other">Sizes</a></li>
+			<li class="game-has LAg-other"><a href="jeu-cache.html" class="other">Hide and seek</a></li>
+			<li class="game-puzzle LAg-other">
+				<a href="jeu-puzzle4.html" title="Previous 'puzzle game'" class="slide-track track-prev" id="slidePrev">Previous 'puzzle game'</a>
+				<span class="other" title="'Puzzle' is the displayed game">Puzzles</span>
+				<a href="jeu-puzzle2.html" title="Next 'puzzle game'" class="slide-track track-next" id="slideNext">Next 'puzzle game'</a>
+			</li>
+			<li class="game-natenv LAg-other"><a href="jeu-milieux1.html" class="other">Environments</a></li>
+		</ol>
+
+		<button class="icon-menu" id="iconLAgMenu"></button>
+	</header> <!-- life-alpilles-games -->
+
+	<p class="lag-order">
+		Reconstitute the male and female bird.
+	</p> <!-- lag-order -->
+
+	<form action="#" class="tool form" id="levels">
+
+		<div class="tool clock extra">
+			<div id="clock"></div>
+		</div> <!-- tool clock -->
+
+		<p>
+			<label for="lev">Levels:</label>
+			<br>
+			<input type="radio" value="lev1" name="lev" title="level1">
+			<input type="radio" value="lev2" name="lev" title="level2" checked id="lev">
+			<input type="radio" value="lev3" name="lev" title="level3">
+		</p>
+		<input type="hidden" id="hybridHelp" value="false"> <!-- to help with hybrid pieces after ending -->
+		<input type="hidden" id="melting" value="true"> <!-- to shuffle the pieces at init puzzle -->
+
+	</form> <!-- levels -->
+
+	<figure class="lev2" id="figure">
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+			viewBox="0 0 1000 1000" width="100%" height="100%" 
+			preserveAspectRatio="xMidYMin meet">
+
+			<rect x="0" y="0" width="1000" height="1000" class="svgBg" id="referencial" />
+			<rect x="0" y="0" width="1000" height="1000" class="svgBg svgBgOk" />
+			<rect x="0" y="0" width="1000" height="1000" class="svgBg svgBgNok" />
+			<rect x="0" y="0" width="1000" height="1000" class="svgBg svgBgAlmost" />
+
+			<image xlink:href="img/jeu-puzzle1/niveau-oc1.png" width="100%" height="100%" class="levels level1" />
+			<image xlink:href="img/jeu-puzzle1/niveau-oc2.png" width="100%" height="100%" class="levels level2" />
+			<image xlink:href="img/jeu-puzzle1/niveau-oc3.png" width="100%" height="100%" class="levels level3" />
+			<image xlink:href="img/jeu-puzzle1/niveau-oc0.png" width="100%" height="100%" class="levels level0" />
+
+			<rect x="1" y="1" width="998" height="998" class="svgSt" />
+
+			<text x="0" y="950">Little Bustard female</text>
+			<text x="1000" y="950">Little Bustard male</text>
+
+		</svg>
+	</figure> <!-- figure -->
+
+	<hr id="webkit">
+
+	<figure id="figures" class="establishing">
+
+		<figure class="figure" data-dueljectif="piece1">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M0,175.978c74.99,0,149.982,0,224.972,0
+						c-3.494,16.575-2.104,44.563-2,63.992c0.044,8.232,2.237,16.443-1,17.998c-21.72,4.476-21.657-15.663-38.995-11.999
+						c-9.767,2.064-14.787,22.881-14.998,31.996c-0.324,13.966,6.137,35.754,12.999,37.995c14.718,4.806,26.408-18.711,39.995-10.999
+						c5.158,2.928,2,29.491,2,42.995c0,19.751,0,33.349,0,48.994c-21.165,3.557-86.922-12.326-92.988,8.999
+						c-4.43,15.573,12.666,17.055,11.999,33.996c-7.92,9.015-19.845,9.92-33.996,9.999c-9.876,0.055-30.809-0.376-32.996-9.999
+						c-3.138-13.806,19.437-23.46,12.998-37.995c-4.145-9.357-27.739-5.999-39.995-5.999c-17.641,0-31.292,0-45.994,0
+						c0.003,1.003-0.81,1.19-1,2c-0.333,0-0.667,0-1,0C0,323.959,0,249.968,0,175.978z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-f1.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+		<figure class="figure" data-dueljectif="piece1">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M772.947,175.978c0.215,8.326,0,25.596,0,40.995
+						c0,15.437,0.326,32.419,0,40.995c-18.626,5.452-22.176-13.515-37.995-11.999c-23.788,2.28-17.653,59.447-5.999,68.991
+						c17.395,10.392,27.897-21.545,42.994-8.999c4.307,3.579,1,30.795,1,42.995c0,18.278,0,32.867,0,47.994
+						c-26.009-2.321-56.317-0.342-83.989-1c-6.829,5.684-9.317,6.621-9.999,11.999c-1.402,11.066,14.799,18.211,12.998,29.996
+						c-2.584,16.916-60.815,16.643-65.991,3c-4.688-12.358,21.627-27.182,9.999-40.995c-6.673-7.926-29.67-4-42.995-4
+						c-16.787,0-33.033-0.673-42.994,1c0.666-73.324-1.333-149.314,0.999-220.972C624.966,175.978,698.957,175.978,772.947,175.978z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-m1.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+
+
+		<figure class="figure" data-dueljectif="piece2">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M227.016,175.978c74.324,0,148.648,0,222.972,0
+						c0,73.324,0,146.648,0,219.973c-20.485,0.084-58.871-0.062-85.989,0c-7.315,6.051-9.336,6.77-9.999,11.999
+						c-1.322,10.435,14.783,18.313,12.999,29.996c-1.12,7.328-13.33,10.704-21.997,11.999c-11.37,1.699-40.083,1.311-43.995-8.999
+						c-5.083-13.398,14.922-18.842,12.999-34.996c-2.43-20.404-68.736-6.081-86.989-8.999c-1.849-16.426-1-32.13-1-51.993
+						c0-15.527,3.833-41.592-7.999-43.995c-15.873-3.223-22.663,17.275-34.996,12.999c-7.439-2.58-12.062-21.059-11.999-34.996
+						c0.046-10.013,4.404-29.631,13.999-30.997c15.468-2.201,18.429,19.3,37.995,12.999c5.411-10.185,3-25.46,3-39.995
+						c0-14.035,0-29.121,0-41.995C225.93,177.559,225.851,176.146,227.016,175.978z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-f2.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+		<figure class="figure" data-dueljectif="piece2">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M999.875,175.978c0,73.991,0,147.982,0,221.972
+						c-9.05-3.448-33.149-2-51.993-2c-20.628,0-39.352-2.809-42.995,9.999c-4.43,15.573,12.666,17.055,11.999,33.996
+						c-7.921,9.015-19.845,9.92-33.996,9.999c-9.834,0.055-30.829-0.468-32.996-9.999c-3.247-14.286,20.98-24.589,11.999-38.995
+						c-5.211-8.357-28.134-4.999-40.995-4.999c-17.388,0-33.479,0.029-44.994,0c0-14.738,0-33.222,0-49.994
+						c0-17.032,3.651-36.033-6-44.994c-19.191-3.902-22.614,17.985-36.995,12.999c-14.616-5.068-17.44-64.24,3-65.992
+						c16.225-1.391,16.236,18.846,36.995,12.999c5.416-10.51,3-26.142,3-40.995c0-14.643,0-30.508,0-43.995
+						C850.561,175.978,925.218,175.978,999.875,175.978z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-m2.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+
+
+		<figure class="figure" data-dueljectif="piece3">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M0,398.95c27.694,1.302,60.617-2.625,84.989,2
+						c7.504,18.213-17.091,23.136-11.999,40.995c2.468,8.655,25.129,12.016,33.996,11.999c10.421-0.021,35.889-4.209,37.995-13.999
+						c2.776-12.899-17.499-21.362-12.999-33.996c3.586-10.066,26.94-6.999,41.995-6.999c19.577,0,35.358,0,49.994,0
+						c-1.767,12.348-1,28.357-1,43.995c0,14.725-3.004,31.838,5,39.995c16.764,7.446,26.392-15.979,38.995-12.998
+						c7.187,1.699,11.886,23.255,11.999,30.996c0.246,16.986-4.781,30.633-13.999,35.995c-13.605-0.877-16.302-16.718-30.996-13.998
+						c-23.069,4.27-5.342,74.776-10.999,94.988c-14.911,0-30.391,0-49.994,0c-16.199,0-37.989,4.078-40.995-4.999
+						c-4.041-12.205,14.669-22.608,11.999-33.996c-2.417-10.303-21.804-14.929-36.995-14.998c-10.416-0.048-32.073,3.331-33.996,14.998
+						c-2.763,16.759,16.597,16.654,11.999,38.995c-20.018,1.514-61.704-2.768-84.989,2C0,546.265,0,472.607,0,398.95z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-f3.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+		<figure class="figure" data-dueljectif="piece3">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M633.965,398.95c8.27,19.017-28.396,41.877,2,49.994
+						c11.971,3.197,56.3,6.177,58.992-10.999c2.058-13.127-14.17-17.025-13.998-30.996c5.751-13.131,25.026-8.999,41.994-8.999
+						c17.239,0,36.28,0,50.994,0c-1.768,12.454-1,29.23-1,44.995c0,15.407-3.144,32.466,5.999,39.995
+						c16.085,5.57,25.096-17.048,37.995-13.998c7.002,1.655,11.771,22.604,11.999,29.996c0.527,17.165-5.006,30.651-12.998,36.995
+						c-14.244-4.226-32.393-24.771-42.995-3.999c0,28.33,0,56.659,0,84.989c-14.655,0-29.716,0-48.994,0c-14.803,0-37.37,3.204-40.994-3
+						c-6.285-10.758,12.122-22.221,11.998-32.995c-0.15-13.002-22.558-17.928-37.995-17.998c-10.552-0.049-32.104,3.523-33.996,14.998
+						c-2.735,16.592,17.989,18.19,10.999,38.995c-18.428,0.704-62.876-1.307-83.989,1c0.666-72.991-1.333-148.648,0.999-219.973
+						C578.306,398.616,608.3,396.618,633.965,398.95z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-m3.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+
+
+		<figure class="figure" data-dueljectif="piece4">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M309.005,399.95c8.27,19.017-28.395,41.877,2,49.994
+						c11.972,3.197,56.301,6.177,58.993-10.999c2.058-13.127-14.169-17.025-13.998-30.996c5.938-13.247,25.691-8.999,42.995-8.999
+						c17.303,0,36.292,0,50.994,0c0,72.991,0,145.981,0,218.973c-10.806,0.089-29.845,0-47.994,0c-15.207,0-40.319,3.291-43.995-3
+						c-6.283-10.754,12.124-22.213,11.999-32.996c-0.15-13.001-22.557-17.927-37.995-17.997c-10.552-0.049-32.104,3.523-33.996,14.998
+						c-2.735,16.592,17.989,18.19,10.999,38.995c-18.713,0.764-57.865-1.385-81.99,1c-1.805-14.103-1-29.139-1-47.994
+						c0-11.835-3.502-39.756,5-43.994c12.399-6.183,22.763,12.768,33.996,11.998c11.438-0.784,17.237-25.957,16.998-37.995
+						c-0.293-14.719-7.273-25.15-11.999-32.996c-18.5-2.063-24.545,18.639-41.995,10.999c-3.924-21.827-2.024-57.288-1-79.99
+						C254.013,399.616,283.674,397.618,309.005,399.95z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-f4.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+		<figure class="figure" data-dueljectif="piece4">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M999.875,398.95c0,73.657,0,147.314,0,220.973
+						c-10.709-3.5-30.945-2-50.994-2c-17.737,0-39.081,3.799-41.994-4.999c-4.06-12.26,14.677-22.576,11.998-33.996
+						c-2.461-10.493-22.729-15.132-37.995-14.998c-10.164,0.089-31.118,3.607-32.996,14.998c-2.763,16.759,16.598,16.654,11.999,38.995
+						c-20.232,0.173-62.121-0.123-83.989,0c0-14.603,0-28.604,0-47.994c0-14.357-3.343-39.213,5.999-42.994
+						c14.811-5.997,21.729,15.678,35.995,11.998c9.176-2.367,14.346-29.123,13.998-38.995c-0.286-8.145-6.101-30.468-13.998-31.996
+						c-17.512-3.389-18.8,18.255-39.995,11.999c-4.619-23.043-0.7-54.625-1.999-80.99c27.361,1.301,59.949-2.624,83.989,2
+						c7.504,18.213-17.091,23.136-11.999,40.995c2.433,8.531,24.667,11.883,32.996,11.999c10.742,0.148,36.854-4.05,38.995-13.999
+						c2.776-12.899-17.498-21.362-12.998-33.996C912.872,389.145,985.321,404.233,999.875,398.95z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-m4.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+
+
+		<figure class="figure" data-dueljectif="piece5">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M0,840.895c0-73.324,0-146.648,0-219.973c14.547,0,27.49,0.001,44.994,0
+						c13.327,0,36.726,3.714,41.995-3.999c8.757-12.818-14.091-25.317-11.999-36.995c3.217-17.957,64.13-16.923,66.992-1
+						c2.876,16.004-20.011,21.329-11.999,36.995c4.442,8.687,29.69,4.999,43.994,4.999c18.472,0,32.276,0,49.994,0
+						c-1.797,12.151-1,28.088-1,42.995c0,14.927-2.655,30.818,4,39.995c19.163,6.075,25.629-14.277,41.995-10.999
+						c12.689,10.453,13.021,61.384-3,64.992c-12.48,2.812-15.622-16.241-33.996-12.998c-12.904,5.959-8.999,26.898-8.999,44.994
+						c0,18.685-0.727,39.065,1,50.993C149.315,840.895,74.657,840.895,0,840.895z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-f5.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+		<figure class="figure" data-dueljectif="piece5">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M773.947,619.923c-0.539,24.559-4.044,60.686,2,81.989
+						c17.742,8.767,26.816-12.949,41.994-9.999c6.243,3.633,10.665,18.826,10.999,27.997c0.525,14.424-4.721,31.051-11.999,36.995
+						c-13.442-1.229-31.191-23.804-43.994-4.999c0.581,28.416-1.217,64.54,1,87.988c-74.657,0-149.315,0-223.972,0
+						c0-73.323,0-146.648,0-219.972c28.38-1.283,61.924,2.599,86.988-2c8.766-20.018-13.984-21.346-11.998-37.995
+						c2.412-20.224,64.354-16.678,66.991-2c2.605,14.495-17.212,20.116-11.998,34.996c3.841,10.959,29.638,6.999,43.994,6.999
+						C744.398,619.923,755.191,619.923,773.947,619.923z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-m5.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+
+
+		<figure class="figure" data-dueljectif="piece6">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M449.988,620.922c0,73.324,0,146.649,0,219.973
+						c-74.657,0-149.315,0-223.972,0c0-16.229,0-30.85,0-49.993c0-12.59-3.479-39.072,6-42.995
+						c13.257-5.487,20.429,14.084,33.996,11.999c10.33-1.588,16.132-25.387,15.998-36.996c-0.169-14.664-6.617-23.187-11.999-32.995
+						c-20.16-1.602-26.642,18.741-43.995,10.998c0-26.663,0-53.326,0-79.99c28.048-1.281,61.256,2.598,85.989-1.999
+						c8.343-21.598-14.012-21.117-11.999-37.995c2.298-19.263,64.144-17.848,66.992-2c2.428,13.507-16.898,21.014-11.999,34.995
+						c3.722,10.62,28.513,6.999,43.995,6.999C419.042,620.923,432.912,620.922,449.988,620.922z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-f6.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+		<figure class="figure" data-dueljectif="piece6">
+			<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+				viewBox="0 0 1000 1000">
+				<g>
+					<path d="M999.875,620.922c0,73.324,0,146.649,0,219.973
+						c-74.657,0-149.314,0-223.972,0c0-15.471,0-30.128,0-49.993c0-15.173-3.416-39.483,6.999-42.995
+						c15.802-5.327,19.264,16.371,34.995,11.999c9.222-2.563,14.248-28.536,13.998-37.995c-0.207-7.867-5.251-29.625-13.998-31.996
+						c-17.738-4.81-23.09,20.86-40.995,10.998c-1.666-24.332-1.666-55.658,0-79.99c14.215,0,26.812,0.001,43.995,0
+						c13.197,0,35.79,3.62,40.995-3.999c8.773-12.842-14.092-25.316-11.999-36.995c3.274-18.275,64.967-16.984,66.992,0
+						c1.77,14.845-19.676,20.983-11.999,35.995c4.181,8.175,28.934,4.999,43.994,4.999C969.52,620.922,985.155,620.923,999.875,620.922z" />
+				</g>
+				<image xlink:href="img/jeu-puzzle1/piece-oc-m6.png" width="100%" height="100%" />
+			</svg>
+		</figure>
+
+	</figure> <!-- figures -->
+
+</section> <!-- puzzle -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="module-flipclok/flipclock.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-puzzle.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+/*
+	Ludwik et Gaëtan Langhade - Interfacteur
+	février-avril 2015
+*/
+
+
+
+
+
+/* POINTER EVENTS */
+.has-waterline	{
+	pointer-events: none;
+}
+
+
+
+
+.hideandseek	{
+	height: 100%;
+}
+
+/* cjwainwright.co.uk - Web Development - Preserving the aspect ratio of general HTML elements
+http://cjwainwright.co.uk/webdev/aspectratio/ */
+
+.has-bathpool	{
+	height: -webkit-calc(100% - 5.6em);
+	height: -moz-calc(100% - 5.6em);
+	height: calc(100% - 5.6em);
+	text-align: center;
+}
+
+.has-surface	{
+	display: inline;
+	position: relative;
+	white-space: nowrap;
+}
+
+.has-cargo	{
+	display: inline-block;
+	max-width: 100%;
+	max-height: 100%;
+	vertical-align: bottom;
+}
+
+.has-waterline {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+}
+.has-shipment	{
+	padding-top: 56.25%;
+}
+.has-cabin {
+	bottom: 0;
+	left: 0;
+	position: absolute;
+	right: 0;
+	text-align: left;
+	top: 0;
+	white-space: normal;
+}
+
+.has-caption	{
+	color: #FFF;
+	font-family: "AllerLight";
+	font-size: 1.8em;
+	left: -4444px;
+	line-height: 1.3;
+	position: absolute;
+	text-align: right;
+	text-shadow: -2px -1px 0px #000;
+	top: .66em;
+	z-index: 1;
+}
+.has-caption.active	{
+	left: 1em;
+}
+
+@media (max-width: 960px), (max-height: 540px)	{
+	.has-caption	{
+		font-size: 1.3em;
+}	}
+@media (max-width: 480px), (max-height: 270px)	{
+	.has-caption	{
+		font-size: 1em;
+}	}
+
+

@@ -1,0 +1,321 @@
+/*
+	Ludwik et Gaëtan Langhade - Interfacteur
+	février-avril 2015
+*/
+
+
+@font-face {
+	font-family: "AllerRegular";
+	src: 	url("typo-aller/aller-regular.eot");
+	src:	url("typo-aller/aller-regular.eot?#iefix") format("embedded-opentype"),
+			url("typo-aller/aller-regular.woff2") format("woff2"),
+			url("typo-aller/aller-regular.woff") format("woff"),
+			url("typo-aller/aller-regular.ttf") format("truetype"),
+			url("typo-aller/aller-regular.svg#AllerRegular") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "AllerLight";
+	src: 	url("typo-aller/aller-light.eot");
+	src:	url("typo-aller/aller-light.eot?#iefix") format("embedded-opentype"),
+			url("typo-aller/aller-light.woff2") format("woff2"),
+			url("typo-aller/aller-light.woff") format("woff"),
+			url("typo-aller/aller-light.ttf") format("truetype"),
+			url("typo-aller/aller-light.svg#AllerLight") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+/*@font-face {
+	font-family: "AllerItalic";
+	src: 	url("typo-aller/aller-italic.eot");
+	src:	url("typo-aller/aller-italic.eot?#iefix") format("embedded-opentype"),
+			url("typo-aller/aller-italic.woff2") format("woff2"),
+			url("typo-aller/aller-italic.woff") format("woff"),
+			url("typo-aller/aller-italic.ttf") format("truetype"),
+			url("typo-aller/aller-italic.svg#AllerItalic") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}*/
+
+/*@font-face {
+	font-family: "AllerLightItalic";
+	src: 	url("typo-aller/aller-light-italic.eot");
+	src:	url("typo-aller/aller-light-italic.eot?#iefix") format("embedded-opentype"),
+			url("typo-aller/aller-light-italic.woff2") format("woff2"),
+			url("typo-aller/aller-light-italic.woff") format("woff"),
+			url("typo-aller/aller-light-italic.ttf") format("truetype"),
+			url("typo-aller/aller-light-italic.svg#AllerLightItalic") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}*/
+
+/*@font-face {
+	font-family: "AllerBold";
+	src: 	url("typo-aller/aller-bold.eot");
+	src:	url("typo-aller/aller-bold.eot?#iefix") format("embedded-opentype"),
+			url("typo-aller/aller-bold.woff2") format("woff2"),
+			url("typo-aller/aller-bold.woff") format("woff"),
+			url("typo-aller/aller-bold.ttf") format("truetype"),
+			url("typo-aller/aller-bold.svg#AllerBold") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}*/
+
+
+body	{
+	background: #EFE3D7;
+	-webkit-box-shadow: -3999px 0 0 4000px #EFE3D7; /* scroll */
+	-moz-box-shadow: -3999px 0 0 4000px #EFE3D7;
+	box-shadow: -3999px 0 0 4000px #EFE3D7;
+	color: #000;
+	font-family: "AllerRegular", Arial, sans-serif;
+	height: 100%;
+}
+h1, h2, h3, h4, h5, h6	{
+	font-family: Helvetica, Arial, sans-serif;
+}
+a	{
+	color: #592919;
+	text-decoration: underline;
+}
+a:focus,
+a:hover	{
+	text-decoration: none;
+}
+hr,
+.hr	{
+	left: -4444px;
+	position: absolute;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0)	{
+	#webkit	{
+		left: -8888px;
+	}
+}
+
+
+
+/* MENU */
+.all-games	{
+	background: #B6BA00;
+/*	-webkit-box-shadow: 1px -20px 6px rgba(124,92,24,.4), 0 -3999px 0 4000px #B6BA00;*/ /* dont scroll */
+/*	-moz-box-shadow: 1px -20px 6px rgba(124,92,24,.4), 0 -3999px 0 4000px #B6BA00;
+	box-shadow: 1px -20px 6px rgba(124,92,24,.4), 0 -3999px 0 4000px #B6BA00;*/
+	-webkit-box-shadow: 0 -3999px 0 4000px #B6BA00; /* dont scroll */
+	-moz-box-shadow: 0 -3999px 0 4000px #B6BA00;
+	box-shadow: 0 -3999px 0 4000px #B6BA00;
+	color: #FFF;
+	height: 4em; /* cf. paramètres.hauteur dans jeu-puzzle.js */
+	line-height: 4em;
+	margin: auto;
+	min-width: 420px;
+	overflow: hidden;
+	position: relative;
+	width: 720px;
+}
+.puzzle .all-games	{
+	z-index: 2;
+}
+.msie .all-games	{
+ 	outline: 1px solid #B6BA00;
+}
+.ranking .all-games	{
+	max-width: 1020px;
+}
+.hideandseek .all-games	{
+	min-width: 0;
+}
+
+[class*="Lg-"]	{
+	float: left;
+	height: 100%;
+	font-size: .95em;
+	margin: 0 6px 0 0;
+	position: relative;
+	z-index: 3;
+}
+.Lg-logo	{
+	display: inline-block;
+	height: 78%;
+}
+.Lg-logo img	{
+	height: 100%;
+	max-height: 99px;
+}
+.Lg-title	{
+	font-size: 1.1em;
+	margin-left: 1.2em;
+	width: 300px;
+}
+.Lg-menu	{
+	float: left;
+	margin: 0;
+	width: 300px;
+}
+.Lg-other:last-child	{
+	margin-right: 0;
+}
+.other	{
+	background: #EFE3D7;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+	color: #592919;
+	display: inline-block;
+	height: 100%;
+	padding: 0 5px;
+	text-decoration: none;
+	vertical-align: middle;
+}
+.ranking .game-ranking .other,
+.hideandseek .game-has .other,
+.puzzle .game-puzzle .other,
+.natenv .game-natenv .other,
+.other:hover,
+.other:focus	{
+	background: #FFB718;
+	color: #FFF;
+}
+
+
+
+.icon-menu	{
+/*http://life-alpilles.com/wp-content/themes/rt_hexeris_wp/css-compiled/menu-29f87f150bdb3ccb7d00a48152df8dbb.css?ver=4.0.8*/
+	background-color: #B9C25B;
+	background-image: -moz-linear-gradient(top, #C4CD6F, #A7B13E);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#C4CD6F), to(#A7B13E));
+	background-image: -webkit-linear-gradient(top, #C4CD6F, #A7B13E);
+	background-image: -o-linear-gradient(top, #C4CD6F, #A7B13E);
+	background-image: linear-gradient(to bottom, #C4CD6F, #A7B13E);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC4CC6E', endColorstr='#FFA6B03E', GradientType=0);	
+
+	border: 0;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-box-shadow: 2px 4px 0 rgba(0,0,0,.1);
+	-moz-box-shadow: 2px 4px 0 rgba(0,0,0,.1);
+	box-shadow: 2px 4px 0 rgba(0,0,0,.1);
+	cursor: pointer;
+	display: none;
+	height: 1.8em;
+	padding: 7px 10px;
+	position: absolute;
+	right: 1em;	
+	top: 25%;
+	width: 2.7em;
+	z-index: 1;
+}
+.icon-menu::before,
+.icon-menu::after	{
+	background-color: #EFE3D7;
+	border-radius: 1px;
+	content: " ";
+	display: block;
+	height: 3px;
+	left: 6px;
+	right: 6px;
+	position: absolute;
+}
+.icon-menu::before	{
+	top: 8px;
+}
+.icon-menu::after	{
+	bottom: 8px;
+}
+
+.active .icon-menu,
+.icon-menu:hover	{
+	background-image:-moz-linear-gradient(top, #BDC65C, #959E37);
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#BDC65C), to(#959E37));
+	background-image:-webkit-linear-gradient(top, #BDC65C, #959E37);
+	background-image:-o-linear-gradient(top, #BDC65C, #959E37);
+	background-image:linear-gradient(to bottom, #BDC65C, #959E37);
+	background-repeat:repeat-x;
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFBCC55C', endColorstr='#FF959E37', GradientType=0);
+
+	-webkit-box-shadow: -2px 4px 3px 1px rgba(255,255,255,.33);
+	-moz-box-shadow: -2px 4px 3px 1px rgba(255,255,255,.33);
+	box-shadow: -2px 4px 3px 1px rgba(255,255,255,.33);
+}
+.active .icon-menu::before,
+.active .icon-menu::after,
+.icon-menu:hover::before,
+.icon-menu:hover::after	{
+	background: #FFF;
+}
+.icon-menu:focus	{
+	outline: 1px dotted #592919;
+}
+
+
+.lg-order	{
+	background: #592919;
+	-webkit-box-shadow: 0 -3999px 0 4000px #592919; /* scroll */
+	-moz-box-shadow: 0 -3999px 0 4000px #592919;
+	box-shadow: 0 -3999px 0 4000px #592919;
+	color: #EFE3D7;
+	font-size: .85em;
+	font-weight: bold;
+	height: 1.6em; /* cf. paramètres.hauteur dans jeu-puzzle.js */
+	line-height: 1.6em!important; /* MSIE 1000 years later */
+	margin: auto;
+	padding: 0 .6em;
+	text-align: center;
+}
+.hideandseek .lg-order	{
+	border-bottom: 1px solid #592919;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	-webkit-box-sizing: content-box; /* partial support ?? */
+	-moz-box-sizing: content-box;
+	-box-sizing: content-box;
+}
+.ranking .lg-order	{
+	height: auto;
+}
+.phases-transit .lg-order	{
+	background: #EFE3D7;
+	-webkit-box-shadow: 0 -3999px 0 4000px #EFE3D7; /* scroll */
+	-moz-box-shadow: 0 -3999px 0 4000px #EFE3D7;
+	box-shadow: 0 -3999px 0 4000px #EFE3D7;
+}
+
+
+@media screen and (max-width: 720px)	{
+	.all-games	{
+		width: auto;
+	}
+	.Lg-menu	{
+		left: -4444px;
+		position: absolute;
+	}
+	.icon-menu	{
+		display: inline-block;
+	}
+	.active .Lg-menu	{
+		display: inherit;
+		left: auto;
+		position: absolute;
+		top: 0;
+		right: 5em;
+	}
+	.active .Lg-title	{
+		display: none;
+	}
+}
+
+@media screen and (max-width: 460px)	{
+	.active .Lg-logo	{
+		opacity: 0;
+	}
+	.hideandseek .Lg-title	{
+		display: none;
+	}
+}

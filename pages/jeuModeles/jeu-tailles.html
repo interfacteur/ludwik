@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles : jeu des tailles</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-tailles.css">
+
+<link rel="stylesheet" type="text/css" href="../jeux/_address/address.css">
+
+</head>
+
+<body class="ranking">
+
+<?php
+$modele = true;
+$_GET["page"] = "tailles";
+include("../jeux/_address/address.php");
+?>
+
+<header class="all-games fixing" id="allGames">
+	<a href="#" class="Lg-logo"><img src="img/interface/logo.png" alt="Ludwik - logo"></a>
+
+	<h1 class="Lg-title" id="LgTitle">Jeu des tailles</h1>
+
+	<ol class="Lg-menu">
+		<li class="game-ranking Lg-other"><span class="other" title="'Tailles' est le jeu affiché">Tailles</span></li>
+		<li class="game-has Lg-other"><a href="jeu-cache1.html" class="other">Cache-cache</a></li>
+		<li class="game-puzzle Lg-other"><a href="jeu-puzzle.html" class="other">Puzzles</a></li>
+		<li class="game-natenv Lg-other"><a href="jeu-milieux.html" class="other">Milieux</a></li>
+	</ol>
+
+	<button class="icon-menu" id="iconLgMenu"></button>
+</header> <!-- all-games -->
+
+<p class="lg-order">
+	Classe les oiseaux du plus petit au plus grand, selon la taille qu'ils ont dans la nature.
+</p> <!-- lg-order -->
+<p class="lg-order">
+	La mesure indiquée représente la longueur de l'oiseau du bec à la queue.
+</p> <!-- lg-order -->
+
+
+<form action="#" class="tool" id="levels">
+	<p class="tool-order"><input type="button" value="Résultat" id="order" class="tools"></p>
+	<p class="tool-again"><input type="button" value="Recommencer" id="again" class="tools"></p>
+</form> <!-- levels -->
+
+<section class="hipster-stage" id="hipsterStage">
+	<ol class="hipster" id="hipster">
+
+<!-- note 16 avril 2015 : laisser ordre alphabétique -->
+
+		<li class="sizesB sizeB1">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/aigle.png" data-fiche="aigle">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+		<li class="sizesB sizeB2">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/fauvette.png" data-fiche="fauvette">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+		<li class="sizesB sizeB3">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/ptduc.png" data-fiche="ptduc">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+		<li class="sizesB sizeB4">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/rollier.png" data-fiche="rollier">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+	</ol>
+</section> <!-- hipster-stage -->
+
+<!-- <small class="notab">A noter : une possible imprécision d'échelle dans ces reproductions.</small> -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-fiches.sujets.js"></script>
+<script src="scripts/jeu-tailles.js"></script>
+
+</body>
+</html>

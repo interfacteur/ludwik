@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles: playing hide and seek</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-cache.css">
+
+<link rel="stylesheet" type="text/css" href="../../jeux/_address/address.css">
+
+</head>
+
+<body class="has">
+
+<?php
+$lang = "en";
+$_GET["page"] = "cache";
+include("../../jeux/_address/address.php");
+?>
+
+<section class="hideandseek">
+
+	<header class="life-alpilles-games fixing" id="lifeAlpillesGame">
+		<a href="http://life-alpilles.com" class="LAg-logo"><img src="img/interface/logoLifeAlpilles.png" alt="Life des Alpilles - logo"></a>
+
+		<p class="bilingual" id="bilingual">
+			<a class="left" href="../../jeux/jeu-cache.html"><img src="img/interface/version-fr.png" height="12" width="18" alt="Version française" lang="fr"></a>
+			<span class="right"><img src="img/interface/version-en.png" height="12" width="18" alt="English version displayed"></span>
+		</p>
+
+		<h1 class="LAg-title" id="LAgTitle">Playing hide and seek</h1>
+
+		<ol class="LAg-menu">
+			<li class="game-ranking LAg-other"><a href="jeu-tailles.html" class="other">Sizes</a></li>
+			<li class="game-has LAg-other">
+				<a href="#" title="Previous 'playing hide and seek'" class="slide-track track-prev" id="slidePrev">Previous 'playing hide and seek'</a>
+				<span class="other" title="'Hide and seek' is the displayed game">Hide and seek</span>
+				<a href="#" title="Next 'playing hide and seek'" class="slide-track track-next" id="slideNext">Next 'playing hide and seek'</a>
+			<li class="game-puzzle LAg-other"><a href="jeu-puzzle1.html" class="other">Puzzles</a></li>
+			<li class="game-natenv LAg-other"><a href="jeu-milieux1.html" class="other">Environments</a></li>
+		</ol>
+
+		<button class="icon-menu" id="iconLAgMenu"></button>
+	</header> <!-- life-alpilles-games -->
+
+	<p class="lag-order">
+		Search in the scenery the birds to listen to theirs songs.
+	</p> <!-- lag-order -->
+
+	<hr id="webkit">
+
+	<iframe src="jeu-cache-frame.html" frameborder="0" name="hasBath" id="hasBath" class="has-bath"></iframe>
+
+</section> <!-- hideandseek -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-cache.js"></script>
+
+</body>
+</html>

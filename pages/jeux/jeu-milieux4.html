@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles : jeu des milieux</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-milieux.css">
+<link rel="stylesheet" href="css/jeu-milieux-svg.css">
+
+<link rel="stylesheet" type="text/css" href="_address/address.css">
+
+</head>
+
+<body>
+
+<?php
+$_GET["page"] = "milieux";
+include("_address/address.php");
+?>
+
+<section class="natenv">
+
+	<header class="life-alpilles-games fixing" id="lifeAlpillesGame">
+		<a href="http://life-alpilles.com" class="LAg-logo"><img src="img/interface/logoLifeAlpilles.png" alt="Life des Alpilles - logo"></a>
+
+		<p class="bilingual" id="bilingual">
+			<span class="left"><img src="img/interface/version-fr.png" height="12" width="18" alt="Version française affichée"></span>
+			<a class="right" href="../en/jeux/jeu-milieux4.html"><img src="img/interface/version-en.png" height="12" width="18" alt="English version" lang="en"></a>
+		</p>
+
+		<h1 class="LAg-title">Jeu des milieux (4/4)</h1>
+
+		<ol class="LAg-menu">
+			<li class="game-ranking LAg-other"><a href="jeu-tailles.html" class="other">Tailles</a></li>
+			<li class="game-has LAg-other"><a href="jeu-cache.html" class="other">Cache-cache</a></li>
+			<li class="game-puzzle LAg-other"><a href="jeu-puzzle1.html" class="other">Puzzles</a></li>
+			<li class="game-natenv LAg-other">
+				<a href="jeu-milieux3.html" title="Précédent 'jeu des milieux'" class="slide-track track-prev" id="slidePrev">Précédent 'jeu des milieux'</a>
+				<span class="other" title="'Milieux' est le jeu affiché">Milieux</span>
+				<a href="jeu-milieux1.html" title="'Jeu des milieux' suivant" class="slide-track track-next" id="slideNext">'Jeu des milieux' suivant</a>
+			</li>
+		</ol>
+
+		<button class="icon-menu" id="iconLAgMenu"></button>
+	</header> <!-- life-alpilles-games -->
+
+	<p class="lag-order">
+		Identifie toutes les menaces pour les oiseaux, en parcourant l'image.
+	</p> <!-- lag-order -->
+	<p class="lag-order" data-review="Tu peux maintenant revoir les informations.">
+		Place les oiseaux dans le milieu où ils nichent.
+	</p> <!-- lag-order -->
+
+	<figure id="figure">
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+			viewBox="0 0 1372 1200">
+			<defs>
+				<clipPath id="magnusGlass">
+					<circle cx="120" cy="120" r="120" />
+				</clipPath>
+			</defs>
+			<g class="stage" id="stage">
+				<image xlink:href="img/jeu-milieux4/milieux4.jpg" width="100%" height="100%" class="levels" />
+				<image xlink:href="img/jeu-milieux4/milieux4-niches.png" width="100%" height="100%" class="levels niches" />
+			</g>
+ 			<g id="zoom" class="stageZoom" clip-path="url(#magnusGlass)" clip-rule="evenodd" transform="translate(566,480)">
+				<g transform="matrix(2 0 0 2 0 0)">
+					<image id="bolge" xlink:href="img/jeu-milieux4/milieux4-loupe.jpg" width="100%" height="100%" />
+				</g>
+				<circle cx="120" cy="120" r="120" />
+				<image xlink:href="img/interface/zoom.png" width="128" height="128" x="56" y="56" class="init-zoom" />
+			</g>
+			<g id="threats" class="stageThreats">
+<!-- essayer de garder circle ou ellipse
+sinon réviser la routine js pour tactile (game.touchPoint = etc.) : en adaptant simplement l'expression reguliere -->
+				<circle class="threat" id="futPesticides" cx="945" cy="515" r="40" />
+				<circle class="threat" id="benneEquarissage" cx="835" cy="585" r="40" />
+				<circle class="threat" id="faucheuse" cx="615" cy="870" r="55" />
+			</g>
+		</svg>
+	</figure> <!-- figure -->
+
+	<hr id="webkit">
+
+	<ol id="figures" class="establishing fixing">
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="bruant">
+					<g>
+						<path d="M909.221,710.911c39.282-5.526,71.99,23.862,71.99,61.992
+							c0,42.384-34.597,62.194-61.992,62.992c-38.028,1.107-64.93-30.006-64.991-62.992C854.167,741.071,875.287,715.685,909.221,710.911z" />
+					</g>
+					<image xlink:href="img/jeu-milieux4/piece-bo.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="faucon">
+					<g>
+						<path d="M667.251,460.942c41.313-5.812,72.991,24.688,72.991,61.992
+							c0,40.836-34.182,61.952-60.992,62.992c-43.529,1.689-78.688-41.841-61.992-85.989
+							C623.597,483.172,641.817,464.521,667.251,460.942z" />
+					</g>
+					<image xlink:href="img/jeu-milieux4/piece-fc.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="outarde">
+					<g>
+						<path d="M343.292,855.893c34.923-3.559,58.75,16.133,66.992,43.995
+							c11.068,37.419-15.553,77.257-53.993,80.989c-33.412,3.245-69.991-18.665-69.991-62.992
+							C286.299,884.079,310.212,859.265,343.292,855.893z" />
+					</g>
+					<image xlink:href="img/jeu-milieux4/piece-oc.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="vautour">
+					<g>
+						<path d="M850.228,127.984c55.796-7.849,98.347,59.583,55.993,104.987
+							c-44.385,47.582-135.196-1.116-103.987-69.991C809.139,147.74,827.319,131.207,850.228,127.984z" />
+					</g>
+					<image xlink:href="img/jeu-milieux4/piece-vp.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+	</ol> <!-- figures -->
+
+</section> <!-- puzzle -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-fiches.oiseaux.js"></script>
+<script src="scripts/polyfills.js"></script>
+<script src="scripts/jeu-milieux.js"></script>
+
+</body>
+</html>

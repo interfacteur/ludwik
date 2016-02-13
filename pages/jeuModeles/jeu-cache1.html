@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles : jeu du cache-cache</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-cache1.css">
+
+<link rel="stylesheet" type="text/css" href="../jeux/_address/address.css">
+
+</head>
+
+<body class="has">
+
+<?php
+$modele = true;
+$_GET["page"] = "cache";
+include("../jeux/_address/address.php");
+?>
+
+<section class="hideandseek">
+
+	<header class="all-games fixing" id="allGames">
+		<a href="#" class="Lg-logo"><img src="img/interface/logo.png" alt="Ludwik - logo"></a>
+
+		<h1 class="Lg-title">Jeu du cache-cache</h1>
+
+		<ol class="Lg-menu">
+			<li class="game-ranking Lg-other"><a href="jeu-tailles.html" class="other">Tailles</a></li>
+			<li class="game-has Lg-other"><span class="other" title="'Cache-cache' est le jeu affiché">Cache-cache</span></li>
+			<li class="game-puzzle Lg-other"><a href="jeu-puzzle.html" class="other">Puzzles</a></li>
+			<li class="game-natenv Lg-other"><a href="jeu-milieux.html" class="other">Milieux</a></li>
+		</ol>
+
+		<button class="icon-menu" id="iconLgMenu"></button>
+	</header> <!-- all-games -->
+
+	<p class="lg-order">
+		Cherche dans cette vue les oiseaux pour écouter leur chant.
+	</p> <!-- lg-order -->
+
+	<hr id="webkit">
+
+	<iframe src="jeu-cache1-frame.html" frameborder="0" name="hasBath" id="hasBath" class="has-bath"></iframe>
+
+</section> <!-- hideandseek -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+
+</body>
+</html>

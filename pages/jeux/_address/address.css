@@ -1,0 +1,24 @@
+address.address	{
+	background: rgba(0,0,0,.66);
+	border: 1px solid #EFE3D7;
+	border-width: 0 1px 1px 0;
+	border-radius: 0 0 1em 0;
+	color: #FFF;
+	font-size: .66em;
+	font-style: normal;
+	line-height: 1.6;
+	padding: .33em .66em .33em .33em;
+	position: absolute;
+	text-align: right;
+	width: 18em;
+	z-index: 10000;
+}
+address.address a	{
+	border-bottom: 1px dotted #EFE3D7;
+	color: #EFE3D7;
+	text-decoration: none;
+}
+address.address a:focus,
+address.address a:hover	{
+	border: 0;
+}

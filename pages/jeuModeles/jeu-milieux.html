@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles : jeu des milieux</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-milieux.css">
+<link rel="stylesheet" href="css/jeu-milieux-svg.css">
+
+<link rel="stylesheet" type="text/css" href="../jeux/_address/address.css">
+
+</head>
+
+<body>
+
+<?php
+$modele = true;
+$_GET["page"] = "milieux";
+include("../jeux/_address/address.php");
+?>
+
+<section class="natenv">
+
+	<header class="all-games fixing" id="allGames">
+		<a href="#" class="Lg-logo"><img src="img/interface/logo.png" alt="Ludwik - logo"></a>
+
+		<h1 class="Lg-title">Jeu des milieux</h1>
+
+		<ol class="Lg-menu">
+			<li class="game-ranking Lg-other"><a href="jeu-tailles.html" class="other">Tailles</a></li>
+			<li class="game-has Lg-other"><a href="jeu-cache1.html" class="other">Cache-cache</a></li>
+			<li class="game-puzzle Lg-other"><a href="jeu-puzzle.html" class="other">Puzzles</a></li>
+			<li class="game-natenv Lg-other"><span class="other" title="'Milieux' est le jeu affiché">Milieux</span></li>
+		</ol>
+
+		<button class="icon-menu" id="iconLgMenu"></button>
+	</header> <!-- all-games -->
+
+	<p class="lg-order">
+		Identifie toutes les menaces pour les oiseaux, en parcourant l'image.
+	</p> <!-- lg-order -->
+	<p class="lg-order" data-review="Tu peux maintenant revoir les informations.">
+		Place les oiseaux dans le milieu où ils nichent.
+	</p> <!-- lg-order -->
+
+	<figure id="figure">
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+			viewBox="0 0 1372 1200">
+			<defs>
+				<clipPath id="magnusGlass">
+					<circle cx="120" cy="120" r="120" />
+				</clipPath>
+			</defs>
+			<g class="stage" id="stage">
+				<image xlink:href="img/jeu-milieux/milieux1.jpg" width="100%" height="100%" class="levels" />
+				<image xlink:href="img/jeu-milieux/milieux-niches.png" width="100%" height="100%" class="levels niches" />
+			</g>
+			<g id="zoom" class="stageZoom" clip-path="url(#magnusGlass)" clip-rule="evenodd" transform="translate(566,480)">
+				<g transform="matrix(2 0 0 2 0 0)">
+					<image id="bolge" xlink:href="img/jeu-milieux/milieux-loupe.jpg" width="100%" height="100%" />
+				</g>
+				<circle cx="120" cy="120" r="120" />
+				<image xlink:href="img/interface/zoom.png" width="128" height="128" x="56" y="56" class="init-zoom" />
+			</g>
+			<g id="threats" class="stageThreats">
+<!-- essayer de garder circle ou ellipse
+sinon réviser la routine js pour tactile (game.touchPoint = etc.) : en adaptant simplement l'expression reguliere -->
+				<circle class="threat" id="grimpeur" cx="720" cy="520" r="45" />
+				<ellipse class="threat" id="maison" cx="535" cy="745" rx="50" ry="75" />
+				<ellipse class="threat" id="embroussaillement" cx="495" cy="900" rx="60" ry="50" />
+			</g>
+		</svg>
+	</figure> <!-- figure -->
+
+	<hr id="webkit">
+
+	<ol id="figures" class="establishing fixing">
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="engoulevent">
+					<g>
+						<path d="M385.286,909.886c33.521-2.549,62.545,20.706,66.992,50.994
+							c10.192,69.425-73.893,93.982-109.986,52.993C310.58,977.86,331.621,913.968,385.286,909.886z" />
+					</g>
+					<image xlink:href="img/jeu-milieux/piece-ee.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="fauvette">
+					<g>
+						<path d="M651.253,777.902c47.732-6.058,88.499,43.113,63.992,90.989
+							c-5.476,10.697-15.752,21.24-26.996,26.996c-41.989,21.493-88.417-9.587-91.989-49.993c-2.834-32.057,14.255-50.854,28.997-59.993
+							C631.728,781.89,637.682,779.625,651.253,777.902z" />
+					</g>
+					<image xlink:href="img/jeu-milieux/piece-fp.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="gdduc">
+					<g>
+						<path d="M811.233,567.929c39.952-5.621,75.167,23.388,71.991,66.992
+							c-1.934,26.544-22.348,53.115-52.993,56.992c-40.641,5.142-72.398-25.591-72.991-60.992
+							C756.667,596.699,781.137,572.163,811.233,567.929z" />
+					</g>
+					<image xlink:href="img/jeu-milieux/piece-ge.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+	</ol> <!-- figures -->
+
+</section> <!-- puzzle -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-fiches.sujets.js"></script>
+<script src="scripts/polyfills.js"></script>
+<script src="scripts/jeu-milieux.js"></script>
+
+</body>
+</html>

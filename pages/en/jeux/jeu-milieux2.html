@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles: environments game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-milieux.css">
+<link rel="stylesheet" href="css/jeu-milieux-svg.css">
+
+<link rel="stylesheet" type="text/css" href="../../jeux/_address/address.css">
+
+</head>
+
+<body>
+
+<?php
+$lang = "en";
+$_GET["page"] = "milieux";
+include("../../jeux/_address/address.php");
+?>
+
+<section class="natenv">
+
+	<header class="life-alpilles-games fixing" id="lifeAlpillesGame">
+		<a href="http://life-alpilles.com" class="LAg-logo"><img src="img/interface/logoLifeAlpilles.png" alt="Life des Alpilles - logo"></a>
+
+		<p class="bilingual" id="bilingual">
+			<a class="left" href="../../jeux/jeu-milieux2.html"><img src="img/interface/version-fr.png" height="12" width="18" alt="Version française" lang="fr"></a>
+			<span class="right"><img src="img/interface/version-en.png" height="12" width="18" alt="English version displayed"></span>
+		</p>
+
+		<h1 class="LAg-title">Environments game (2/4)</h1>
+
+		<ol class="LAg-menu">
+			<li class="game-ranking LAg-other"><a href="jeu-tailles.html" class="other">Sizes</a></li>
+			<li class="game-has LAg-other"><a href="jeu-cache.html" class="other">Hide and seek</a></li>
+			<li class="game-puzzle LAg-other"><a href="jeu-puzzle1.html" class="other">Puzzles</a></li>
+			<li class="game-natenv LAg-other">
+				<a href="jeu-milieux1.html" title="Previous 'environments game'" class="slide-track track-prev" id="slidePrev">Previous 'environments game'</a>
+				<span class="other" title="'Milieux' is the displayed game">Environments</span>
+				<a href="jeu-milieux3.html" title="Next 'environments game'" class="slide-track track-next" id="slideNext">Next 'environments game'</a>
+			</li>
+		</ol>
+
+		<button class="icon-menu" id="iconLAgMenu"></button>
+	</header> <!-- life-alpilles-games -->
+
+	<p class="lag-order">
+		Identifies all the threats for the birds, browsing the image.
+	</p> <!-- lag-order -->
+	<p class="lag-order" data-review="
+Now you can review the information.">
+		Put the birds in their nesting environment.
+	</p> <!-- lag-order -->
+
+	<figure id="figure">
+		<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+			viewBox="0 0 1372 1200">
+			<defs>
+				<clipPath id="magnusGlass">
+					<circle cx="120" cy="120" r="120" />
+				</clipPath>
+			</defs>
+			<g class="stage" id="stage">
+				<image xlink:href="img/jeu-milieux2/milieux2.jpg" width="100%" height="100%" class="levels" />
+				<image xlink:href="img/jeu-milieux2/milieux2-niches.png" width="100%" height="100%" class="levels niches" />
+			</g>
+			<g id="zoom" class="stageZoom" clip-path="url(#magnusGlass)" clip-rule="evenodd" transform="translate(566,480)">
+				<g transform="matrix(2 0 0 2 0 0)">
+					<image id="bolge" xlink:href="img/jeu-milieux2/milieux2-loupe.jpg" width="100%" height="100%" />
+				</g>
+				<circle cx="120" cy="120" r="120" />
+				<image xlink:href="img/interface/zoom.png" width="128" height="128" x="56" y="56" class="init-zoom" />
+			</g>
+			<g id="threats" class="stageThreats">
+<!-- essayer de garder circle ou ellipse
+sinon réviser la routine js pour tactile (game.touchPoint = etc.) : en adaptant simplement l'expression reguliere -->
+				<circle class="threat" id="coupeArbreIsole" cx="570" cy="695" r="50" />
+				<ellipse class="threat" id="pylone" cx="955" cy="550" rx="45" ry="70" />
+			</g>
+		</svg>
+	</figure> <!-- figure -->
+
+	<hr id="webkit">
+
+	<ol id="figures" class="establishing fixing">
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="aigle">
+					<g>
+						<path d="M856.227,304.962c39.751-5.592,70.546,21.753,71.991,58.993
+							c1.623,41.799-32.776,65.538-61.992,65.992c-33.771,0.525-64.386-26.956-64.992-61.992
+							C800.625,332.685,826.73,309.111,856.227,304.962z" />
+					</g>
+					<image xlink:href="img/jeu-milieux2/piece-ab.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+		<li class="walking">
+			<figure class="figure">
+				<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="0 0 1372 1200" id="ptduc">
+					<g>
+						<path d="M384.287,665.917c43.89-6.175,81.887,32.709,68.991,78.99
+							c-8.077,28.987-33.289,45.245-58.993,45.994c-37.767,1.1-64.548-29.334-64.992-61.992
+							C328.814,693.627,353.474,670.251,384.287,665.917z" />
+					</g>
+					<image xlink:href="img/jeu-milieux2/piece-ps.png" width="100%" height="100%" />
+				</svg>
+			</figure>
+		</li>
+
+	</ol> <!-- figures -->
+
+</section> <!-- puzzle -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-fiches.oiseaux.js"></script>
+<script src="scripts/polyfills.js"></script>
+<script src="scripts/jeu-milieux.js"></script>
+
+</body>
+</html>

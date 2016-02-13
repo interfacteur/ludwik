@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1">
+<title>Life des Alpilles: Game sizes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/regularize.css">
+<link rel="stylesheet" href="css/communs.css">
+<link rel="stylesheet" href="css/jeu-tailles.css">
+
+<link rel="stylesheet" type="text/css" href="../../jeux/_address/address.css">
+
+</head>
+
+<body class="ranking">
+
+<?php
+$lang = "en";
+$_GET["page"] = "tailles";
+include("../../jeux/_address/address.php");
+?>
+
+<header class="life-alpilles-games fixing" id="lifeAlpillesGame">
+	<a href="http://life-alpilles.com" class="LAg-logo"><img src="img/interface/logoLifeAlpilles.png" alt="Life des Alpilles - logo"></a>
+
+	<p class="bilingual" id="bilingual">
+		<a class="left" href="../../jeux/jeu-tailles.html"><img src="img/interface/version-fr.png" height="12" width="18" alt="Version française" lang="fr"></a>
+		<span class="right"><img src="img/interface/version-en.png" height="12" width="18" alt="English version displayed"></span>
+	</p>
+
+	<h1 class="LAg-title" id="LAgTitle">Game sizes</h1>
+
+	<ol class="LAg-menu">
+		<li class="game-ranking LAg-other">
+			<a href="#" title="Previous 'Game sizes'" class="slide-track track-prev" id="slidePrev">Previous 'Game sizes'</a>
+			<span class="other" title="'Sizes' is the displayed game">Sizes</span>
+			<a href="#" title="Next 'Game sizes'" class="slide-track track-next" id="slideNext">Next 'Game sizes'</a>
+		</li>
+		<li class="game-has LAg-other"><a href="jeu-cache.html" class="other">Hide and seek</a></li>
+		<li class="game-puzzle LAg-other"><a href="jeu-puzzle1.html" class="other">Puzzles</a></li>
+		<li class="game-natenv LAg-other"><a href="jeu-milieux1.html" class="other">Environments</a></li>
+	</ol>
+
+	<button class="icon-menu" id="iconLAgMenu"></button>
+</header> <!-- life-alpilles-games -->
+
+<p class="lag-order">
+	Rank the birds from the smallest to the biggest, according to the size they have in the wild
+</p> <!-- lag-order -->
+<p class="lag-order">
+	The specified measurement represents the length of the bird from its beak to its tail.
+</p> <!-- lag-order -->
+
+<form action="#" class="tool" id="levels">
+	<p class="tool-order"><input type="button" value="Result" id="order" class="tools"></p>
+	<p class="tool-again"><input type="button" value="Again" id="again" class="tools"></p>
+</form> <!-- levels -->
+
+<section class="hipster-stage" id="hipsterStage">
+	<ol class="hipster" id="hipster">
+
+<!-- note 16 avril 2015 : laisser ordre alphabétique -->
+
+		<li class="sizesB sizeB1">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/aigle.png" data-fiche="aigle">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+		<li class="sizesB sizeB2">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/fauvette.png" data-fiche="fauvette">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+		<li class="sizesB sizeB3">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/ptduc.png" data-fiche="ptduc">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+		<li class="sizesB sizeB4">
+			<figure class="nest">
+				<img class="birds" src="img/jeu-tailles/rollier.png" data-fiche="rollier">
+				<figcaption class="nest-caption"></figcaption>
+			</figure>
+		</li>
+	</ol>
+</section> <!-- hipster-stage -->
+
+<!-- <small class="notab">A noter : une possible imprécision d'échelle dans ces reproductions.</small> -->
+
+<script src="scripts/jquery-1.11.2.min.js"></script>
+<script src="scripts/jquery-ui-1.11.2.min.js"></script>
+<script src="scripts/jquery.ui.touch-punch.min.js"></script>
+<script src="scripts/communs.js"></script>
+<script src="scripts/jeu-fiches.oiseaux.js"></script>
+<script src="scripts/jeu-tailles.js"></script>
+
+</body>
+</html>

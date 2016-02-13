@@ -1,0 +1,23 @@
+/*
+	Ludwik et Gaëtan Langhade - Interfacteur
+	février-avril 2015
+*/
+
+
+
+
+
+path	{
+	fill: transparent;
+	stroke: transparent;
+	stroke-width: 11%;
+	stroke-linejoin: bevel;
+	stroke-linecap: butt;
+}
+
+.lamp circle	{
+	fill: none;
+	stroke: #EFE3D7;
+	stroke-width: 2px;
+}
+
