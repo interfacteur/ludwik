@@ -3,10 +3,10 @@ Ludwik
 
 4 jeux web, responsives, pour interfaces bureau et mobiles, développés chez Ludwik pour Life des Alpilles
 
-* Jeu des tailles, type classement
-* Jeu de cache-cache, type exploration
-* Puzzle, type placement
-* Jeu des milieux, type exploration-placement
+* Jeu des tailles, de type classement
+* Jeu de cache-cache, de type exploration
+* Puzzle, de type placement
+* Jeu des milieux, de type exploration-placement
 
 
 
